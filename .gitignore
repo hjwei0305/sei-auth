@@ -25,5 +25,6 @@ nbdist/
 dependency-reduced-pom.xml
 
 ## gradle
+gradle/
 .gradle
 logs/
