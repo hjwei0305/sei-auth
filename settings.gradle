@@ -1,1 +1,3 @@
-rootProject.name = 'sei-core-auth'
+rootProject.name = 'sei-auth'
+include 'auth-service'
+include 'auth-api'
