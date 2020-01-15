@@ -25,7 +25,7 @@ dependencies {
 bootJar  {
     enabled = true
     archiveName = 'sei-auth.jar'
-    mainClassName = 'com.changhong.sei.notify.NotifyRestApplication'
+    mainClassName = 'com.changhong.sei.auth.AuthApplication'
     manifest {
         attributes("Manifest-Version": "4.0")
         attributes("Created-By": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString())
