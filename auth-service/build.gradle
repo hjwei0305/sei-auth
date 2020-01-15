@@ -24,7 +24,7 @@ dependencies {
 //打ar包
 bootJar  {
     enabled = true
-    archiveName = 'sei-notify.jar'
+    archiveName = 'sei-auth.jar'
     mainClassName = 'com.changhong.sei.notify.NotifyRestApplication'
     manifest {
         attributes("Manifest-Version": "4.0")
