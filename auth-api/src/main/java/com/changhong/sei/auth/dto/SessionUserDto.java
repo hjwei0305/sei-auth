@@ -22,11 +22,6 @@ public class SessionUserDto implements Serializable {
     @ApiModelProperty(notes = "会话id")
     private String sessionId;
     /**
-     * token
-     */
-    @ApiModelProperty(notes = "token")
-    private String token;
-    /**
      * 用户id，平台唯一
      */
     @ApiModelProperty(notes = "用户id")
@@ -78,14 +73,6 @@ public class SessionUserDto implements Serializable {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getUserId() {

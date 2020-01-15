@@ -1,11 +1,6 @@
 package com.changhong.sei.auth.dao;
 
 import com.changhong.com.sei.core.test.BaseUnitTest;
-import com.changhong.sei.core.util.JsonUtils;
-import com.changhong.sei.auth.entity.ContentTemplate;
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <strong>实现功能:</strong>
@@ -15,14 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version 1.0.1 2019-12-23 11:18
  */
 public class ContentTemplateDaoTest  extends BaseUnitTest {
-    @Autowired
-    private ContentTemplateDao dao;
-
-    @Test
-    public void findByCode(){
-        String code = "test";
-        ContentTemplate template = dao.findByCode(code);
-        Assert.assertNotNull(template);
-        System.out.println(JsonUtils.toJson(template));
-    }
+//    @Autowired
+//    private ContentTemplateDao dao;
+//
+//    @Test
+//    public void findByCode(){
+//        String code = "test";
+//        ContentTemplate template = dao.findByCode(code);
+//        Assert.assertNotNull(template);
+//        System.out.println(JsonUtils.toJson(template));
+//    }
 }

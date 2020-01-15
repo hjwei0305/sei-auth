@@ -38,5 +38,12 @@ public interface AuthenticationService {
      */
     @PostMapping(path = "check")
     @ApiOperation("认证会话id")
-    ResultData<SessionUserDto> check(String sid);
+    ResultData<String> check(String sid);
+
+    /**
+     * 获取匿名token
+     */
+    @PostMapping(path = "getAnonymousToken")
+    @ApiOperation("获取匿名token")
+    ResultData<String> getAnonymousToken();
 }
