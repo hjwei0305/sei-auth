@@ -36,4 +36,8 @@ logging:
           clients:
             NetworkClient: error
 
+sei:
+  auth:
+    default:
+      password: 123456
 

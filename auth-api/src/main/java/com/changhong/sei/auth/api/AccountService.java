@@ -36,7 +36,7 @@ public interface AccountService extends FindByPageService<AccountDto> {
      */
     @PostMapping(path = "udapte")
     @ApiOperation("更新账户")
-    ResultData<String> udapte(@RequestBody AccountDto dto);
+    ResultData<String> update(@RequestBody AccountDto dto);
 
     /**
      * 更新密码

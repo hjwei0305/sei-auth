@@ -19,7 +19,7 @@ public class AccountDto extends BaseEntityDto {
      * 租户代码
      */
     @ApiModelProperty(notes = "租户代码")
-    private String tenant;
+    private String tenantCode;
     /**
      * 账号
      */
@@ -61,12 +61,12 @@ public class AccountDto extends BaseEntityDto {
     @ApiModelProperty(notes = "注册时间")
     private Date sinceDate;
 
-    public String getTenant() {
-        return tenant;
+    public String getTenantCode() {
+        return tenantCode;
     }
 
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
     }
 
     public String getAccount() {

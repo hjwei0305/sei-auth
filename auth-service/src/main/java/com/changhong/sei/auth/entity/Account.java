@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
+import com.changhong.sei.core.entity.ITenant;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -17,13 +18,13 @@ import java.util.Date;
 @Table(name = "auth_account")
 @DynamicInsert
 @DynamicUpdate
-public class Account extends BaseEntity {
+public class Account extends BaseEntity implements ITenant {
     private static final long serialVersionUID = 1L;
     /**
      * 租户代码
      */
-    @Column(name = "tenant", length = 20, nullable = false)
-    private String tenant;
+    @Column(name = "tenant_code", length = 20, nullable = false)
+    private String tenantCode;
 
     /**
      * 账号
@@ -52,7 +53,7 @@ public class Account extends BaseEntity {
     /**
      * 密码
      */
-    @Column(name = "password", length = 100, nullable = false)
+    @Column(name = "password_hash", length = 100, nullable = false)
     private String password;
 
     /**
@@ -74,12 +75,14 @@ public class Account extends BaseEntity {
     @Column(name = "since_date", updatable = false)
     private Date sinceDate;
 
-    public String getTenant() {
-        return tenant;
+    @Override
+    public String getTenantCode() {
+        return tenantCode;
     }
 
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
+    @Override
+    public void setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
     }
 
     public String getAccount() {
