@@ -5,9 +5,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.auth.dto.AuthDto;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 实现功能：账户认证接口
@@ -24,26 +22,26 @@ public interface AuthenticationService {
      */
     @PostMapping(path = "login")
     @ApiOperation("登录")
-    ResultData<SessionUserDto> login(AuthDto authDto);
+    ResultData<SessionUserDto> login(@RequestBody AuthDto authDto);
 
     /**
      * 登出
      */
     @PostMapping(path = "logout")
     @ApiOperation("登出")
-    ResultData<String> logout(String sid);
+    ResultData<String> logout(@RequestBody String sid);
 
     /**
      * 认证会话id
      */
     @PostMapping(path = "check")
     @ApiOperation("认证会话id")
-    ResultData<String> check(String sid);
+    ResultData<String> check(@RequestBody String sid);
 
     /**
      * 获取匿名token
      */
-    @PostMapping(path = "getAnonymousToken")
+    @GetMapping(path = "getAnonymousToken")
     @ApiOperation("获取匿名token")
     ResultData<String> getAnonymousToken();
 }
