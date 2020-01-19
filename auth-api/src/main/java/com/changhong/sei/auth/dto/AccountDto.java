@@ -21,6 +21,11 @@ public class AccountDto extends BaseEntityDto {
     @ApiModelProperty(notes = "租户代码")
     private String tenantCode;
     /**
+     * 用户id
+     */
+    @ApiModelProperty(notes = "用户id")
+    private String userId;
+    /**
      * 账号
      */
     @ApiModelProperty(notes = "账号")
@@ -60,6 +65,16 @@ public class AccountDto extends BaseEntityDto {
      */
     @ApiModelProperty(notes = "注册时间")
     private Date sinceDate;
+    /**
+     * 开始有效期
+     */
+    @ApiModelProperty(notes = "开始有效期")
+    private Date startValidity;
+    /**
+     * 截止有效期
+     */
+    @ApiModelProperty(notes = "截止有效期")
+    private Date endValidity;
 
     public String getTenantCode() {
         return tenantCode;
@@ -67,6 +82,14 @@ public class AccountDto extends BaseEntityDto {
 
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getAccount() {
@@ -131,5 +154,21 @@ public class AccountDto extends BaseEntityDto {
 
     public void setSinceDate(Date sinceDate) {
         this.sinceDate = sinceDate;
+    }
+
+    public Date getStartValidity() {
+        return startValidity;
+    }
+
+    public void setStartValidity(Date startValidity) {
+        this.startValidity = startValidity;
+    }
+
+    public Date getEndValidity() {
+        return endValidity;
+    }
+
+    public void setEndValidity(Date endValidity) {
+        this.endValidity = endValidity;
     }
 }

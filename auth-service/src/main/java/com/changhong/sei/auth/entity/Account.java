@@ -27,6 +27,12 @@ public class Account extends BaseEntity implements ITenant {
     private String tenantCode;
 
     /**
+     * 用户id
+     */
+    @Column(name = "user_id", length = 100, nullable = false)
+    private String userId;
+
+    /**
      * 账号
      */
     @Column(name = "account", length = 100, nullable = false)
@@ -58,12 +64,14 @@ public class Account extends BaseEntity implements ITenant {
 
     /**
      * 冻结
+     * 针对禁用或删除用户时使用
      */
     @Column(name = "frozen", length = 1)
     private Boolean frozen = Boolean.FALSE;
 
     /**
      * 锁定
+     * 针对验证码或其他业务临时暂停账户时使用
      */
     @Column(name = "locked", length = 1)
     private Boolean locked = Boolean.FALSE;
@@ -75,6 +83,19 @@ public class Account extends BaseEntity implements ITenant {
     @Column(name = "since_date", updatable = false)
     private Date sinceDate;
 
+    /**
+     * 开始有效期
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "start_validity")
+    private Date startValidity;
+    /**
+     * 截止有效期
+     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "end_validity")
+    private Date endValidity;
+
     @Override
     public String getTenantCode() {
         return tenantCode;
@@ -83,6 +104,14 @@ public class Account extends BaseEntity implements ITenant {
     @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getAccount() {
@@ -147,5 +176,21 @@ public class Account extends BaseEntity implements ITenant {
 
     public void setSinceDate(Date sinceDate) {
         this.sinceDate = sinceDate;
+    }
+
+    public Date getStartValidity() {
+        return startValidity;
+    }
+
+    public void setStartValidity(Date startValidity) {
+        this.startValidity = startValidity;
+    }
+
+    public Date getEndValidity() {
+        return endValidity;
+    }
+
+    public void setEndValidity(Date endValidity) {
+        this.endValidity = endValidity;
     }
 }
