@@ -67,4 +67,16 @@ public class AccountServiceImplTest extends BaseUnitTest {
         ResultData<PageResult<AccountDto>> resultData = service.findByPage(search);
         System.out.println(JsonUtils.toJson(resultData));
     }
+
+    @Test
+    public void frozenById(){
+        ResultData<String> resultData = service.frozenById("76046094-3832-11EA-92DA-1063C8D2143D");
+        System.out.println(JsonUtils.toJson(resultData));
+    }
+
+    @Test
+    public void lockedById(){
+        ResultData<String> resultData = service.lockedById("76046094-3832-11EA-92DA-1063C8D2143D");
+        System.out.println(JsonUtils.toJson(resultData));
+    }
 }

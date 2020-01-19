@@ -51,4 +51,18 @@ public interface AccountService extends FindByPageService<AccountDto> {
     @PostMapping(path = "resetPass")
     @ApiOperation("重置密码")
     ResultData<String> resetPassword(@RequestBody AccountDto dto);
+
+    /**
+     * 账户冻结/解冻
+     */
+    @PostMapping(path = "frozenById")
+    @ApiOperation("账户冻结/解冻")
+    ResultData<String> frozenById(String id);
+
+    /**
+     * 账户锁定/解锁
+     */
+    @PostMapping(path = "lockedById")
+    @ApiOperation("账户锁定/解锁")
+    ResultData<String> lockedById(String id);
 }

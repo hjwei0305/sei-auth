@@ -150,4 +150,30 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         newPageResult.setRows(newRows);
         return ResultData.success(newPageResult);
     }
+
+    /**
+     * 账户冻结
+     *
+     * @param id
+     */
+    @Override
+    public ResultData<String> frozenById(String id) {
+        Account account = accountManager.findOne(id);
+        account.setFrozen(!account.getFrozen());
+        accountManager.save(account);
+        return ResultData.success(account.getFrozen()?"账户冻结成功!":"账户解冻成功!",account.getAccount());
+    }
+
+    /**
+     * 账户锁定/解锁
+     *
+     * @param id
+     */
+    @Override
+    public ResultData<String> lockedById(String id) {
+        Account account = accountManager.findOne(id);
+        account.setLocked(!account.getLocked());
+        accountManager.save(account);
+        return ResultData.success(account.getLocked()?"账户锁定成功!":"账户解锁成功!",account.getAccount());
+    }
 }
