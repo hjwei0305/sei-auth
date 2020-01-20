@@ -60,7 +60,7 @@ public class Account extends BaseEntity implements ITenant {
      * 密码
      */
     @Column(name = "password_hash", length = 100, nullable = false)
-    private String password;
+    private String passwordHash;
 
     /**
      * 冻结
@@ -146,12 +146,12 @@ public class Account extends BaseEntity implements ITenant {
         this.accountType = accountType;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public Boolean getFrozen() {

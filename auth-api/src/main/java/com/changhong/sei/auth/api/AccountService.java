@@ -29,14 +29,14 @@ public interface AccountService extends FindByPageService<AccountDto> {
      */
     @PostMapping(path = "create")
     @ApiOperation("创建新账户")
-    ResultData<String> create(@RequestBody AccountDto dto);
+    ResultData<String> create(@RequestBody AccountDto dto) throws IllegalAccessException;
 
     /**
      * 更新账户
      */
     @PostMapping(path = "udapte")
     @ApiOperation("更新账户")
-    ResultData<String> update(@RequestBody AccountDto dto);
+    ResultData<String> update(@RequestBody AccountDto dto) throws IllegalAccessException;
 
     /**
      * 更新密码

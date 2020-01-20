@@ -9,6 +9,8 @@ import com.changhong.sei.core.util.JsonUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.UUID;
+
 /**
  * @Author: 杨浩
  * @Description:
@@ -19,25 +21,28 @@ public class AccountServiceImplTest extends BaseUnitTest {
     @Autowired
     private AccountServiceImpl service;
 
+    private final static String ID = "015535F3-3B2D-11EA-808B-1063C8D2143D";
+
     @Test
     public void getById() {
-        ResultData<AccountDto> resultData = service.getById("76046094-3832-11EA-92DA-1063C8D2143D");
+        ResultData<AccountDto> resultData = service.getById(ID);
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
-    public void create() {
+    public void create() throws IllegalAccessException {
         AccountDto dto = new AccountDto();
+        dto.setUserId(UUID.randomUUID().toString());
         dto.setAccount("88001031");
         dto.setName("账号测试");
-        dto.setPassword("123qweAS");
+        dto.setPasswordHash("123qweAS");
         ResultData<String> resultData = service.create(dto);
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
-    public void update() {
-        ResultData<AccountDto> result = service.getById("76046094-3832-11EA-92DA-1063C8D2143D");
+    public void update() throws IllegalAccessException {
+        ResultData<AccountDto> result = service.getById(ID);
         AccountDto dto = result.getData();
         dto.setName("账户名修改测试");
         ResultData<String> resultData = service.update(dto);
@@ -46,16 +51,16 @@ public class AccountServiceImplTest extends BaseUnitTest {
 
     @Test
     public void updatePassword() {
-        ResultData<AccountDto> result = service.getById("76046094-3832-11EA-92DA-1063C8D2143D");
+        ResultData<AccountDto> result = service.getById(ID);
         AccountDto dto = result.getData();
-        dto.setPassword("99999");
+        dto.setPasswordHash("99999");
         ResultData<String> resultData = service.updatePassword(dto);
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
     public void resetPassword() {
-        ResultData<AccountDto> result = service.getById("76046094-3832-11EA-92DA-1063C8D2143D");
+        ResultData<AccountDto> result = service.getById(ID);
         AccountDto dto = result.getData();
         ResultData<String> resultData = service.resetPassword(dto);
         System.out.println(JsonUtils.toJson(resultData));
@@ -70,13 +75,13 @@ public class AccountServiceImplTest extends BaseUnitTest {
 
     @Test
     public void frozenById(){
-        ResultData<String> resultData = service.frozenById("76046094-3832-11EA-92DA-1063C8D2143D");
+        ResultData<String> resultData = service.frozenById(ID);
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
     public void lockedById(){
-        ResultData<String> resultData = service.lockedById("76046094-3832-11EA-92DA-1063C8D2143D");
+        ResultData<String> resultData = service.lockedById(ID);
         System.out.println(JsonUtils.toJson(resultData));
     }
 }
