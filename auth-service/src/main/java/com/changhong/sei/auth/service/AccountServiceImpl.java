@@ -179,11 +179,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         if(oldAccount.getPasswordHash().equals(dto.getPasswordHash())){
             return ResultData.fail("新密码与原密码相同，请重新输入！");
         }
-        int i = accountManager.updatePassword(dto.getId(), dto.getPasswordHash());
-        if(i!=1){
-            return ResultData.fail("密码更新失败！");
-        }
-        return ResultData.success(dto.getPasswordHash());
+        return accountManager.updatePassword(dto.getId(), dto.getPasswordHash());
     }
 
     /**
@@ -203,11 +199,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         if(ObjectUtils.isEmpty(oldAccount)){
             return ResultData.fail("账户不存在！");
         }
-        int i = accountManager.updatePassword(dto.getId(), defaultPassword);
-        if(i!=1){
-            return ResultData.fail("密码重置失败！");
-        }
-        return ResultData.success(defaultPassword);
+        return accountManager.updatePassword(dto.getId(), defaultPassword);
     }
 
     /**

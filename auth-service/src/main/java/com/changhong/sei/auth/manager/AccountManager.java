@@ -3,6 +3,7 @@ package com.changhong.sei.auth.manager;
 import com.changhong.sei.auth.dao.AccountDao;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.dao.BaseEntityDao;
+import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.manager.BaseEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,11 +27,15 @@ public class AccountManager extends BaseEntityManager<Account> {
 
     /**
      * 更新密码
-     * @param id
-     * @param newPassword
-     * @return
+     * @param id 账户id
+     * @param newPassword 新密码
+     * @return 更新结果
      */
-    public int updatePassword(String id, String newPassword){
-        return dao.updatePassword(id, newPassword);
+    public ResultData<String> updatePassword(String id, String newPassword){
+        int i = dao.updatePassword(id, newPassword);
+        if(i!=1){
+            return ResultData.fail("密码更新失败！");
+        }
+        return ResultData.success(newPassword);
     }
 }
