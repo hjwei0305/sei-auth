@@ -24,4 +24,13 @@ public class AccountManager extends BaseEntityManager<Account> {
         return dao;
     }
 
+    /**
+     * 更新密码
+     * @param id
+     * @param newPassword
+     * @return
+     */
+    public int updatePassword(String id, String newPassword){
+        return dao.updatePassword(id, newPassword);
+    }
 }
