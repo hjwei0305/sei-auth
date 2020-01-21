@@ -1,9 +1,6 @@
 package com.changhong.sei.auth.api;
 
-import com.changhong.sei.auth.dto.AccountRequest;
-import com.changhong.sei.auth.dto.AccountResponse;
-import com.changhong.sei.auth.dto.RegisterAccountRequest;
-import com.changhong.sei.auth.dto.UpdatePasswordRequest;
+import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.core.api.FindByPageService;
 import com.changhong.sei.core.dto.ResultData;
 import io.swagger.annotations.ApiOperation;
@@ -28,7 +25,7 @@ public interface AccountService extends FindByPageService<AccountResponse> {
      */
     @GetMapping(path = "getById")
     @ApiOperation("通过账户id获取已有账户")
-    ResultData<AccountResponse> getById(@RequestParam("id") String id);
+    ResultData<AccountResponse> getById(@RequestParam("id") @NotBlank String id);
 
     /**
      * 注册新账户
@@ -42,21 +39,21 @@ public interface AccountService extends FindByPageService<AccountResponse> {
      */
     @PostMapping(path = "create")
     @ApiOperation("创建新账户.无初始密码,使用平台提供的默认密码策略")
-    ResultData<String> create(@RequestBody @Valid AccountRequest request) throws IllegalAccessException;
+    ResultData<String> create(@RequestBody @Valid CreateAccountRequest request) throws IllegalAccessException;
 
     /**
      * 更新账户
      */
     @PostMapping(path = "udapte")
     @ApiOperation("更新账户")
-    ResultData<String> update(@RequestBody AccountRequest dto) throws IllegalAccessException;
+    ResultData<String> update(@RequestBody @Valid UpdateAccountRequest request) throws IllegalAccessException;
 
     /**
      * 更新密码
      */
     @PostMapping(path = "updatePassword")
     @ApiOperation("更新密码")
-    ResultData<String> updatePassword(@RequestBody UpdatePasswordRequest request);
+    ResultData<String> updatePassword(@RequestBody @Valid UpdatePasswordRequest request);
 
     /**
      * 重置密码

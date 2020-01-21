@@ -1,7 +1,7 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.com.sei.core.test.BaseUnitTest;
-import com.changhong.sei.auth.dto.AccountRequest;
+import com.changhong.sei.auth.dto.CreateAccountRequest;
 import com.changhong.sei.auth.dto.AccountResponse;
 import com.changhong.sei.auth.dto.RegisterAccountRequest;
 import com.changhong.sei.auth.dto.UpdatePasswordRequest;
@@ -51,7 +51,7 @@ public class AccountServiceImplTest extends BaseUnitTest {
 
     @Test
     public void create() {
-        AccountRequest request = new AccountRequest();
+        CreateAccountRequest request = new CreateAccountRequest();
         request.setUserId(UUID.randomUUID().toString());
         request.setAccount("admin");
         request.setName("账号测试");
@@ -63,7 +63,7 @@ public class AccountServiceImplTest extends BaseUnitTest {
     @Test
     public void update() throws IllegalAccessException {
         ResultData<AccountResponse> result = service.getById(ID);
-        AccountRequest request = (AccountRequest) result.getData();
+        CreateAccountRequest request = (CreateAccountRequest) result.getData();
         ResultData<String> resultData = service.update(request);
         System.out.println(JsonUtils.toJson(resultData));
     }

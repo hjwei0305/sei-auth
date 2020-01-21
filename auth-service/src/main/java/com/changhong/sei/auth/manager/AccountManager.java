@@ -56,6 +56,12 @@ public class AccountManager extends BaseEntityManager<Account> {
             return ResultData.fail("参数不能为空！");
         }
 
+        // 检查账户是否已存在
+        Account oldAccount = dao.findByAccountAndTenantCode(account.getAccount(), account.getTenantCode());
+        if (Objects.nonNull(oldAccount)) {
+            return ResultData.fail(String.format("账户[%s]已在租户[%s]下存在！", account.getAccount(), account.getTenantCode()));
+        }
+
         // 检查是否有密码
         if (!StringUtils.hasText(account.getPassword())) {
             // 无密码,使用平台默认密码策略.后续考虑产生随机密码并通知用户

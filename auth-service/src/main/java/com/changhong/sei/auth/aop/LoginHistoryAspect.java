@@ -58,7 +58,7 @@ public class LoginHistoryAspect {
                 }
                 historyManager.save(history);
             } catch (Exception e) {
-                LogUtil.error("", e);
+                LogUtil.error("登录历史记录异常", e);
             }
         }
     }

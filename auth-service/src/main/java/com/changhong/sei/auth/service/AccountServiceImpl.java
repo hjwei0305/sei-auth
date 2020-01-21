@@ -1,10 +1,7 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.api.AccountService;
-import com.changhong.sei.auth.dto.AccountRequest;
-import com.changhong.sei.auth.dto.AccountResponse;
-import com.changhong.sei.auth.dto.RegisterAccountRequest;
-import com.changhong.sei.auth.dto.UpdatePasswordRequest;
+import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.manager.AccountManager;
 import com.changhong.sei.core.dto.ResultData;
@@ -107,7 +104,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      * @param request 账户dto
      */
     @Override
-    public ResultData<String> create(AccountRequest request) {
+    public ResultData<String> create(CreateAccountRequest request) {
         Account account = convertToEntity(request);
         if (Objects.isNull(account)) {
             return ResultData.fail("参数不能为空！");
@@ -120,26 +117,30 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
     /**
      * 更新账户
      *
-     * @param dto 账户dto
+     * @param request 更新账户
      */
     @Override
-    public ResultData<String> update(AccountRequest dto) throws IllegalAccessException {
-        Account account = convertToEntity(dto);
-        if (ObjectUtils.isEmpty(account.getId())) {
+    public ResultData<String> update(UpdateAccountRequest request) throws IllegalAccessException {
+        if (ObjectUtils.isEmpty(request.getId())) {
             return ResultData.fail("参数id不能为空！");
         }
-        Account oldAccount = accountManager.findOne(account.getId());
-        if (oldAccount == null) {
+        Account account = accountManager.findOne(request.getId());
+        if (account == null) {
             return ResultData.fail("账户数据不存在！");
         }
-        // 密码不能被修改
-        account.setPassword(oldAccount.getPassword());
+        // 允许修改的账户信息
+        account.setName(request.getName());
+        account.setSystemCode(request.getSystemCode());
+        account.setAccountType(request.getAccountType());
+        account.setFrozen(request.getFrozen());
+        account.setLocked(request.getLocked());
+        account.setValidityDate(request.getValidityDate());
 
         OperateResultWithData<Account> resultWithData = accountManager.save(account);
         if (resultWithData.notSuccessful()) {
             return ResultData.fail(resultWithData.getMessage());
         }
-        return ResultData.success(dto.getAccount());
+        return ResultData.success(account.getAccount());
     }
 
     /**

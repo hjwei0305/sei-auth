@@ -1,5 +1,6 @@
 package com.changhong.sei.auth.dto;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
@@ -11,6 +12,7 @@ import java.io.Serializable;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-21 10:56
  */
+@ApiModel(description = "账户密码修改")
 public class UpdatePasswordRequest implements Serializable {
     private static final long serialVersionUID = -250452444530573741L;
     /**
