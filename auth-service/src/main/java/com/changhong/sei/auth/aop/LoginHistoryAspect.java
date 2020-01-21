@@ -1,7 +1,7 @@
 package com.changhong.sei.auth.aop;
 
-import com.changhong.sei.auth.dto.AuthDto;
-import com.changhong.sei.auth.dto.SessionUserDto;
+import com.changhong.sei.auth.dto.LoginRequest;
+import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.LoginHistory;
 import com.changhong.sei.auth.manager.LoginHistoryManager;
 import com.changhong.sei.core.dto.ResultData;
@@ -34,14 +34,14 @@ public class LoginHistoryAspect {
      * 拦截@see com.changhong.sei.auth.service.AuthenticationServiceImpl#login 方法的返回,记录登录历史
      */
     @AfterReturning(value = "execution(* com.changhong.sei.auth.service.AuthenticationServiceImpl.login(..))", argNames = "joinPoint, result", returning = "result")
-    public void afterReturning(JoinPoint joinPoint, ResultData<SessionUserDto> result) {
+    public void afterReturning(JoinPoint joinPoint, ResultData<SessionUserResponse> result) {
         Object[] args = joinPoint.getArgs();
         if (Objects.nonNull(args) && args.length == 1) {
-            AuthDto authDto = (AuthDto) args[0];
+            LoginRequest loginRequest = (LoginRequest) args[0];
 
             LoginHistory history = new LoginHistory();
-            history.setAccount(authDto.getAccount());
-            history.setTenantCode(authDto.getTenant());
+            history.setAccount(loginRequest.getAccount());
+            history.setTenantCode(loginRequest.getTenant());
             history.setLoginDate(LocalDateTime.now());
             try {
                 HttpServletRequest req = HttpUtils.getRequest();
@@ -49,11 +49,11 @@ public class LoginHistoryAspect {
                 history.setLoginUserAgent(req.getHeader("user-agent"));
 
                 if (result.getSuccessful()) {
-                    SessionUserDto dto = result.getData();
+                    SessionUserResponse dto = result.getData();
                     history.setLoginStatus(dto.getLoginStatus());
                     history.setLoginLog(result.getMessage());
                 } else {
-                    history.setLoginStatus(SessionUserDto.LoginStatus.failure);
+                    history.setLoginStatus(SessionUserResponse.LoginStatus.failure);
                     history.setLoginLog(result.getMessage());
                 }
                 historyManager.save(history);

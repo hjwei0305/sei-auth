@@ -1,7 +1,10 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.com.sei.core.test.BaseUnitTest;
-import com.changhong.sei.auth.dto.AccountDto;
+import com.changhong.sei.auth.dto.AccountRequest;
+import com.changhong.sei.auth.dto.AccountResponse;
+import com.changhong.sei.auth.dto.RegisterAccountRequest;
+import com.changhong.sei.auth.dto.UpdatePasswordRequest;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
@@ -12,11 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
-/**
- * @Author: 杨浩
- * @Description:
- * @Date: 2020/1/16 14:57
- */
 public class AccountServiceImplTest extends BaseUnitTest {
 
     @Autowired
@@ -32,66 +30,83 @@ public class AccountServiceImplTest extends BaseUnitTest {
         System.out.println(str);
         System.out.println("e10adc3949ba59abbe56e057f20f883e".equals(str));
     }
+
     @Test
     public void getById() {
-        ResultData<AccountDto> resultData = service.getById(ID);
+        ResultData<AccountResponse> resultData = service.getById(ID);
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
-    public void create() throws IllegalAccessException {
-        AccountDto dto = new AccountDto();
-        dto.setUserId(UUID.randomUUID().toString());
-        dto.setAccount("admin");
-        dto.setName("账号测试");
-        dto.setPassword(encrypt.encrypt("123456"));
+    public void register() {
+        RegisterAccountRequest request = new RegisterAccountRequest();
+        request.setUserId(UUID.randomUUID().toString());
+        request.setAccount("admin");
+        request.setName("账号测试");
+        request.setPassword(encrypt.encrypt("123456"));
 
-        ResultData<String> resultData = service.create(dto);
+        ResultData<String> resultData = service.register(request);
+        System.out.println(JsonUtils.toJson(resultData));
+    }
+
+    @Test
+    public void create() {
+        AccountRequest request = new AccountRequest();
+        request.setUserId(UUID.randomUUID().toString());
+        request.setAccount("admin");
+        request.setName("账号测试");
+
+        ResultData<String> resultData = service.create(request);
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
     public void update() throws IllegalAccessException {
-        ResultData<AccountDto> result = service.getById(ID);
-        AccountDto dto = result.getData();
-        dto.setName("账户名修改测试");
-        ResultData<String> resultData = service.update(dto);
+        ResultData<AccountResponse> result = service.getById(ID);
+        AccountRequest request = (AccountRequest) result.getData();
+        ResultData<String> resultData = service.update(request);
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
     public void updatePassword() {
-        ResultData<AccountDto> result = service.getById(ID);
-        AccountDto dto = result.getData();
-        dto.setPassword("99999");
-        ResultData<String> resultData = service.updatePassword(dto);
-        System.out.println(JsonUtils.toJson(resultData));
+        ResultData<AccountResponse> result = service.getById(ID);
+        if (result.isSuccessful()) {
+            AccountResponse response = result.getData();
+            UpdatePasswordRequest request = new UpdatePasswordRequest();
+            request.setTenant(response.getTenantCode());
+            request.setAccount(response.getAccount());
+            request.setNewPassword("123456");
+            request.setOldPassword("654321");
+            ResultData<String> resultData = service.updatePassword(request);
+            System.out.println(JsonUtils.toJson(resultData));
+        }
     }
 
     @Test
     public void resetPassword() {
-        ResultData<AccountDto> result = service.getById(ID);
-        AccountDto dto = result.getData();
-        ResultData<String> resultData = service.resetPassword(dto);
+        ResultData<AccountResponse> result = service.getById(ID);
+        AccountResponse dto = result.getData();
+        ResultData<String> resultData = service.resetPassword(dto.getTenantCode(), dto.getAccount());
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
     public void findByPage() {
         Search search = new Search();
-        ResultData<PageResult<AccountDto>> resultData = service.findByPage(search);
+        ResultData<PageResult<AccountResponse>> resultData = service.findByPage(search);
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
-    public void frozenById(){
-        ResultData<String> resultData = service.frozenById(ID);
+    public void frozenById() {
+        ResultData<String> resultData = service.frozen(ID, true);
         System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
-    public void lockedById(){
-        ResultData<String> resultData = service.lockedById(ID);
+    public void lockedById() {
+        ResultData<String> resultData = service.locked(ID, true);
         System.out.println(JsonUtils.toJson(resultData));
     }
 }

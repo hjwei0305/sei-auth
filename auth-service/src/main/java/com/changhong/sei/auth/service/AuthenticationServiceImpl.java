@@ -1,8 +1,8 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.api.AuthenticationService;
-import com.changhong.sei.auth.dto.AuthDto;
-import com.changhong.sei.auth.dto.SessionUserDto;
+import com.changhong.sei.auth.dto.LoginRequest;
+import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.manager.AccountManager;
 import com.changhong.sei.auth.manager.SessionManager;
@@ -42,14 +42,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * 4.返回会话id​​
      */
     @Override
-    public ResultData<SessionUserDto> login(AuthDto authDto) {
-        String tenant = authDto.getTenant();
-        String account = authDto.getAccount();
-        String password = authDto.getPassword();
+    public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
+        String tenant = loginRequest.getTenant();
+        String account = loginRequest.getAccount();
+        String password = loginRequest.getPassword();
         // 认证码检查,登录错误指定次数后要求输入验证码
 //        if (租户+账号 检查验证码) {
 //            //return ResultData.fail("认证码错误!");
-//            return ResultData.success(SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.captchaError));
+//            return ResultData.success(SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.captchaError));
 //        }
 
         Account entity;
@@ -59,10 +59,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 return ResultData.fail("账号密码错误,认证失败!");
             }
 
-            SessionUserDto dto = new SessionUserDto();
+            SessionUserResponse dto = new SessionUserResponse();
             if (accounts.size() > 1) {
-                dto.setLoginStatus(SessionUserDto.LoginStatus.multiTenant);
-                return ResultData.success("请指定租户代码", SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.multiTenant));
+                dto.setLoginStatus(SessionUserResponse.LoginStatus.multiTenant);
+                return ResultData.success("请指定租户代码", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.multiTenant));
             }
             entity = accounts.get(0);
         } else {
@@ -79,15 +79,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         // 检查是否被锁定
         if (!accountManager.checkLocked(entity)) {
-            return ResultData.success("账号被锁定,认证失败!", SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.locked));
+            return ResultData.success("账号被锁定,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.locked));
         }
         // 检查是否被冻结
         if (!accountManager.checkFrozen(entity)) {
-            return ResultData.success("账号被冻结,认证失败!", SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.frozen));
+            return ResultData.success("账号被冻结,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.frozen));
         }
         // 检查账户是否在有效期内
         if (!accountManager.checkValidityDate(entity)) {
-            return ResultData.success("账号已过期,认证失败!", SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.expire));
+            return ResultData.success("账号已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
         }
 
         SessionUser sessionUser = new SessionUser();
@@ -103,8 +103,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         sessionUser.setLocale("zh_CN");
         ContextUtil.generateToken(sessionUser);
 
-        SessionUserDto dto = new SessionUserDto();
-        dto.setLoginStatus(SessionUserDto.LoginStatus.success);
+        SessionUserResponse dto = new SessionUserResponse();
+        dto.setLoginStatus(SessionUserResponse.LoginStatus.success);
         dto.setSessionId(sessionUser.getSessionId());
         dto.setTenantCode(sessionUser.getTenantCode());
         dto.setUserId(sessionUser.getUserId());

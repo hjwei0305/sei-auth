@@ -1,8 +1,8 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.com.sei.core.test.BaseUnitTest;
-import com.changhong.sei.auth.dto.AuthDto;
-import com.changhong.sei.auth.dto.SessionUserDto;
+import com.changhong.sei.auth.dto.LoginRequest;
+import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.util.JsonUtils;
@@ -18,11 +18,11 @@ public class AuthenticationServiceTest extends BaseUnitTest {
 
     @Test
     public void login() {
-        AuthDto dto = new AuthDto();
-        dto.setTenant("10001");
-        dto.setAccount("admin");
-        dto.setPassword(encrypt.encrypt("123456"));
-        ResultData<SessionUserDto> resultData = service.login(dto);
+        LoginRequest request = new LoginRequest();
+        request.setTenant("10001");
+        request.setAccount("admin");
+        request.setPassword(encrypt.encrypt("123456"));
+        ResultData<SessionUserResponse> resultData = service.login(request);
         System.out.println(JsonUtils.toJson(resultData));
         Assert.assertTrue(resultData.getSuccessful());
     }

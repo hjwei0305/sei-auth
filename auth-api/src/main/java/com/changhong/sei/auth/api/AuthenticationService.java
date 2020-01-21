@@ -1,8 +1,8 @@
 package com.changhong.sei.auth.api;
 
-import com.changhong.sei.auth.dto.SessionUserDto;
+import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.auth.dto.AuthDto;
+import com.changhong.sei.auth.dto.LoginRequest;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +24,7 @@ public interface AuthenticationService {
      */
     @PostMapping(path = "login")
     @ApiOperation("登录")
-    ResultData<SessionUserDto> login(@RequestBody @Valid AuthDto authDto);
+    ResultData<SessionUserResponse> login(@RequestBody @Valid LoginRequest loginRequest);
 
     /**
      * 登出

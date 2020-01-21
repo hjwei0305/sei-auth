@@ -1,12 +1,11 @@
 package com.changhong.sei.auth.entity;
 
-import com.changhong.sei.auth.dto.SessionUserDto;
+import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.ITenant;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -54,7 +53,7 @@ public class LoginHistory extends BaseEntity implements ITenant {
      */
     @Enumerated(value= EnumType.STRING)
     @Column(name = "login_status")
-    private SessionUserDto.LoginStatus loginStatus;
+    private SessionUserResponse.LoginStatus loginStatus;
 
     @Column(name = "login_log")
     private String loginLog;
@@ -101,11 +100,11 @@ public class LoginHistory extends BaseEntity implements ITenant {
         this.loginUserAgent = loginUserAgent;
     }
 
-    public SessionUserDto.LoginStatus getLoginStatus() {
+    public SessionUserResponse.LoginStatus getLoginStatus() {
         return loginStatus;
     }
 
-    public void setLoginStatus(SessionUserDto.LoginStatus loginStatus) {
+    public void setLoginStatus(SessionUserResponse.LoginStatus loginStatus) {
         this.loginStatus = loginStatus;
     }
 

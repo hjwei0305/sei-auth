@@ -1,31 +1,28 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.api.AccountService;
-import com.changhong.sei.auth.dto.AccountDto;
+import com.changhong.sei.auth.dto.AccountRequest;
+import com.changhong.sei.auth.dto.AccountResponse;
+import com.changhong.sei.auth.dto.RegisterAccountRequest;
+import com.changhong.sei.auth.dto.UpdatePasswordRequest;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.manager.AccountManager;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.manager.BaseEntityManager;
 import com.changhong.sei.core.manager.bo.OperateResultWithData;
 import com.changhong.sei.core.service.DefaultBaseEntityService;
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 实现功能：
@@ -35,18 +32,12 @@ import java.util.List;
  */
 @Service
 @Api(value = "AccountService", tags = "账户接口服务")
-public class AccountServiceImpl implements DefaultBaseEntityService<Account, AccountDto>, AccountService {
+public class AccountServiceImpl implements DefaultBaseEntityService<Account, AccountResponse>, AccountService {
 
     @Autowired
     private AccountManager accountManager;
     @Autowired
     private ModelMapper modelMapper;
-
-    @Value("${sei.auth.default.password}")
-    private String defaultPassword;
-
-    @Autowired
-    private IEncrypt encrypt;
 
     @Override
     public BaseEntityManager<Account> getManager() {
@@ -74,8 +65,8 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      * @return 类型Class
      */
     @Override
-    public Class<AccountDto> getDtoClass() {
-        return AccountDto.class;
+    public Class<AccountResponse> getDtoClass() {
+        return AccountResponse.class;
     }
 
     ///////////////////////
@@ -86,40 +77,44 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      * @param id 账户id
      */
     @Override
-    public ResultData<AccountDto> getById(String id) {
+    public ResultData<AccountResponse> getById(String id) {
         Account account = accountManager.findOne(id);
-        if(account==null){
+        if (account == null) {
             return ResultData.fail("账户不存在！");
         }
-        AccountDto dto = convertToDto(account);
+        AccountResponse dto = convertToDto(account);
         return ResultData.success(dto);
     }
 
     /**
      * 创建新账户
      *
-     * @param dto 账户dto
+     * @param request 账户dto
      */
     @Override
-    public ResultData<String> create(AccountDto dto) throws IllegalAccessException {
-        Account account = convertToEntity(dto);
-        ResultData<String> checkResult = checkEntity(account);
-        if(checkResult.isFailed()){
-            return checkResult;
-        }
-        if (!StringUtils.hasText(account.getPassword())) {
-            account.setPassword(encrypt.encrypt(defaultPassword));
+    public ResultData<String> register(RegisterAccountRequest request) {
+        Account account = convertToEntity(request);
+        if (Objects.isNull(account)) {
+            return ResultData.fail("参数不能为空！");
         }
 
-        account.setPassword(accountManager.encodePassword(account.getPassword()));
-        account.setValidityDate(LocalDate.of(2099, 12, 31));
-        account.setSinceDate(LocalDateTime.now());
+        return accountManager.createAccount(account);
+    }
 
-        OperateResultWithData<Account> resultWithData = accountManager.save(account);
-        if(resultWithData.notSuccessful()){
-            return ResultData.fail(resultWithData.getMessage());
+    /**
+     * 创建新账户
+     *
+     * @param request 账户dto
+     */
+    @Override
+    public ResultData<String> create(AccountRequest request) {
+        Account account = convertToEntity(request);
+        if (Objects.isNull(account)) {
+            return ResultData.fail("参数不能为空！");
         }
-        return ResultData.success(dto.getAccount());
+        account.setPassword(StringUtils.EMPTY);
+
+        return accountManager.createAccount(account);
     }
 
     /**
@@ -128,104 +123,47 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      * @param dto 账户dto
      */
     @Override
-    public ResultData<String> update(AccountDto dto) throws IllegalAccessException {
+    public ResultData<String> update(AccountRequest dto) throws IllegalAccessException {
         Account account = convertToEntity(dto);
-        ResultData<String> checkResult = checkEntity(account);
-        if(checkResult.isFailed()){
-            return checkResult;
-        }
-        if(ObjectUtils.isEmpty(account.getId())){
+        if (ObjectUtils.isEmpty(account.getId())) {
             return ResultData.fail("参数id不能为空！");
         }
         Account oldAccount = accountManager.findOne(account.getId());
-        if(oldAccount==null){
+        if (oldAccount == null) {
             return ResultData.fail("账户数据不存在！");
         }
-        if(!oldAccount.getPassword().equals(account.getPassword())){
-            return ResultData.fail("禁止修改密码！");
-        }
+        // 密码不能被修改
+        account.setPassword(oldAccount.getPassword());
+
         OperateResultWithData<Account> resultWithData = accountManager.save(account);
-        if(resultWithData.notSuccessful()){
+        if (resultWithData.notSuccessful()) {
             return ResultData.fail(resultWithData.getMessage());
         }
         return ResultData.success(dto.getAccount());
     }
 
     /**
-     * 参数为空检查
-     * @param account 新增/更新账户数据
-     * @return 检查结果
-     */
-    private ResultData<String> checkEntity(Account account) throws IllegalAccessException {
-        if(account==null){
-            return ResultData.fail("请求参数不能为空！");
-        }
-        for (Field field : account.getClass().getDeclaredFields()) {
-            Column column = field.getAnnotation(Column.class);
-            if(column!=null && !column.nullable()){
-                field.setAccessible(true);
-                if(field.get(account)==null && !"tenantCode".equals(field.getName())){
-                    return ResultData.fail(String.format("参数%s不能为空！", field.getName()));
-                }
-            }
-        }
-        return ResultData.success(account.getAccount());
-    }
-
-    /**
      * 更新密码
      *
-     * @param dto 账户dto
+     * @param request 账户
      */
     @Override
-    public ResultData<String> updatePassword(AccountDto dto) {
-        if(dto == null){
+    public ResultData<String> updatePassword(UpdatePasswordRequest request) {
+        if (request == null) {
             return ResultData.fail("请求参数不能为空！");
         }
-        if(ObjectUtils.isEmpty(dto.getId())){
-            return ResultData.fail("id不能为空！");
-        }
-        if(ObjectUtils.isEmpty(dto.getPassword())){
-            return ResultData.fail("密码不能为空！");
-        }
-        Account oldAccount = accountManager.findOne(dto.getId());
-        if(ObjectUtils.isEmpty(oldAccount)){
-            return ResultData.fail("账户不存在！");
-        }
-        if(oldAccount.getPassword().equals(dto.getPassword())){
-            return ResultData.fail("新密码与原密码相同，请重新输入！");
-        }
-        oldAccount.setPassword(dto.getPassword());
-        OperateResultWithData<Account> result = accountManager.save(oldAccount);
-        if(result.notSuccessful()){
-            return ResultData.fail(result.getMessage());
-        }
-        return ResultData.success(dto.getPassword());
+        return accountManager.updatePassword(request);
     }
 
     /**
      * 重置密码
      *
-     * @param dto 账户dto
+     * @param tenant  租户
+     * @param account 账号
      */
     @Override
-    public ResultData<String> resetPassword(AccountDto dto) {
-        if(dto == null){
-            return ResultData.fail("请求参数不能为空！");
-        }
-        if(ObjectUtils.isEmpty(dto.getId())){
-            return ResultData.fail("id不能为空！");
-        }
-        Account oldAccount = accountManager.findOne(dto.getId());
-        if(ObjectUtils.isEmpty(oldAccount)){
-            return ResultData.fail("账户不存在！");
-        }
-        oldAccount.setPassword(defaultPassword);
-        OperateResultWithData<Account> result = accountManager.save(oldAccount);
-        if(result.notSuccessful()){
-            return ResultData.fail(result.getMessage());
-        }
-        return ResultData.success(defaultPassword);
+    public ResultData<String> resetPassword(String tenant, String account) {
+        return accountManager.resetPassword(tenant, account);
     }
 
     /**
@@ -235,9 +173,9 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      * @return 分页查询结果
      */
     @Override
-    public ResultData<PageResult<AccountDto>> findByPage(Search search) {
-        PageResult<AccountDto> newPageResult = new PageResult<>();
-        List<AccountDto> newRows = new ArrayList<>();
+    public ResultData<PageResult<AccountResponse>> findByPage(Search search) {
+        PageResult<AccountResponse> newPageResult = new PageResult<>();
+        List<AccountResponse> newRows = new ArrayList<>();
         PageResult<Account> pageResult = accountManager.findByPage(search);
         pageResult.getRows().forEach(d -> newRows.add(convertToDto(d)));
         newPageResult.setPage(pageResult.getPage());
@@ -253,11 +191,8 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      * @param id 账户id
      */
     @Override
-    public ResultData<String> frozenById(String id) {
-        Account account = accountManager.findOne(id);
-        account.setFrozen(!account.getFrozen());
-        accountManager.save(account);
-        return ResultData.success(account.getFrozen()?"账户冻结成功！":"账户解冻成功！",account.getAccount());
+    public ResultData<String> frozen(String id, boolean frozen) {
+        return accountManager.frozen(id, frozen);
     }
 
     /**
@@ -266,10 +201,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      * @param id 账户id
      */
     @Override
-    public ResultData<String> lockedById(String id) {
-        Account account = accountManager.findOne(id);
-        account.setLocked(!account.getLocked());
-        accountManager.save(account);
-        return ResultData.success(account.getLocked()?"账户锁定成功！":"账户解锁成功！",account.getAccount());
+    public ResultData<String> locked(String id, boolean locked) {
+        return accountManager.locked(id, locked);
     }
 }

@@ -25,6 +25,28 @@ public interface AccountDao extends BaseEntityDao<Account> {
     int updatePassword(String id, String password);
 
     /**
+     * 更新账户冻结状态
+     *
+     * @param id     账户id
+     * @param frozen 冻结状态
+     * @return 更新结果
+     */
+    @Modifying
+    @Query("update Account a set a.frozen = :frozen where a.id = :id")
+    int updateFrozen(String id, boolean frozen);
+
+    /**
+     * 更新账户锁定状态
+     *
+     * @param id     账户id
+     * @param locked 锁定状态
+     * @return 更新结果
+     */
+    @Modifying
+    @Query("update Account a set a.locked = :locked where a.id = :id")
+    int updateLocked(String id, boolean locked);
+
+    /**
      * 根据账号,租户代码查询账户
      *
      * @param account 账号

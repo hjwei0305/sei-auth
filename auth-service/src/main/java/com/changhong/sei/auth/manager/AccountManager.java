@@ -1,20 +1,22 @@
 package com.changhong.sei.auth.manager;
 
 import com.changhong.sei.auth.dao.AccountDao;
-import com.changhong.sei.auth.dto.AccountDto;
+import com.changhong.sei.auth.dto.UpdatePasswordRequest;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.manager.BaseEntityManager;
-import com.changhong.sei.core.manager.bo.OperateResultWithData;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -31,70 +33,134 @@ public class AccountManager extends BaseEntityManager<Account> {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Value("${sei.auth.default.password:123456}")
+    private String defaultPassword;
+
+    @Autowired
+    private IEncrypt encrypt;
+
     @Override
     protected BaseEntityDao<Account> getDao() {
         return dao;
     }
 
     /**
-     * 参数为空检查并保存
+     * 创建账户
      *
-     * @param dto 账户dto
-     * @return 检查结果
+     * @param account 账户
+     * @return 创建账户结果
      */
-    public ResultData<String> checkNullAndSave(AccountDto dto) {
-        if (dto == null) {
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<String> createAccount(Account account) {
+        if (Objects.isNull(account)) {
             return ResultData.fail("参数不能为空！");
         }
-        if (dto.getAccount() == null) {
-            return ResultData.fail("账号不能为空！");
+
+        // 检查是否有密码
+        if (!StringUtils.hasText(account.getPassword())) {
+            // 无密码,使用平台默认密码策略.后续考虑产生随机密码并通知用户
+            account.setPassword(getDefaultPassword());
         }
-        if (dto.getName() == null) {
-            return ResultData.fail("名称不能为空！");
+        // 对密码md5散列值进行再次散列
+        account.setPassword(encodePassword(account.getPassword()));
+        // 有效期
+        if (Objects.isNull(account.getValidityDate())) {
+            // 无有效期设置默认有效期
+            account.setValidityDate(LocalDate.of(2099, 12, 31));
         }
-        if (dto.getPassword() == null) {
-            return ResultData.fail("密码不能为空！");
-        }
-        Account account = new Account();
-        BeanUtils.copyProperties(dto, account);
-        OperateResultWithData<Account> saveResult = this.save(account);
-        if (saveResult.notSuccessful()) {
-            return ResultData.fail(saveResult.getMessage());
-        }
-        return ResultData.success(dto.getAccount());
+        // 注册时间
+        account.setSinceDate(LocalDateTime.now());
+
+        dao.save(account);
+        return ResultData.success(account.getAccount());
     }
 
     /**
      * 更新密码
      *
-     * @param dto 账户dto
+     * @param request 账户更新密码
      * @return 更新结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<String> updatePassword(AccountDto dto) {
-        if (dto == null) {
+    public ResultData<String> updatePassword(UpdatePasswordRequest request) {
+        if (Objects.isNull(request)) {
             return ResultData.fail("参数不能为空！");
         }
-        if (dto.getId() == null) {
-            return ResultData.fail("ID不能为空！");
+        Account account = this.getByAccountAndTenantCode(request.getAccount(), request.getTenant());
+        if (Objects.isNull(account)) {
+            return ResultData.fail("账户不存在,密码变更失败！");
         }
-        if (dto.getPassword() == null) {
-            return ResultData.fail("密码不能为空！");
-        }
-        String id = dto.getId();
-        Account account = dao.findOne(id);
-        if (ObjectUtils.isEmpty(account)) {
-            return ResultData.fail("账户不存在！");
-        }
-        if (verifyPassword(dto.getPassword(), account.getPassword())) {
+
+        if (verifyPassword(request.getOldPassword(), account.getPassword())) {
             return ResultData.fail("新密码与原密码相同，请重新输入！");
         }
 
-        int i = dao.updatePassword(id, dto.getPassword());
+        int i = dao.updatePassword(account.getId(), this.encodePassword(request.getNewPassword()));
         if (i != 1) {
             return ResultData.fail("密码更新失败！");
         }
-        return ResultData.success("密码更新成功！", dto.getPassword());
+        return ResultData.success("密码更新成功！", request.getAccount());
+    }
+
+    /**
+     * 密码重置
+     *
+     * @param account 账户
+     * @param tenant  租户代码
+     * @return 密码重置结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<String> resetPassword(@NotBlank String tenant, @NotBlank String account) {
+        Account oldAccount = this.getByAccountAndTenantCode(account, tenant);
+        if (Objects.isNull(oldAccount)) {
+            return ResultData.fail("账户不存在,密码重置失败！");
+        }
+
+        int i = dao.updatePassword(oldAccount.getId(), this.encodePassword(getDefaultPassword()));
+        if (i != 1) {
+            return ResultData.fail("密码重置失败！");
+        }
+        return ResultData.success("密码重置新成功！", account);
+    }
+
+    /**
+     * 账户冻结
+     *
+     * @param id 账户
+     * @return 账户冻结结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<String> frozen(@NotBlank String id, boolean frozen) {
+        Account oldAccount = this.findOne(id);
+        if (Objects.isNull(oldAccount)) {
+            return ResultData.fail("账户不存在,账户冻结失败！");
+        }
+
+        int i = dao.updateFrozen(oldAccount.getId(), frozen);
+        if (i != 1) {
+            return ResultData.fail("账户冻结失败！");
+        }
+        return ResultData.success("账户冻结成功！", oldAccount.getAccount());
+    }
+
+    /**
+     * 账户锁定
+     *
+     * @param id 账户
+     * @return 账户锁定结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<String> locked(@NotBlank String id, boolean locked) {
+        Account oldAccount = this.findOne(id);
+        if (Objects.isNull(oldAccount)) {
+            return ResultData.fail("账户不存在,账户锁定失败！");
+        }
+
+        int i = dao.updateLocked(oldAccount.getId(), locked);
+        if (i != 1) {
+            return ResultData.fail("账户锁定失败！");
+        }
+        return ResultData.success("账户锁定成功！", oldAccount.getAccount());
     }
 
     /**
@@ -141,6 +207,13 @@ public class AccountManager extends BaseEntityManager<Account> {
         } else {
             return true;
         }
+    }
+
+    /**
+     * 使用平台默认密码策略.后续考虑产生随机密码并通知用户
+     */
+    public String getDefaultPassword() {
+        return encrypt.encrypt(defaultPassword);
     }
 
     /**

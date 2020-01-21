@@ -85,14 +85,12 @@ public class Account extends BaseEntity implements ITenant {
      * 注册时间
      */
     @Column(name = "since_date", updatable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sinceDate;
 
     /**
      * 截止有效期
      */
     @Column(name = "validity_date")
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate validityDate;
 
     @Override

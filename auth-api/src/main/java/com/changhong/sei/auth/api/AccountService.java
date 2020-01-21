@@ -1,11 +1,17 @@
 package com.changhong.sei.auth.api;
 
-import com.changhong.sei.auth.dto.AccountDto;
+import com.changhong.sei.auth.dto.AccountRequest;
+import com.changhong.sei.auth.dto.AccountResponse;
+import com.changhong.sei.auth.dto.RegisterAccountRequest;
+import com.changhong.sei.auth.dto.UpdatePasswordRequest;
 import com.changhong.sei.core.api.FindByPageService;
 import com.changhong.sei.core.dto.ResultData;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 /**
  * 实现功能：账户访问接口
@@ -15,54 +21,61 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping(path = "account", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public interface AccountService extends FindByPageService<AccountDto> {
+public interface AccountService extends FindByPageService<AccountResponse> {
 
     /**
      * 通过账户id获取已有账户
      */
     @GetMapping(path = "getById")
     @ApiOperation("通过账户id获取已有账户")
-    ResultData<AccountDto> getById(@RequestParam("id") String id);
+    ResultData<AccountResponse> getById(@RequestParam("id") String id);
+
+    /**
+     * 注册新账户
+     */
+    @PostMapping(path = "register")
+    @ApiOperation("创建新账户.有初始密码")
+    ResultData<String> register(@RequestBody @Valid RegisterAccountRequest request) throws IllegalAccessException;
 
     /**
      * 创建新账户
      */
     @PostMapping(path = "create")
-    @ApiOperation("创建新账户")
-    ResultData<String> create(@RequestBody AccountDto dto) throws IllegalAccessException;
+    @ApiOperation("创建新账户.无初始密码,使用平台提供的默认密码策略")
+    ResultData<String> create(@RequestBody @Valid AccountRequest request) throws IllegalAccessException;
 
     /**
      * 更新账户
      */
     @PostMapping(path = "udapte")
     @ApiOperation("更新账户")
-    ResultData<String> update(@RequestBody AccountDto dto) throws IllegalAccessException;
+    ResultData<String> update(@RequestBody AccountRequest dto) throws IllegalAccessException;
 
     /**
      * 更新密码
      */
     @PostMapping(path = "updatePassword")
     @ApiOperation("更新密码")
-    ResultData<String> updatePassword(@RequestBody AccountDto dto);
+    ResultData<String> updatePassword(@RequestBody UpdatePasswordRequest request);
 
     /**
      * 重置密码
      */
     @PostMapping(path = "resetPass")
     @ApiOperation("重置密码")
-    ResultData<String> resetPassword(@RequestBody AccountDto dto);
+    ResultData<String> resetPassword(@RequestParam("tenant") @NotBlank String tenant, @RequestParam("account") @NotBlank String account);
 
     /**
      * 账户冻结/解冻
      */
-    @PostMapping(path = "frozenById")
+    @PostMapping(path = "frozen")
     @ApiOperation("账户冻结/解冻")
-    ResultData<String> frozenById(String id);
+    ResultData<String> frozen(@RequestParam("id") @NotBlank String id, @RequestParam("frozen") boolean frozen);
 
     /**
      * 账户锁定/解锁
      */
-    @PostMapping(path = "lockedById")
+    @PostMapping(path = "locked")
     @ApiOperation("账户锁定/解锁")
-    ResultData<String> lockedById(String id);
+    ResultData<String> locked(@RequestParam("id") @NotBlank String id, @RequestParam("locked") boolean locked);
 }

@@ -13,8 +13,8 @@ import java.util.StringJoiner;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-14 14:15
  */
-@ApiModel(description = "账户认证DTO")
-public class AuthDto extends BaseEntityDto {
+@ApiModel(description = "账户认证登录")
+public class LoginRequest extends BaseEntityDto {
     private static final long serialVersionUID = -2149001770273260656L;
     /**
      * 代码
@@ -24,13 +24,13 @@ public class AuthDto extends BaseEntityDto {
     /**
      * 账户
      */
-    @NotBlank(message = "{login.account.blank}")
+    @NotBlank
     @ApiModelProperty(notes = "账户")
     private String account;
     /**
      * 密码
      */
-    @NotBlank(message = "{login.password.blank}")
+    @NotBlank
     @ApiModelProperty(notes = "密码")
     private String password;
     /**
@@ -73,9 +73,10 @@ public class AuthDto extends BaseEntityDto {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", AuthDto.class.getSimpleName() + "[", "]")
+        return new StringJoiner(", ", LoginRequest.class.getSimpleName() + "[", "]")
                 .add("tenant='" + tenant + "'")
                 .add("account='" + account + "'")
+                .add("locale='" + locale + "'")
                 .toString();
     }
 }

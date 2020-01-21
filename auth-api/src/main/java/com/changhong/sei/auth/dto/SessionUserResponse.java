@@ -1,7 +1,5 @@
 package com.changhong.sei.auth.dto;
 
-import com.chonghong.sei.enums.UserAuthorityPolicy;
-import com.chonghong.sei.enums.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -13,8 +11,8 @@ import java.io.Serializable;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-14 22:05
  */
-@ApiModel(description = "SessionUserDto")
-public class SessionUserDto implements Serializable {
+@ApiModel(description = "SessionUserResponse")
+public class SessionUserResponse implements Serializable {
     private static final long serialVersionUID = 6402761734842712786L;
     /**
      * 会话id
@@ -104,7 +102,7 @@ public class SessionUserDto implements Serializable {
         return loginStatus;
     }
 
-    public SessionUserDto setLoginStatus(LoginStatus loginStatus) {
+    public SessionUserResponse setLoginStatus(LoginStatus loginStatus) {
         this.loginStatus = loginStatus;
         return this;
     }
@@ -148,8 +146,8 @@ public class SessionUserDto implements Serializable {
         expire
     }
 
-    public static SessionUserDto build() {
-        return new SessionUserDto();
+    public static SessionUserResponse build() {
+        return new SessionUserResponse();
     }
 
 }

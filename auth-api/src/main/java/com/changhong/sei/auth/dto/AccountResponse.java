@@ -1,9 +1,11 @@
 package com.changhong.sei.auth.dto;
 
 import com.changhong.sei.core.dto.BaseEntityDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
@@ -13,43 +15,44 @@ import java.util.Date;
  * @version 1.0.00  2020-01-14 21:04
  */
 @ApiModel(description = "账户DTO")
-public class AccountDto extends BaseEntityDto {
+public class AccountResponse extends BaseEntityDto {
     private static final long serialVersionUID = 2974541194405245535L;
     /**
      * 租户代码
      */
     @ApiModelProperty(notes = "租户代码")
+    @NotBlank
     private String tenantCode;
     /**
      * 用户id
      */
     @ApiModelProperty(notes = "用户id")
+    @NotBlank
     private String userId;
     /**
      * 账号
      */
     @ApiModelProperty(notes = "账号")
+    @NotBlank
     private String account;
     /**
      * 名称
      */
     @ApiModelProperty(notes = "名称")
+    @NotBlank
     private String name;
     /**
      * 来源系统
      */
     @ApiModelProperty(notes = "来源系统")
+    @NotBlank
     private String systemCode;
     /**
      * 账户类型
      */
     @ApiModelProperty(notes = "账户类型")
+    @NotBlank
     private String accountType;
-    /**
-     * 密码
-     */
-    @ApiModelProperty(notes = "密码")
-    private String password;
     /**
      * 冻结
      */
@@ -64,17 +67,14 @@ public class AccountDto extends BaseEntityDto {
      * 注册时间
      */
     @ApiModelProperty(notes = "注册时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date sinceDate;
-    /**
-     * 开始有效期
-     */
-    @ApiModelProperty(notes = "开始有效期")
-    private Date startValidity;
     /**
      * 截止有效期
      */
     @ApiModelProperty(notes = "截止有效期")
-    private Date endValidity;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date validityDate;
 
     public String getTenantCode() {
         return tenantCode;
@@ -124,14 +124,6 @@ public class AccountDto extends BaseEntityDto {
         this.accountType = accountType;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public Boolean getFrozen() {
         return frozen;
     }
@@ -156,19 +148,11 @@ public class AccountDto extends BaseEntityDto {
         this.sinceDate = sinceDate;
     }
 
-    public Date getStartValidity() {
-        return startValidity;
+    public Date getValidityDate() {
+        return validityDate;
     }
 
-    public void setStartValidity(Date startValidity) {
-        this.startValidity = startValidity;
-    }
-
-    public Date getEndValidity() {
-        return endValidity;
-    }
-
-    public void setEndValidity(Date endValidity) {
-        this.endValidity = endValidity;
+    public void setValidityDate(Date validityDate) {
+        this.validityDate = validityDate;
     }
 }
