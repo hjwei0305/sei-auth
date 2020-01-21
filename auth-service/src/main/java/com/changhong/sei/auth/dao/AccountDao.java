@@ -4,8 +4,6 @@ import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 实现功能：账户实体数据访问接口
@@ -17,12 +15,21 @@ public interface AccountDao extends BaseEntityDao<Account> {
 
     /**
      * 更新密码
-     * @param id 账户id
-     * @param passwordHash 账户新密码
+     *
+     * @param id       账户id
+     * @param password 账户新密码
      * @return 更新结果
      */
     @Modifying
-    @Transactional(rollbackFor = Exception.class)
-    @Query("update com.changhong.sei.auth.entity.Account a set a.passwordHash = :passwordHash where a.id = :id")
-    int updatePassword(@Param("id") String id, @Param("passwordHash") String passwordHash);
+    @Query("update Account a set a.password = :password where a.id = :id")
+    int updatePassword(String id, String password);
+
+    /**
+     * 根据账号,租户代码查询账户
+     *
+     * @param account 账号
+     * @param tenant  租户代码
+     * @return 存在返回账号, 不存在返回null
+     */
+    Account findByAccountAndTenantCode(String account, String tenant);
 }

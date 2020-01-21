@@ -49,7 +49,7 @@ public class AccountDto extends BaseEntityDto {
      * 密码
      */
     @ApiModelProperty(notes = "密码")
-    private String passwordHash;
+    private String password;
     /**
      * 冻结
      */
@@ -124,12 +124,12 @@ public class AccountDto extends BaseEntityDto {
         this.accountType = accountType;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Boolean getFrozen() {

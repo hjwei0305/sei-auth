@@ -11,6 +11,7 @@ dependencies {
     compile project(':auth-api')
 
     compile(
+            "org.hibernate:hibernate-java8:5.3.7.Final",
             "mysql:mysql-connector-java:$mysqlVersion",
             "com.changhong.sei:sei-service-starter:$sei_version",
     )

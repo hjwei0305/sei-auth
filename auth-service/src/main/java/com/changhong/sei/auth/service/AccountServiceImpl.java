@@ -7,6 +7,7 @@ import com.changhong.sei.auth.manager.AccountManager;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.manager.BaseEntityManager;
 import com.changhong.sei.core.manager.bo.OperateResultWithData;
 import com.changhong.sei.core.service.DefaultBaseEntityService;
@@ -16,9 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.Column;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +44,9 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
 
     @Value("${sei.auth.default.password}")
     private String defaultPassword;
+
+    @Autowired
+    private IEncrypt encrypt;
 
     @Override
     public BaseEntityManager<Account> getManager() {
@@ -99,6 +107,14 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         if(checkResult.isFailed()){
             return checkResult;
         }
+        if (!StringUtils.hasText(account.getPassword())) {
+            account.setPassword(encrypt.encrypt(defaultPassword));
+        }
+
+        account.setPassword(accountManager.encodePassword(account.getPassword()));
+        account.setValidityDate(LocalDate.of(2099, 12, 31));
+        account.setSinceDate(LocalDateTime.now());
+
         OperateResultWithData<Account> resultWithData = accountManager.save(account);
         if(resultWithData.notSuccessful()){
             return ResultData.fail(resultWithData.getMessage());
@@ -125,7 +141,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         if(oldAccount==null){
             return ResultData.fail("账户数据不存在！");
         }
-        if(!oldAccount.getPasswordHash().equals(account.getPasswordHash())){
+        if(!oldAccount.getPassword().equals(account.getPassword())){
             return ResultData.fail("禁止修改密码！");
         }
         OperateResultWithData<Account> resultWithData = accountManager.save(account);
@@ -169,17 +185,22 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         if(ObjectUtils.isEmpty(dto.getId())){
             return ResultData.fail("id不能为空！");
         }
-        if(ObjectUtils.isEmpty(dto.getPasswordHash())){
+        if(ObjectUtils.isEmpty(dto.getPassword())){
             return ResultData.fail("密码不能为空！");
         }
         Account oldAccount = accountManager.findOne(dto.getId());
         if(ObjectUtils.isEmpty(oldAccount)){
             return ResultData.fail("账户不存在！");
         }
-        if(oldAccount.getPasswordHash().equals(dto.getPasswordHash())){
+        if(oldAccount.getPassword().equals(dto.getPassword())){
             return ResultData.fail("新密码与原密码相同，请重新输入！");
         }
-        return accountManager.updatePassword(dto.getId(), dto.getPasswordHash());
+        oldAccount.setPassword(dto.getPassword());
+        OperateResultWithData<Account> result = accountManager.save(oldAccount);
+        if(result.notSuccessful()){
+            return ResultData.fail(result.getMessage());
+        }
+        return ResultData.success(dto.getPassword());
     }
 
     /**
@@ -199,7 +220,12 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         if(ObjectUtils.isEmpty(oldAccount)){
             return ResultData.fail("账户不存在！");
         }
-        return accountManager.updatePassword(dto.getId(), defaultPassword);
+        oldAccount.setPassword(defaultPassword);
+        OperateResultWithData<Account> result = accountManager.save(oldAccount);
+        if(result.notSuccessful()){
+            return ResultData.fail(result.getMessage());
+        }
+        return ResultData.success(defaultPassword);
     }
 
     /**

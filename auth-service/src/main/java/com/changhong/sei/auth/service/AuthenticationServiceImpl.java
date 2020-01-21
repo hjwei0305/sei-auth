@@ -1,23 +1,23 @@
 package com.changhong.sei.auth.service;
 
+import com.changhong.sei.auth.api.AuthenticationService;
+import com.changhong.sei.auth.dto.AuthDto;
 import com.changhong.sei.auth.dto.SessionUserDto;
+import com.changhong.sei.auth.entity.Account;
+import com.changhong.sei.auth.manager.AccountManager;
+import com.changhong.sei.auth.manager.SessionManager;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.auth.api.AuthenticationService;
-import com.changhong.sei.auth.dto.AuthDto;
-import com.changhong.sei.core.util.JsonUtils;
+import com.changhong.sei.core.util.HttpUtils;
 import io.swagger.annotations.Api;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.data.redis.core.BoundValueOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.concurrent.TimeUnit;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 实现功能：
@@ -30,8 +30,9 @@ import java.util.concurrent.TimeUnit;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
-//    private CacheManager cacheManager;
-    private StringRedisTemplate stringRedisTemplate;
+    private AccountManager accountManager;
+    @Autowired
+    private SessionManager sessionManager;
 
     /**
      * 登录
@@ -42,30 +43,77 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public ResultData<SessionUserDto> login(AuthDto authDto) {
+        String tenant = authDto.getTenant();
+        String account = authDto.getAccount();
+        String password = authDto.getPassword();
+        // 认证码检查,登录错误指定次数后要求输入验证码
+//        if (租户+账号 检查验证码) {
+//            //return ResultData.fail("认证码错误!");
+//            return ResultData.success(SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.captchaError));
+//        }
+
+        Account entity;
+        if (StringUtils.isBlank(tenant)) {
+            List<Account> accounts = accountManager.findListByProperty(Account.FIELD_ACCOUNT, account);
+            if (CollectionUtils.isEmpty(accounts)) {
+                return ResultData.fail("账号密码错误,认证失败!");
+            }
+
+            SessionUserDto dto = new SessionUserDto();
+            if (accounts.size() > 1) {
+                dto.setLoginStatus(SessionUserDto.LoginStatus.multiTenant);
+                return ResultData.success("请指定租户代码", SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.multiTenant));
+            }
+            entity = accounts.get(0);
+        } else {
+            entity = accountManager.getByAccountAndTenantCode(account, tenant);
+        }
+
+        if (Objects.isNull(entity)) {
+            return ResultData.fail("账号密码错误,认证失败!");
+        }
+
+        // 验证密码
+        if (!accountManager.verifyPassword(password, entity.getPassword())) {
+            return ResultData.fail("账号密码错误,认证失败!");
+        }
+        // 检查是否被锁定
+        if (!accountManager.checkLocked(entity)) {
+            return ResultData.success("账号被锁定,认证失败!", SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.locked));
+        }
+        // 检查是否被冻结
+        if (!accountManager.checkFrozen(entity)) {
+            return ResultData.success("账号被冻结,认证失败!", SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.frozen));
+        }
+        // 检查账户是否在有效期内
+        if (!accountManager.checkValidityDate(entity)) {
+            return ResultData.success("账号已过期,认证失败!", SessionUserDto.build().setLoginStatus(SessionUserDto.LoginStatus.expire));
+        }
+
         SessionUser sessionUser = new SessionUser();
-        sessionUser.setTenantCode(authDto.getTenant());
-        sessionUser.setUserId(authDto.getAccount());
-        sessionUser.setAccount(authDto.getAccount());
-        sessionUser.setUserName("用户名-" + authDto.getAccount());
-        sessionUser.setEmail("test@sei.com");
-        sessionUser.setIp("127.0.0.1");
+        sessionUser.setTenantCode(entity.getTenantCode());
+        sessionUser.setUserId(entity.getUserId());
+        sessionUser.setAccount(entity.getAccount());
+        sessionUser.setUserName(entity.getName());
+        try {
+            // 请求ip
+            sessionUser.setIp(HttpUtils.getIpAddr(HttpUtils.getRequest()));
+        } catch (Exception ignored) {
+        }
+        sessionUser.setLocale("zh_CN");
         ContextUtil.generateToken(sessionUser);
 
         SessionUserDto dto = new SessionUserDto();
-        dto.setAccount(sessionUser.getAccount());
-        dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
-        dto.setEmail(sessionUser.getEmail());
-        dto.setIp(sessionUser.getIp());
-        dto.setLocale(sessionUser.getLocale());
+        dto.setLoginStatus(SessionUserDto.LoginStatus.success);
         dto.setSessionId(sessionUser.getSessionId());
         dto.setTenantCode(sessionUser.getTenantCode());
         dto.setUserId(sessionUser.getUserId());
+        dto.setAccount(sessionUser.getAccount());
         dto.setUserName(sessionUser.getUserName());
-        dto.setUserType(sessionUser.getUserType());
+        dto.setLocale(sessionUser.getLocale());
 
         try {
-            BoundValueOperations<String, String> operations = stringRedisTemplate.boundValueOps("auth:login:" + sessionUser.getSessionId());
-            operations.set(sessionUser.getToken(), 36000, TimeUnit.SECONDS);
+            sessionManager.addSession(sessionUser.getSessionId(), sessionUser.getToken());
             return ResultData.success(dto);
         } catch (Exception e) {
             return ResultData.fail("登录认证异常:" + e.getMessage());
@@ -79,7 +127,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public ResultData<String> logout(String sid) {
         try {
-            stringRedisTemplate.delete("auth:login:" + sid);
+            sessionManager.removeSession(sid, 0);
             return ResultData.success("OK");
         } catch (Exception e) {
             return ResultData.fail("登出异常:" + e.getMessage());
@@ -95,11 +143,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public ResultData<String> check(String sid) {
         try {
-            BoundValueOperations<String, String> operations = stringRedisTemplate.boundValueOps("auth:login:" + sid);
-            String token = operations.get();
+            // 获取会话并续期
+            String token = sessionManager.getAndTouchSession(sid);
             if (StringUtils.isNotBlank(token)) {
-                // 续期
-                operations.set(token, 36000, TimeUnit.SECONDS);
                 return ResultData.success(token);
             } else {
                 return ResultData.fail("认证失败");

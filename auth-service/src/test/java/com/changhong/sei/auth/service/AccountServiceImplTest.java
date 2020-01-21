@@ -5,6 +5,7 @@ import com.changhong.sei.auth.dto.AccountDto;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.util.JsonUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,17 @@ public class AccountServiceImplTest extends BaseUnitTest {
 
     @Autowired
     private AccountServiceImpl service;
+    @Autowired
+    private IEncrypt encrypt;
 
     private final static String ID = "58092E60-3B5F-11EA-B974-1063C8D2143D";
 
+    @Test
+    public void md5() {
+        String str = encrypt.encrypt("123456");
+        System.out.println(str);
+        System.out.println("e10adc3949ba59abbe56e057f20f883e".equals(str));
+    }
     @Test
     public void getById() {
         ResultData<AccountDto> resultData = service.getById(ID);
@@ -33,9 +42,10 @@ public class AccountServiceImplTest extends BaseUnitTest {
     public void create() throws IllegalAccessException {
         AccountDto dto = new AccountDto();
         dto.setUserId(UUID.randomUUID().toString());
-        dto.setAccount("88001031");
+        dto.setAccount("admin");
         dto.setName("账号测试");
-        dto.setPasswordHash("123qweAS");
+        dto.setPassword(encrypt.encrypt("123456"));
+
         ResultData<String> resultData = service.create(dto);
         System.out.println(JsonUtils.toJson(resultData));
     }
@@ -53,7 +63,7 @@ public class AccountServiceImplTest extends BaseUnitTest {
     public void updatePassword() {
         ResultData<AccountDto> result = service.getById(ID);
         AccountDto dto = result.getData();
-        dto.setPasswordHash("99999");
+        dto.setPassword("99999");
         ResultData<String> resultData = service.updatePassword(dto);
         System.out.println(JsonUtils.toJson(resultData));
     }

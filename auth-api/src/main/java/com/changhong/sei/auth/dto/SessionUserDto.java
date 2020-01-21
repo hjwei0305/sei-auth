@@ -42,30 +42,15 @@ public class SessionUserDto implements Serializable {
     @ApiModelProperty(notes = "租户代码")
     private String tenantCode;
     /**
-     * 邮箱
-     */
-    @ApiModelProperty(notes = "邮箱")
-    private String email;
-    /**
-     * 用户类型
-     */
-    @ApiModelProperty(notes = "用户类型")
-    private UserType userType = UserType.Employee;
-    /**
-     * 用户权限策略
-     */
-    @ApiModelProperty(notes = "用户权限策略")
-    private UserAuthorityPolicy authorityPolicy = UserAuthorityPolicy.NormalUser;
-    /**
-     * 客户端IP
-     */
-    @ApiModelProperty(notes = "客户端IP")
-    private String ip;
-    /**
      * 语言环境
      */
     @ApiModelProperty(notes = "语言环境")
     private String locale = "zh_CN";
+    /**
+     * 客户端IP
+     */
+    @ApiModelProperty(notes = "登录状态")
+    private LoginStatus loginStatus;
 
     public String getSessionId() {
         return sessionId;
@@ -107,38 +92,6 @@ public class SessionUserDto implements Serializable {
         this.tenantCode = tenantCode;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public UserType getUserType() {
-        return userType;
-    }
-
-    public void setUserType(UserType userType) {
-        this.userType = userType;
-    }
-
-    public UserAuthorityPolicy getAuthorityPolicy() {
-        return authorityPolicy;
-    }
-
-    public void setAuthorityPolicy(UserAuthorityPolicy authorityPolicy) {
-        this.authorityPolicy = authorityPolicy;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
     public String getLocale() {
         return locale;
     }
@@ -146,4 +99,57 @@ public class SessionUserDto implements Serializable {
     public void setLocale(String locale) {
         this.locale = locale;
     }
+
+    public LoginStatus getLoginStatus() {
+        return loginStatus;
+    }
+
+    public SessionUserDto setLoginStatus(LoginStatus loginStatus) {
+        this.loginStatus = loginStatus;
+        return this;
+    }
+
+    public enum LoginStatus {
+        /**
+         * 登录成功
+         */
+        success,
+
+        /**
+         * 登录失败
+         * 账号密码错误或账号不存在
+         */
+        failure,
+
+        /**
+         * 多租户
+         * 登录时需要传入租户代码
+         */
+        multiTenant,
+
+        /**
+         * 验证码错误
+         */
+        captchaError,
+
+        /**
+         * 账号被冻结
+         */
+        frozen,
+
+        /**
+         * 账号被锁定
+         */
+        locked,
+
+        /**
+         * 账号过期
+         */
+        expire
+    }
+
+    public static SessionUserDto build() {
+        return new SessionUserDto();
+    }
+
 }

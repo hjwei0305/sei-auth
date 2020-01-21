@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * 实现功能：账户认证接口
  *
@@ -22,7 +24,7 @@ public interface AuthenticationService {
      */
     @PostMapping(path = "login")
     @ApiOperation("登录")
-    ResultData<SessionUserDto> login(@RequestBody AuthDto authDto);
+    ResultData<SessionUserDto> login(@RequestBody @Valid AuthDto authDto);
 
     /**
      * 登出

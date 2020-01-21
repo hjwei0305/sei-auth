@@ -4,6 +4,7 @@ import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
 import java.util.StringJoiner;
 
 /**
@@ -23,13 +24,20 @@ public class AuthDto extends BaseEntityDto {
     /**
      * 账户
      */
+    @NotBlank(message = "{login.account.blank}")
     @ApiModelProperty(notes = "账户")
     private String account;
     /**
      * 密码
      */
+    @NotBlank(message = "{login.password.blank}")
     @ApiModelProperty(notes = "密码")
     private String password;
+    /**
+     * 语言环境
+     */
+    @ApiModelProperty(notes = "语言环境")
+    private String locale = "zh_CN";
 
     public String getTenant() {
         return tenant;
@@ -53,6 +61,14 @@ public class AuthDto extends BaseEntityDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 
     @Override

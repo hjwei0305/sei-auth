@@ -2,10 +2,14 @@ package com.changhong.sei.auth.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.ITenant;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -20,6 +24,7 @@ import java.util.Date;
 @DynamicUpdate
 public class Account extends BaseEntity implements ITenant {
     private static final long serialVersionUID = 1L;
+    public static final String FIELD_ACCOUNT = "account";
     /**
      * 租户代码
      */
@@ -60,7 +65,7 @@ public class Account extends BaseEntity implements ITenant {
      * 密码
      */
     @Column(name = "password_hash", length = 100, nullable = false)
-    private String passwordHash;
+    private String password;
 
     /**
      * 冻结
@@ -79,22 +84,16 @@ public class Account extends BaseEntity implements ITenant {
     /**
      * 注册时间
      */
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "since_date", updatable = false)
-    private Date sinceDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime sinceDate;
 
-    /**
-     * 开始有效期
-     */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "start_validity")
-    private Date startValidity;
     /**
      * 截止有效期
      */
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "end_validity")
-    private Date endValidity;
+    @Column(name = "validity_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate validityDate;
 
     @Override
     public String getTenantCode() {
@@ -146,12 +145,12 @@ public class Account extends BaseEntity implements ITenant {
         this.accountType = accountType;
     }
 
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Boolean getFrozen() {
@@ -170,27 +169,19 @@ public class Account extends BaseEntity implements ITenant {
         this.locked = locked;
     }
 
-    public Date getSinceDate() {
+    public LocalDateTime getSinceDate() {
         return sinceDate;
     }
 
-    public void setSinceDate(Date sinceDate) {
+    public void setSinceDate(LocalDateTime sinceDate) {
         this.sinceDate = sinceDate;
     }
 
-    public Date getStartValidity() {
-        return startValidity;
+    public LocalDate getValidityDate() {
+        return validityDate;
     }
 
-    public void setStartValidity(Date startValidity) {
-        this.startValidity = startValidity;
-    }
-
-    public Date getEndValidity() {
-        return endValidity;
-    }
-
-    public void setEndValidity(Date endValidity) {
-        this.endValidity = endValidity;
+    public void setValidityDate(LocalDate validityDate) {
+        this.validityDate = validityDate;
     }
 }
