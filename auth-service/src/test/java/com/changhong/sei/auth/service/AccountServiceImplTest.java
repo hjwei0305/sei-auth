@@ -1,10 +1,7 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.com.sei.core.test.BaseUnitTest;
-import com.changhong.sei.auth.dto.CreateAccountRequest;
-import com.changhong.sei.auth.dto.AccountResponse;
-import com.changhong.sei.auth.dto.RegisterAccountRequest;
-import com.changhong.sei.auth.dto.UpdatePasswordRequest;
+import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
@@ -63,9 +60,9 @@ public class AccountServiceImplTest extends BaseUnitTest {
     @Test
     public void update() throws IllegalAccessException {
         ResultData<AccountResponse> result = service.getById(ID);
-        CreateAccountRequest request = (CreateAccountRequest) result.getData();
-        ResultData<String> resultData = service.update(request);
-        System.out.println(JsonUtils.toJson(resultData));
+//        UpdateAccountRequest request = (UpdateAccountRequest) result.getData();
+//        ResultData<String> resultData = service.update(request);
+//        System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test

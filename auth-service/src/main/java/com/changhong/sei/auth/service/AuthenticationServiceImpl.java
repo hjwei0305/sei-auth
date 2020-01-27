@@ -165,7 +165,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         sessionUser.setUserId("anonymous");
         sessionUser.setAccount("anonymous");
         sessionUser.setUserName("anonymous");
-        sessionUser.setEmail("anonymous");
+//        sessionUser.setEmail("anonymous");
         ContextUtil.generateToken(sessionUser);
         return ResultData.success(sessionUser.getToken());
     }
