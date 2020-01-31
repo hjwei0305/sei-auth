@@ -9,7 +9,9 @@ import com.changhong.sei.auth.manager.SessionManager;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
+import com.changhong.sei.core.util.JsonUtils;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
+        LogUtil.info(JsonUtils.toJson(loginRequest));
         String tenant = loginRequest.getTenant();
         String account = loginRequest.getAccount();
         String password = loginRequest.getPassword();
