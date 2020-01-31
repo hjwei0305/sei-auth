@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -167,6 +168,16 @@ public class AccountManager extends BaseEntityManager<Account> {
             return ResultData.fail("账户锁定失败！");
         }
         return ResultData.success("账户锁定成功！", oldAccount.getAccount());
+    }
+
+    /**
+     * 根据账号查询账户
+     *
+     * @param account 账号
+     * @return 存在返回账号, 不存在返回null
+     */
+    public List<Account> getByAccount(String account) {
+        return dao.findByAccount(account);
     }
 
     /**

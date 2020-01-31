@@ -5,6 +5,8 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 /**
  * 实现功能：账户实体数据访问接口
  *
@@ -45,6 +47,14 @@ public interface AccountDao extends BaseEntityDao<Account> {
     @Modifying
     @Query("update Account a set a.locked = :locked where a.id = :id")
     int updateLocked(String id, boolean locked);
+
+    /**
+     * 根据账号查询账户
+     *
+     * @param account 账号
+     * @return 存在返回账号, 不存在返回null
+     */
+    List<Account> findByAccount(String account);
 
     /**
      * 根据账号,租户代码查询账户

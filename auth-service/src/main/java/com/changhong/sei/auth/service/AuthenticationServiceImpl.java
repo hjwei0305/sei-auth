@@ -45,7 +45,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     @Override
     public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
-        LogUtil.info(JsonUtils.toJson(loginRequest));
         String tenant = loginRequest.getTenant();
         String account = loginRequest.getAccount();
         String password = loginRequest.getPassword();
@@ -57,9 +56,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Account entity;
         if (StringUtils.isBlank(tenant)) {
-            List<Account> accounts = accountManager.findListByProperty(Account.FIELD_ACCOUNT, account);
+            List<Account> accounts = accountManager.getByAccount(account);
             if (CollectionUtils.isEmpty(accounts)) {
-                return ResultData.fail("账号不存在,认证失败!");
+                return ResultData.fail("账号密码错误,认证失败!");
             }
 
             if (accounts.size() > 1) {
@@ -71,7 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (Objects.isNull(entity)) {
-            return ResultData.fail("账号不存在1,认证失败!");
+            return ResultData.fail("账号密码错误,认证失败!");
         }
 
         // 验证密码
