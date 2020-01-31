@@ -78,11 +78,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return ResultData.fail("账号密码错误,认证失败!");
         }
         // 检查是否被锁定
-        if (!accountManager.checkLocked(entity)) {
+        if (accountManager.checkLocked(entity)) {
             return ResultData.success("账号被锁定,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.locked));
         }
         // 检查是否被冻结
-        if (!accountManager.checkFrozen(entity)) {
+        if (accountManager.checkFrozen(entity)) {
             return ResultData.success("账号被冻结,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.frozen));
         }
         // 检查账户是否在有效期内
