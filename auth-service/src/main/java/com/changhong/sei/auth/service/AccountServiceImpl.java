@@ -134,7 +134,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         account.setAccountType(request.getAccountType());
         account.setFrozen(request.getFrozen());
         account.setLocked(request.getLocked());
-        account.setValidityDate(request.getValidityDate());
+        account.setAccountExpired(request.getAccountExpired());
 
         OperateResultWithData<Account> resultWithData = accountManager.save(account);
         if (resultWithData.notSuccessful()) {

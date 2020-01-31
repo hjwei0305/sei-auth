@@ -38,8 +38,8 @@ public class AccountServiceImplTest extends BaseUnitTest {
     public void register() {
         RegisterAccountRequest request = new RegisterAccountRequest();
         request.setUserId(UUID.randomUUID().toString());
-        request.setAccount("admin");
-        request.setName("账号测试");
+        request.setAccount("mac");
+        request.setName("mac测试");
         request.setPassword(encrypt.encrypt("123456"));
 
         ResultData<String> resultData = service.register(request);

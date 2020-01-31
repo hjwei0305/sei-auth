@@ -88,10 +88,10 @@ public class Account extends BaseEntity implements ITenant {
     private LocalDateTime sinceDate;
 
     /**
-     * 截止有效期
+     * 账户有效期
      */
-    @Column(name = "validity_date")
-    private LocalDate validityDate;
+    @Column(name = "account_expired")
+    private LocalDate accountExpired;
 
     @Override
     public String getTenantCode() {
@@ -175,11 +175,11 @@ public class Account extends BaseEntity implements ITenant {
         this.sinceDate = sinceDate;
     }
 
-    public LocalDate getValidityDate() {
-        return validityDate;
+    public LocalDate getAccountExpired() {
+        return accountExpired;
     }
 
-    public void setValidityDate(LocalDate validityDate) {
-        this.validityDate = validityDate;
+    public void setAccountExpired(LocalDate accountExpired) {
+        this.accountExpired = accountExpired;
     }
 }

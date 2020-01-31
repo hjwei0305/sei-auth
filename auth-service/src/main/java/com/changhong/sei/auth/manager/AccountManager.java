@@ -71,9 +71,9 @@ public class AccountManager extends BaseEntityManager<Account> {
         // 对密码md5散列值进行再次散列
         account.setPassword(encodePassword(account.getPassword()));
         // 有效期
-        if (Objects.isNull(account.getValidityDate())) {
+        if (Objects.isNull(account.getAccountExpired())) {
             // 无有效期设置默认有效期
-            account.setValidityDate(LocalDate.of(2099, 12, 31));
+            account.setAccountExpired(LocalDate.of(2099, 12, 31));
         }
         // 注册时间
         account.setSinceDate(LocalDateTime.now());
@@ -217,8 +217,8 @@ public class AccountManager extends BaseEntityManager<Account> {
      * @param account 账户
      * @return 在有效期中返回true, 反之返回false
      */
-    public boolean checkValidityDate(Account account) {
-        LocalDate validityDate = account.getValidityDate();
+    public boolean checkAccountExpired(Account account) {
+        LocalDate validityDate = account.getAccountExpired();
         if (Objects.nonNull(validityDate)) {
             return validityDate.isAfter(LocalDate.now());
         } else {

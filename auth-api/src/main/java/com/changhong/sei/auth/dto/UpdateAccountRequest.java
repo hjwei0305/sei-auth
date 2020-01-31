@@ -51,7 +51,7 @@ public class UpdateAccountRequest extends BaseEntityDto {
      */
     @ApiModelProperty(notes = "截止有效期")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate validityDate;
+    private LocalDate accountExpired;
 
     public String getName() {
         return name;
@@ -93,11 +93,11 @@ public class UpdateAccountRequest extends BaseEntityDto {
         this.locked = locked;
     }
 
-    public LocalDate getValidityDate() {
-        return validityDate;
+    public LocalDate getAccountExpired() {
+        return accountExpired;
     }
 
-    public void setValidityDate(LocalDate validityDate) {
-        this.validityDate = validityDate;
+    public void setAccountExpired(LocalDate accountExpired) {
+        this.accountExpired = accountExpired;
     }
 }

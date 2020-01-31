@@ -86,7 +86,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             return ResultData.success("账号被冻结,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.frozen));
         }
         // 检查账户是否在有效期内
-        if (!accountManager.checkValidityDate(entity)) {
+        if (!accountManager.checkAccountExpired(entity)) {
             return ResultData.success("账号已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
         }
 
