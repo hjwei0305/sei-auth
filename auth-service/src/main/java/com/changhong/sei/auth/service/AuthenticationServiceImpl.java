@@ -59,12 +59,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (StringUtils.isBlank(tenant)) {
             List<Account> accounts = accountManager.findListByProperty(Account.FIELD_ACCOUNT, account);
             if (CollectionUtils.isEmpty(accounts)) {
-                return ResultData.fail("账号密码错误,认证失败!");
+                return ResultData.fail("账号不存在,认证失败!");
             }
 
-            SessionUserResponse dto = new SessionUserResponse();
             if (accounts.size() > 1) {
-                dto.setLoginStatus(SessionUserResponse.LoginStatus.multiTenant);
                 return ResultData.success("请指定租户代码", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.multiTenant));
             }
             entity = accounts.get(0);
@@ -73,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (Objects.isNull(entity)) {
-            return ResultData.fail("账号密码错误,认证失败!");
+            return ResultData.fail("账号不存在1,认证失败!");
         }
 
         // 验证密码
@@ -103,11 +101,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             sessionUser.setIp(HttpUtils.getIpAddr(HttpUtils.getRequest()));
         } catch (Exception ignored) {
         }
-        sessionUser.setLocale("zh_CN");
+        // 设置语言
+        sessionUser.setLocale(loginRequest.getLocale());
+        // 生产token
         ContextUtil.generateToken(sessionUser);
 
-        SessionUserResponse dto = new SessionUserResponse();
-        dto.setLoginStatus(SessionUserResponse.LoginStatus.success);
+        SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
         dto.setSessionId(sessionUser.getSessionId());
         dto.setTenantCode(sessionUser.getTenantCode());
         dto.setUserId(sessionUser.getUserId());
@@ -116,6 +115,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         dto.setLocale(sessionUser.getLocale());
 
         try {
+            // 会话id关联token(redis或db等)
             sessionManager.addSession(sessionUser.getSessionId(), sessionUser.getToken());
             return ResultData.success(dto);
         } catch (Exception e) {
