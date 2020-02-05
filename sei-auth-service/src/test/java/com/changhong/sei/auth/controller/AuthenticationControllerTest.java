@@ -41,7 +41,7 @@ public class AuthenticationControllerTest extends BaseUnitTest {
         request.setTenant("10044");
         request.setAccount("admin");
 //        System.out.println("e10adc3949ba59abbe56e057f20f883e".equals(encrypt.encrypt("123456")));
-//        request.setPassword("e10adc3949ba59abbe56e057f20f883e");
+        request.setPassword("e10adc3949ba59abbe56e057f20f883e");
 //        request = JsonUtils.fromJson(" {\"id\":null,\"tenant\":null,\"account\":\"admin\",\"password\":\"e10adc3949ba59abbe56e057f20f883e\",\"locale\":\"zh_CN\"}", LoginRequest.class);
         ResultData result = apiTemplate.postByUrl(uri, ResultData.class, request);
         System.out.println(JsonUtils.toJson(result));

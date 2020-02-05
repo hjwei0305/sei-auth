@@ -1,7 +1,7 @@
 # 应用全局配置
 application:
   name: 统一账户服务
-  version: 4.0.1
+  version: 6.0.1
 
 # spring 环境配置
 spring:

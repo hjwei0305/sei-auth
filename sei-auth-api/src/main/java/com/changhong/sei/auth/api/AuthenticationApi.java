@@ -15,7 +15,6 @@ import javax.validation.Valid;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-14 14:13
  */
-@RestController
 @RequestMapping(path = "auth", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public interface AuthenticationApi {
 

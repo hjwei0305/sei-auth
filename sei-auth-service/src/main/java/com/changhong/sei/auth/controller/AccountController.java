@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.Objects;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-14 13:55
  */
-@Service
+@RestController
 @Api(value = "AccountApi", tags = "账户接口服务")
 public class AccountController implements DefaultBaseEntityController<Account, AccountResponse>, AccountApi {
 

@@ -16,7 +16,6 @@ import javax.validation.constraints.NotBlank;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-14 14:09
  */
-@RestController
 @RequestMapping(path = "account", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public interface AccountApi extends FindByPageApi<AccountResponse> {
 
