@@ -8,7 +8,7 @@ dependencyManagement {
 }
 
 dependencies {
-    compile project(':auth-api')
+    compile project(':sei-auth-api')
 
     compile(
             "org.hibernate:hibernate-java8:5.3.7.Final",
