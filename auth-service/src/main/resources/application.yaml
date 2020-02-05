@@ -1,12 +1,12 @@
 # 应用全局配置
 application:
   name: 统一账户服务
-  version: 4.0.1
+  version: 6.0.1
 
 # spring 环境配置
 spring:
   datasource:
-    driverClassName: com.mysql.jdbc.Driver
+    driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://10.4.208.134:3306/sei_auth?characterEncoding=utf8&useSSL=false
     username: sei
     password: 123456

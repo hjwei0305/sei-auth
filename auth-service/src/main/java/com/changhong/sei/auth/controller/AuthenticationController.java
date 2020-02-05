@@ -1,17 +1,15 @@
-package com.changhong.sei.auth.service;
+package com.changhong.sei.auth.controller;
 
-import com.changhong.sei.auth.api.AuthenticationService;
+import com.changhong.sei.auth.api.AuthenticationApi;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
-import com.changhong.sei.auth.manager.AccountManager;
-import com.changhong.sei.auth.manager.SessionManager;
+import com.changhong.sei.auth.service.AccountService;
+import com.changhong.sei.auth.service.SessionService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
-import com.changhong.sei.core.util.JsonUtils;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,13 +26,13 @@ import java.util.Objects;
  * @version 1.0.00  2020-01-14 14:21
  */
 @Service
-@Api(value = "AuthenticationService", tags = "账户认证服务")
-public class AuthenticationServiceImpl implements AuthenticationService {
+@Api(value = "AuthenticationApi", tags = "账户认证服务")
+public class AuthenticationController implements AuthenticationApi {
 
     @Autowired
-    private AccountManager accountManager;
+    private AccountService accountService;
     @Autowired
-    private SessionManager sessionManager;
+    private SessionService sessionService;
 
     /**
      * 登录
@@ -56,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Account entity;
         if (StringUtils.isBlank(tenant)) {
-            List<Account> accounts = accountManager.getByAccount(account);
+            List<Account> accounts = accountService.getByAccount(account);
             if (CollectionUtils.isEmpty(accounts)) {
                 return ResultData.fail("账号密码错误,认证失败!");
             }
@@ -66,7 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             }
             entity = accounts.get(0);
         } else {
-            entity = accountManager.getByAccountAndTenantCode(account, tenant);
+            entity = accountService.getByAccountAndTenantCode(account, tenant);
         }
 
         if (Objects.isNull(entity)) {
@@ -74,19 +72,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         // 验证密码
-        if (!accountManager.verifyPassword(password, entity.getPassword())) {
+        if (!accountService.verifyPassword(password, entity.getPassword())) {
             return ResultData.fail("账号密码错误,认证失败!");
         }
         // 检查是否被锁定
-        if (accountManager.checkLocked(entity)) {
+        if (accountService.checkLocked(entity)) {
             return ResultData.success("账号被锁定,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.locked));
         }
         // 检查是否被冻结
-        if (accountManager.checkFrozen(entity)) {
+        if (accountService.checkFrozen(entity)) {
             return ResultData.success("账号被冻结,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.frozen));
         }
         // 检查账户是否在有效期内
-        if (!accountManager.checkAccountExpired(entity)) {
+        if (!accountService.checkAccountExpired(entity)) {
             return ResultData.success("账号已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
         }
 
@@ -115,7 +113,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         try {
             // 会话id关联token(redis或db等)
-            sessionManager.addSession(sessionUser.getSessionId(), sessionUser.getToken());
+            sessionService.addSession(sessionUser.getSessionId(), sessionUser.getToken());
             return ResultData.success(dto);
         } catch (Exception e) {
             return ResultData.fail("登录认证异常:" + e.getMessage());
@@ -129,7 +127,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public ResultData<String> logout(String sid) {
         try {
-            sessionManager.removeSession(sid, 0);
+            sessionService.removeSession(sid, 0);
             return ResultData.success("OK");
         } catch (Exception e) {
             return ResultData.fail("登出异常:" + e.getMessage());
@@ -146,7 +144,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public ResultData<String> check(String sid) {
         try {
             // 获取会话并续期
-            String token = sessionManager.getAndTouchSession(sid);
+            String token = sessionService.getAndTouchSession(sid);
             if (StringUtils.isNotBlank(token)) {
                 return ResultData.success(token);
             } else {

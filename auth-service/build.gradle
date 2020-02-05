@@ -36,3 +36,12 @@ bootJar  {
         attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
     }
 }
+
+//上传到nexus
+uploadArchives {
+    enabled = false
+}
+
+install {
+    enabled = false
+}

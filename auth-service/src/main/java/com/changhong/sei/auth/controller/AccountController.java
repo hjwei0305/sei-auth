@@ -1,15 +1,15 @@
-package com.changhong.sei.auth.service;
+package com.changhong.sei.auth.controller;
 
-import com.changhong.sei.auth.api.AccountService;
+import com.changhong.sei.auth.api.AccountApi;
 import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
-import com.changhong.sei.auth.manager.AccountManager;
+import com.changhong.sei.auth.service.AccountService;
+import com.changhong.sei.core.controller.DefaultBaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.core.manager.BaseEntityManager;
-import com.changhong.sei.core.manager.bo.OperateResultWithData;
-import com.changhong.sei.core.service.DefaultBaseEntityService;
+import com.changhong.sei.core.service.bo.OperateResultWithData;
+import com.changhong.sei.core.service.BaseEntityService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -28,17 +28,17 @@ import java.util.Objects;
  * @version 1.0.00  2020-01-14 13:55
  */
 @Service
-@Api(value = "AccountService", tags = "账户接口服务")
-public class AccountServiceImpl implements DefaultBaseEntityService<Account, AccountResponse>, AccountService {
+@Api(value = "AccountApi", tags = "账户接口服务")
+public class AccountController implements DefaultBaseEntityController<Account, AccountResponse>, AccountApi {
 
     @Autowired
-    private AccountManager accountManager;
+    private AccountService accountService;
     @Autowired
     private ModelMapper modelMapper;
 
     @Override
-    public BaseEntityManager<Account> getManager() {
-        return accountManager;
+    public BaseEntityService<Account> getService() {
+        return accountService;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      */
     @Override
     public ResultData<AccountResponse> getById(String id) {
-        Account account = accountManager.findOne(id);
+        Account account = accountService.findOne(id);
         if (account == null) {
             return ResultData.fail("账户不存在！");
         }
@@ -95,7 +95,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
             return ResultData.fail("参数不能为空！");
         }
 
-        return accountManager.createAccount(account);
+        return accountService.createAccount(account);
     }
 
     /**
@@ -111,7 +111,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         }
         account.setPassword(StringUtils.EMPTY);
 
-        return accountManager.createAccount(account);
+        return accountService.createAccount(account);
     }
 
     /**
@@ -124,7 +124,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         if (ObjectUtils.isEmpty(request.getId())) {
             return ResultData.fail("参数id不能为空！");
         }
-        Account account = accountManager.findOne(request.getId());
+        Account account = accountService.findOne(request.getId());
         if (account == null) {
             return ResultData.fail("账户数据不存在！");
         }
@@ -136,7 +136,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         account.setLocked(request.getLocked());
         account.setAccountExpired(request.getAccountExpired());
 
-        OperateResultWithData<Account> resultWithData = accountManager.save(account);
+        OperateResultWithData<Account> resultWithData = accountService.save(account);
         if (resultWithData.notSuccessful()) {
             return ResultData.fail(resultWithData.getMessage());
         }
@@ -153,7 +153,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
         if (request == null) {
             return ResultData.fail("请求参数不能为空！");
         }
-        return accountManager.updatePassword(request);
+        return accountService.updatePassword(request);
     }
 
     /**
@@ -164,7 +164,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      */
     @Override
     public ResultData<String> resetPassword(String tenant, String account) {
-        return accountManager.resetPassword(tenant, account);
+        return accountService.resetPassword(tenant, account);
     }
 
     /**
@@ -177,7 +177,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
     public ResultData<PageResult<AccountResponse>> findByPage(Search search) {
         PageResult<AccountResponse> newPageResult = new PageResult<>();
         List<AccountResponse> newRows = new ArrayList<>();
-        PageResult<Account> pageResult = accountManager.findByPage(search);
+        PageResult<Account> pageResult = accountService.findByPage(search);
         pageResult.getRows().forEach(d -> newRows.add(convertToDto(d)));
         newPageResult.setPage(pageResult.getPage());
         newPageResult.setRecords(pageResult.getRecords());
@@ -193,7 +193,7 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      */
     @Override
     public ResultData<String> frozen(String id, boolean frozen) {
-        return accountManager.frozen(id, frozen);
+        return accountService.frozen(id, frozen);
     }
 
     /**
@@ -203,6 +203,6 @@ public class AccountServiceImpl implements DefaultBaseEntityService<Account, Acc
      */
     @Override
     public ResultData<String> locked(String id, boolean locked) {
-        return accountManager.locked(id, locked);
+        return accountService.locked(id, locked);
     }
 }

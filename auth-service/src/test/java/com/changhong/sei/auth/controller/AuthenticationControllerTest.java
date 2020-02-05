@@ -1,4 +1,4 @@
-package com.changhong.sei.auth.service;
+package com.changhong.sei.auth.controller;
 
 import com.changhong.com.sei.core.test.BaseUnitTest;
 import com.changhong.sei.apitemplate.ApiTemplate;
@@ -10,14 +10,10 @@ import com.changhong.sei.core.util.JsonUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import sun.rmi.runtime.Log;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-public class AuthenticationServiceTest extends BaseUnitTest {
+public class AuthenticationControllerTest extends BaseUnitTest {
     @Autowired
-    private AuthenticationServiceImpl service;
+    private AuthenticationController controller;
     @Autowired
     private IEncrypt encrypt;
 
@@ -33,9 +29,9 @@ public class AuthenticationServiceTest extends BaseUnitTest {
 //        request.setPassword("e10adc3949ba59abbe56e057f20f883e");
         request = JsonUtils.fromJson(" {\"id\":null,\"tenant\":null,\"account\":\"admin\",\"password\":\"e10adc3949ba59abbe56e057f20f883e\",\"locale\":\"zh_CN\"}", LoginRequest.class);
 
-        ResultData<SessionUserResponse> resultData = service.login(request);
+        ResultData<SessionUserResponse> resultData = controller.login(request);
         System.out.println(JsonUtils.toJson(resultData));
-        Assert.assertTrue(resultData.getSuccessful());
+        Assert.assertTrue(resultData.successful());
     }
 
     @Test
@@ -49,7 +45,7 @@ public class AuthenticationServiceTest extends BaseUnitTest {
 //        request = JsonUtils.fromJson(" {\"id\":null,\"tenant\":null,\"account\":\"admin\",\"password\":\"e10adc3949ba59abbe56e057f20f883e\",\"locale\":\"zh_CN\"}", LoginRequest.class);
         ResultData result = apiTemplate.postByUrl(uri, ResultData.class, request);
         System.out.println(JsonUtils.toJson(result));
-        Assert.assertTrue(result.isSuccessful());
+        Assert.assertTrue(result.successful());
     }
 
 }

@@ -1,7 +1,7 @@
 package com.changhong.sei.auth.api;
 
 import com.changhong.sei.auth.dto.*;
-import com.changhong.sei.core.api.FindByPageService;
+import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
@@ -18,7 +18,7 @@ import javax.validation.constraints.NotBlank;
  */
 @RestController
 @RequestMapping(path = "account", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public interface AccountService extends FindByPageService<AccountResponse> {
+public interface AccountApi extends FindByPageApi<AccountResponse> {
 
     /**
      * 通过账户id获取已有账户

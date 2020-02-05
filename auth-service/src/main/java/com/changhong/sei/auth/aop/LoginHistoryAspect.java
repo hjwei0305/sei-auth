@@ -3,7 +3,7 @@ package com.changhong.sei.auth.aop;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.LoginHistory;
-import com.changhong.sei.auth.manager.LoginHistoryManager;
+import com.changhong.sei.auth.service.LoginHistoryService;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
@@ -28,12 +28,12 @@ import java.util.Objects;
 public class LoginHistoryAspect {
 
     @Autowired
-    private LoginHistoryManager historyManager;
+    private LoginHistoryService historyManager;
 
     /**
      * 拦截@see com.changhong.sei.auth.service.AuthenticationServiceImpl#login 方法的返回,记录登录历史
      */
-    @AfterReturning(value = "execution(* com.changhong.sei.auth.service.AuthenticationServiceImpl.login(..))", argNames = "joinPoint, result", returning = "result")
+    @AfterReturning(value = "execution(* com.changhong.sei.auth.controller.AuthenticationController.login(..))", argNames = "joinPoint, result", returning = "result")
     public void afterReturning(JoinPoint joinPoint, ResultData<SessionUserResponse> result) {
         Object[] args = joinPoint.getArgs();
         if (Objects.nonNull(args) && args.length == 1) {
@@ -48,7 +48,7 @@ public class LoginHistoryAspect {
                 history.setLoginIp(HttpUtils.getIpAddr(req));
                 history.setLoginUserAgent(req.getHeader("user-agent"));
 
-                if (result.getSuccessful()) {
+                if (result.getSuccess()) {
                     SessionUserResponse dto = result.getData();
                     history.setLoginStatus(dto.getLoginStatus());
                     history.setLoginLog(result.getMessage());

@@ -1,9 +1,9 @@
-package com.changhong.sei.auth.manager;
+package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.dao.LoginSessionDao;
 import com.changhong.sei.auth.entity.LoginSession;
 import com.changhong.sei.core.dao.BaseEntityDao;
-import com.changhong.sei.core.manager.BaseEntityManager;
+import com.changhong.sei.core.service.BaseEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
  * @version 1.0.00  2020-01-20 12:01
  */
 //@Component
-public class LoginSessionManager extends BaseEntityManager<LoginSession> implements SessionManager {
+public class LoginSessionService extends BaseEntityService<LoginSession> implements SessionService {
 
     /**
      * 超时时间(秒)

@@ -17,7 +17,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping(path = "auth", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public interface AuthenticationService {
+public interface AuthenticationApi {
 
     /**
      * 登录

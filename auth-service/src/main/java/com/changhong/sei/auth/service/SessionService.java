@@ -1,4 +1,4 @@
-package com.changhong.sei.auth.manager;
+package com.changhong.sei.auth.service;
 
 /**
  * 实现功能：会话管理
@@ -6,7 +6,7 @@ package com.changhong.sei.auth.manager;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-20 11:48
  */
-public interface SessionManager {
+public interface SessionService {
 
     /**
      * 添加会话

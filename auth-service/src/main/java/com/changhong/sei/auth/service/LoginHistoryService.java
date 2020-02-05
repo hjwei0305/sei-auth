@@ -1,9 +1,9 @@
-package com.changhong.sei.auth.manager;
+package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.dao.LoginHistoryDao;
 import com.changhong.sei.auth.entity.LoginHistory;
 import com.changhong.sei.core.dao.BaseEntityDao;
-import com.changhong.sei.core.manager.BaseEntityManager;
+import com.changhong.sei.core.service.BaseEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
  * @version 1.0.00  2020-01-20 12:38
  */
 @Service
-public class LoginHistoryManager extends BaseEntityManager<LoginHistory> {
+public class LoginHistoryService extends BaseEntityService<LoginHistory> {
 
     @Autowired
     private LoginHistoryDao dao;

@@ -1,4 +1,4 @@
-package com.changhong.sei.auth.manager;
+package com.changhong.sei.auth.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0.00  2020-01-20 12:01
  */
 @Component
-public class RedisSessionManager implements SessionManager {
+public class RedisSessionService implements SessionService {
 
     @Value("${server.servlet.session.timeout:36000}")
     private Integer sessionTimeout;

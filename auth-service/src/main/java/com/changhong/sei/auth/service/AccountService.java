@@ -1,4 +1,4 @@
-package com.changhong.sei.auth.manager;
+package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.dao.AccountDao;
 import com.changhong.sei.auth.dto.UpdatePasswordRequest;
@@ -6,7 +6,7 @@ import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.encryption.IEncrypt;
-import com.changhong.sei.core.manager.BaseEntityManager;
+import com.changhong.sei.core.service.BaseEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +27,7 @@ import java.util.Objects;
  * @version 1.0.00  2020-01-14 13:53
  */
 @Service
-public class AccountManager extends BaseEntityManager<Account> {
+public class AccountService extends BaseEntityService<Account> {
 
     @Autowired
     private AccountDao dao;

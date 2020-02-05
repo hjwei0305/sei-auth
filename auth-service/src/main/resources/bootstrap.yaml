@@ -5,16 +5,16 @@ spring:
     bus:
       trace:
         enabled: true
-      enabled: true
+      enabled: false
     config:
-      uri: http://10.4.208.86:8100/config-center
+#      uri: http://10.4.208.86:8100/config-center
       profile: DEV
       name: ${spring.application.name}
     zookeeper:
       # zk 地址
       connect-string: 10.4.208.132:2181
       # 关闭zk可用不用依赖zk
-      enabled: true
+      enabled: false
 
 sei:
   mock: # 本地调试的当前用户配置

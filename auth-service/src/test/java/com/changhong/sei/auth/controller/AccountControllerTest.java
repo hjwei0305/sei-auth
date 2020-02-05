@@ -1,4 +1,4 @@
-package com.changhong.sei.auth.service;
+package com.changhong.sei.auth.controller;
 
 import com.changhong.com.sei.core.test.BaseUnitTest;
 import com.changhong.sei.auth.dto.*;
@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
-public class AccountServiceImplTest extends BaseUnitTest {
+public class AccountControllerTest extends BaseUnitTest {
 
     @Autowired
-    private AccountServiceImpl service;
+    private AccountController service;
     @Autowired
     private IEncrypt encrypt;
 
@@ -68,7 +68,7 @@ public class AccountServiceImplTest extends BaseUnitTest {
     @Test
     public void updatePassword() {
         ResultData<AccountResponse> result = service.getById(ID);
-        if (result.isSuccessful()) {
+        if (result.successful()) {
             AccountResponse response = result.getData();
             UpdatePasswordRequest request = new UpdatePasswordRequest();
             request.setTenant(response.getTenantCode());
