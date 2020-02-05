@@ -4,6 +4,7 @@ import com.changhong.sei.auth.entity.LoginSession;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 /**
  * 实现功能：
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-20 12:35
  */
+@Repository
 public interface LoginSessionDao extends BaseEntityDao<LoginSession> {
 
     /**

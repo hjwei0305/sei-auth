@@ -4,6 +4,7 @@ import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-14 13:47
  */
+@Repository
 public interface AccountDao extends BaseEntityDao<Account> {
 
     /**
