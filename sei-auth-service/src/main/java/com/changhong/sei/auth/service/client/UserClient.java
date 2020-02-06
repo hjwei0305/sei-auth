@@ -20,5 +20,5 @@ public interface UserClient {
      * @return 用户信息
      */
     @GetMapping(path = "getUserInformation")
-    ResultData<UserInformation> getUserInformation(@RequestParam("userId")String userId);
+    ResultData<UserInformation> getUserInformation(@RequestParam("userId") String userId);
 }

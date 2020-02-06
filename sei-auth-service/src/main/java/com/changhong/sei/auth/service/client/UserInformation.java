@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @version 2020-01-28 10:58
  */
 @ApiModel(description = "认证中心需要的用户信息")
-public class UserInformation{
+public class UserInformation {
     /**
      * 用户Id
      */
