@@ -1,5 +1,7 @@
 package com.changhong.sei.auth.dto;
 
+import com.chonghong.sei.enums.UserAuthorityPolicy;
+import com.chonghong.sei.enums.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -39,6 +41,14 @@ public class SessionUserResponse implements Serializable {
      */
     @ApiModelProperty(notes = "租户代码")
     private String tenantCode;
+    /**
+     * 用户类型
+     */
+    private UserType userType = UserType.Employee;
+    /**
+     * 用户权限策略
+     */
+    private UserAuthorityPolicy authorityPolicy = UserAuthorityPolicy.NormalUser;
     /**
      * 语言环境
      */
@@ -88,6 +98,22 @@ public class SessionUserResponse implements Serializable {
 
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public UserType getUserType() {
+        return userType;
+    }
+
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
+
+    public UserAuthorityPolicy getAuthorityPolicy() {
+        return authorityPolicy;
+    }
+
+    public void setAuthorityPolicy(UserAuthorityPolicy authorityPolicy) {
+        this.authorityPolicy = authorityPolicy;
     }
 
     public String getLocale() {

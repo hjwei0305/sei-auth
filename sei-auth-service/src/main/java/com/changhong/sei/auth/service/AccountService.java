@@ -3,16 +3,20 @@ package com.changhong.sei.auth.service;
 import com.changhong.sei.auth.dao.AccountDao;
 import com.changhong.sei.auth.dto.UpdatePasswordRequest;
 import com.changhong.sei.auth.entity.Account;
+import com.changhong.sei.auth.service.client.UserClient;
+import com.changhong.sei.auth.service.client.UserInformation;
+import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.service.BaseEntityService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
@@ -33,6 +37,8 @@ public class AccountService extends BaseEntityService<Account> {
     private AccountDao dao;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserClient userClient;
 
     @Value("${sei.auth.default.password:123456}")
     private String defaultPassword;
@@ -43,6 +49,36 @@ public class AccountService extends BaseEntityService<Account> {
     @Override
     protected BaseEntityDao<Account> getDao() {
         return dao;
+    }
+
+    /**
+     * @param account 账户
+     * @param ipAddr  ip地址
+     * @param lang    语言
+     */
+    public ResultData<SessionUser> getSessionUser(Account account, String ipAddr, String lang) {
+        SessionUser sessionUser = new SessionUser();
+        sessionUser.setTenantCode(account.getTenantCode());
+        sessionUser.setUserId(account.getUserId());
+        sessionUser.setAccount(account.getAccount());
+        sessionUser.setUserName(account.getName());
+        sessionUser.setIp(ipAddr);
+
+        ResultData<UserInformation> resultData = userClient.getUserInformation(account.getUserId());
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+        UserInformation userInformation = resultData.getData();
+
+        sessionUser.setUserType(userInformation.getUserType());
+        sessionUser.setAuthorityPolicy(userInformation.getUserAuthorityPolicy());
+        // 设置语言
+        sessionUser.setLocale(StringUtils.isBlank(lang) ? userInformation.getLanguageCode() : lang);
+
+        // 生产token
+        ContextUtil.generateToken(sessionUser);
+
+        return ResultData.success(sessionUser);
     }
 
     /**
@@ -64,7 +100,7 @@ public class AccountService extends BaseEntityService<Account> {
         }
 
         // 检查是否有密码
-        if (!StringUtils.hasText(account.getPassword())) {
+        if (StringUtils.isBlank(account.getPassword())) {
             // 无密码,使用平台默认密码策略.后续考虑产生随机密码并通知用户
             account.setPassword(getDefaultPassword());
         }

@@ -14,7 +14,6 @@ import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -89,35 +88,36 @@ public class AuthenticationController implements AuthenticationApi {
             return ResultData.success("账号已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
         }
 
-        SessionUser sessionUser = new SessionUser();
-        sessionUser.setTenantCode(entity.getTenantCode());
-        sessionUser.setUserId(entity.getUserId());
-        sessionUser.setAccount(entity.getAccount());
-        sessionUser.setUserName(entity.getName());
+        String ipAddr = "";
         try {
             // 请求ip
-            sessionUser.setIp(HttpUtils.getIpAddr(HttpUtils.getRequest()));
+            ipAddr = HttpUtils.getIpAddr(HttpUtils.getRequest());
         } catch (Exception ignored) {
         }
-        // 设置语言
-        sessionUser.setLocale(loginRequest.getLocale());
-        // 生产token
-        ContextUtil.generateToken(sessionUser);
 
-        SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
-        dto.setSessionId(sessionUser.getSessionId());
-        dto.setTenantCode(sessionUser.getTenantCode());
-        dto.setUserId(sessionUser.getUserId());
-        dto.setAccount(sessionUser.getAccount());
-        dto.setUserName(sessionUser.getUserName());
-        dto.setLocale(sessionUser.getLocale());
+        ResultData<SessionUser> resultData = accountService.getSessionUser(entity, ipAddr, loginRequest.getLocale());
+        if (resultData.successful()) {
+            SessionUser sessionUser = resultData.getData();
 
-        try {
-            // 会话id关联token(redis或db等)
-            sessionService.addSession(sessionUser.getSessionId(), sessionUser.getToken());
-            return ResultData.success(dto);
-        } catch (Exception e) {
-            return ResultData.fail("登录认证异常:" + e.getMessage());
+            SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
+            dto.setSessionId(sessionUser.getSessionId());
+            dto.setTenantCode(sessionUser.getTenantCode());
+            dto.setUserId(sessionUser.getUserId());
+            dto.setAccount(sessionUser.getAccount());
+            dto.setUserName(sessionUser.getUserName());
+            dto.setUserType(sessionUser.getUserType());
+            dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
+            dto.setLocale(sessionUser.getLocale());
+
+            try {
+                // 会话id关联token(redis或db等)
+                sessionService.addSession(sessionUser.getSessionId(), sessionUser.getToken());
+                return ResultData.success(dto);
+            } catch (Exception e) {
+                return ResultData.fail("登录认证异常:" + e.getMessage());
+            }
+        } else {
+            return ResultData.fail("登录认证失败:" + resultData.getMessage());
         }
     }
 
