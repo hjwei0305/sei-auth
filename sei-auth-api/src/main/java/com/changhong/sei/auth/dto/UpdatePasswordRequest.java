@@ -30,13 +30,13 @@ public class UpdatePasswordRequest implements Serializable {
     /**
      * 新账号密码
      */
-    @ApiModelProperty(notes = "新账号密码.MD5散列后的值")
+    @ApiModelProperty(notes = "新账号密码.MD5散列后的值", example = "e10adc3949ba59abbe56e057f20f883e")
     @NotBlank
     private String newPassword;
     /**
      * 旧账号密码
      */
-    @ApiModelProperty(notes = "旧账号密码.MD5散列后的值")
+    @ApiModelProperty(notes = "旧账号密码.MD5散列后的值",  example = "e10adc3949ba59abbe56e057f20f883e")
     @NotBlank
     private String oldPassword;
 

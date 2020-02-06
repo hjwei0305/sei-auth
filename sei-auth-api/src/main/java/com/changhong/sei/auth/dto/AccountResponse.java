@@ -66,13 +66,13 @@ public class AccountResponse extends BaseEntityDto {
     /**
      * 注册时间
      */
-    @ApiModelProperty(notes = "注册时间")
+    @ApiModelProperty(notes = "注册时间", example = "2020-01-14 22:18:48")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date sinceDate;
     /**
      * 截止有效期
      */
-    @ApiModelProperty(notes = "截止有效期")
+    @ApiModelProperty(notes = "截止有效期", example = "2099-01-14")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date validityDate;
 

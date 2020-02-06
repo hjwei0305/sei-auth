@@ -44,10 +44,12 @@ public class SessionUserResponse implements Serializable {
     /**
      * 用户类型
      */
+    @ApiModelProperty(notes = "用户类型(enum)")
     private UserType userType = UserType.Employee;
     /**
      * 用户权限策略
      */
+    @ApiModelProperty(notes = "用户权限策略(enum)")
     private UserAuthorityPolicy authorityPolicy = UserAuthorityPolicy.NormalUser;
     /**
      * 语言环境
@@ -57,7 +59,7 @@ public class SessionUserResponse implements Serializable {
     /**
      * 客户端IP
      */
-    @ApiModelProperty(notes = "登录状态")
+    @ApiModelProperty(notes = "登录状态(enum)")
     private LoginStatus loginStatus;
 
     public String getSessionId() {

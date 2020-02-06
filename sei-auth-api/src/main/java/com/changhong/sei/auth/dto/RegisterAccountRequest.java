@@ -17,7 +17,7 @@ public class RegisterAccountRequest extends AccountResponse {
     /**
      * 密码
      */
-    @ApiModelProperty(notes = "密码,MD5散列后的值")
+    @ApiModelProperty(notes = "密码(md5散列后的值)", example = "e10adc3949ba59abbe56e057f20f883e")
     private String password;
 
     public String getPassword() {

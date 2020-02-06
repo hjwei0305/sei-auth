@@ -49,7 +49,7 @@ public class UpdateAccountRequest extends BaseEntityDto {
     /**
      * 截止有效期
      */
-    @ApiModelProperty(notes = "截止有效期")
+    @ApiModelProperty(notes = "截止有效期", example = "2020-01-21")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate accountExpired;
 

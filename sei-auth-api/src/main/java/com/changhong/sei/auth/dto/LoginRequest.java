@@ -31,7 +31,7 @@ public class LoginRequest extends BaseEntityDto {
      * 密码
      */
     @NotBlank
-    @ApiModelProperty(notes = "密码")
+    @ApiModelProperty(notes = "密码(md5散列后的值)", example = "e10adc3949ba59abbe56e057f20f883e")
     private String password;
     /**
      * 语言环境
