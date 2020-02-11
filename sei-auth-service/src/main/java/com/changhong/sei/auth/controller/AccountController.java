@@ -4,17 +4,17 @@ import com.changhong.sei.auth.api.AccountApi;
 import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.service.AccountService;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.controller.DefaultBaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.core.service.bo.OperateResultWithData;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.core.service.bo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -68,6 +68,37 @@ public class AccountController implements DefaultBaseEntityController<Account, A
     }
 
     ///////////////////////
+
+
+    /**
+     * 通过租户和账号获取已有账户
+     *
+     * @param tenant  租户
+     * @param account 账号
+     */
+    @Override
+    public ResultData<SessionUserResponse> getByTenantAccount(String tenant, String account) {
+        Account accountObj = accountService.getByAccountAndTenantCode(account, tenant);
+        if (Objects.isNull(accountObj)) {
+            return ResultData.fail("账户不存在！");
+        }
+        ResultData<SessionUser> resultData = accountService.getSessionUser(accountObj, StringUtils.EMPTY, StringUtils.EMPTY);
+        if (resultData.successful()) {
+            SessionUser sessionUser = resultData.getData();
+            SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
+            dto.setSessionId(sessionUser.getSessionId());
+            dto.setTenantCode(sessionUser.getTenantCode());
+            dto.setUserId(sessionUser.getUserId());
+            dto.setAccount(sessionUser.getAccount());
+            dto.setUserName(sessionUser.getUserName());
+            dto.setUserType(sessionUser.getUserType());
+            dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
+            dto.setLocale(sessionUser.getLocale());
+            return ResultData.success(dto);
+        } else {
+            return ResultData.fail(resultData.getMessage());
+        }
+    }
 
     /**
      * 通过账户id获取已有账户

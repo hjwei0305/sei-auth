@@ -20,6 +20,14 @@ import javax.validation.constraints.NotBlank;
 public interface AccountApi extends FindByPageApi<AccountResponse> {
 
     /**
+     * 通过租户和账号获取已有账户
+     */
+    @GetMapping(path = "getByTenantAccount")
+    @ApiOperation("通过租户和账号获取已有账户")
+    ResultData<SessionUserResponse> getByTenantAccount(@RequestParam("tenant") @NotBlank String tenant,
+                                                   @RequestParam("account") @NotBlank String account);
+
+    /**
      * 通过账户id获取已有账户
      */
     @GetMapping(path = "getById")

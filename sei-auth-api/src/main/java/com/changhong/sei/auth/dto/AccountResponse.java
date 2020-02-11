@@ -74,7 +74,7 @@ public class AccountResponse extends BaseEntityDto {
      */
     @ApiModelProperty(notes = "截止有效期", example = "2099-01-14")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date validityDate;
+    private Date accountExpired;
 
     public String getTenantCode() {
         return tenantCode;
@@ -148,11 +148,11 @@ public class AccountResponse extends BaseEntityDto {
         this.sinceDate = sinceDate;
     }
 
-    public Date getValidityDate() {
-        return validityDate;
+    public Date getAccountExpired() {
+        return accountExpired;
     }
 
-    public void setValidityDate(Date validityDate) {
-        this.validityDate = validityDate;
+    public void setAccountExpired(Date accountExpired) {
+        this.accountExpired = accountExpired;
     }
 }
