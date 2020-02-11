@@ -75,9 +75,6 @@ public class AccountService extends BaseEntityService<Account> {
         // 设置语言
         sessionUser.setLocale(StringUtils.isBlank(lang) ? userInformation.getLanguageCode() : lang);
 
-        // 生产token
-        ContextUtil.generateToken(sessionUser);
-
         return ResultData.success(sessionUser);
     }
 

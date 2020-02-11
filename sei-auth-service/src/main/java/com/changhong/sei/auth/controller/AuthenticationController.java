@@ -99,6 +99,9 @@ public class AuthenticationController implements AuthenticationApi {
         if (resultData.successful()) {
             SessionUser sessionUser = resultData.getData();
 
+            // 生产token
+            ContextUtil.generateToken(sessionUser);
+
             SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
             dto.setSessionId(sessionUser.getSessionId());
             dto.setTenantCode(sessionUser.getTenantCode());
