@@ -1,6 +1,6 @@
 package com.changhong.sei.auth.controller;
 
-import com.changhong.com.sei.core.test.BaseUnitTest;
+import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;

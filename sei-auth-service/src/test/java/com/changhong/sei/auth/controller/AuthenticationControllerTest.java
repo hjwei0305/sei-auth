@@ -1,11 +1,11 @@
 package com.changhong.sei.auth.controller;
 
-import com.changhong.com.sei.core.test.BaseUnitTest;
 import com.changhong.sei.apitemplate.ApiTemplate;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.encryption.IEncrypt;
+import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.core.util.JsonUtils;
 import org.junit.Assert;
 import org.junit.Test;
