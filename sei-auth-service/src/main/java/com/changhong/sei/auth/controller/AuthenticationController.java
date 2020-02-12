@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * 实现功能：
@@ -172,5 +174,16 @@ public class AuthenticationController implements AuthenticationApi {
 //        sessionUser.setEmail("anonymous");
         ContextUtil.generateToken(sessionUser);
         return ResultData.success(sessionUser.getToken());
+    }
+
+    /**
+     * 获取用户前端权限检查的功能项键值
+     *
+     * @param userId 用户Id
+     * @return 功能项键值
+     */
+    @Override
+    public ResultData<Map<String, Set<String>>> getAuthorizedFeatures(String userId) {
+        return accountService.getAuthorizedFeatures(userId);
     }
 }

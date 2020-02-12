@@ -22,7 +22,9 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * 实现功能：平台账户业务逻辑实现
@@ -285,5 +287,15 @@ public class AccountService extends BaseEntityService<Account> {
      */
     public boolean verifyPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    /**
+     * 获取用户前端权限检查的功能项键值
+     *
+     * @param userId 用户Id
+     * @return 功能项键值
+     */
+    public ResultData<Map<String, Set<String>>> getAuthorizedFeatures(String userId) {
+        return userClient.getUserAuthorizedFeatureMaps(userId);
     }
 }

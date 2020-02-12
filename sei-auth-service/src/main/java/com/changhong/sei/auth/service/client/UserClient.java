@@ -5,6 +5,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Map;
+import java.util.Set;
+
 /**
  * 实现功能: 用户API接口
  *
@@ -21,4 +24,12 @@ public interface UserClient {
      */
     @GetMapping(path = "getUserInformation")
     ResultData<UserInformation> getUserInformation(@RequestParam("userId") String userId);
+
+    /**
+     * 获取用户前端权限检查的功能项键值
+     * @param userId 用户Id
+     * @return 功能项键值
+     */
+    @GetMapping(path = "getUserAuthorizedFeatureMaps")
+    ResultData<Map<String, Set<String>>> getUserAuthorizedFeatureMaps(@RequestParam("userId") String userId);
 }

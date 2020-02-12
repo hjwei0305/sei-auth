@@ -1,13 +1,16 @@
 package com.changhong.sei.auth.api;
 
+import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.auth.dto.LoginRequest;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 实现功能：账户认证接口
@@ -45,4 +48,14 @@ public interface AuthenticationApi {
     @GetMapping(path = "getAnonymousToken")
     @ApiOperation("获取匿名token")
     ResultData<String> getAnonymousToken();
+
+    /**
+     * 获取用户前端权限检查的功能项键值
+     *
+     * @param userId 用户Id
+     * @return 功能项键值
+     */
+    @GetMapping(path = "getAuthorizedFeatures")
+    @ApiOperation(value = "获取用户前端权限检查的功能项键值", notes = "获取用户前端权限检查的功能项键值(以应用模块代码分组)")
+    ResultData<Map<String, Set<String>>> getAuthorizedFeatures(@RequestParam("userId") @NotBlank String userId);
 }
