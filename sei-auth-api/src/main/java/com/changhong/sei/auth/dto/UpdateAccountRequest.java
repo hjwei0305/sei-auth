@@ -21,19 +21,19 @@ public class UpdateAccountRequest extends BaseEntityDto {
     /**
      * 名称
      */
-    @ApiModelProperty(notes = "名称")
+    @ApiModelProperty(notes = "名称", required = true)
     @NotBlank
     private String name;
     /**
      * 来源系统
      */
-    @ApiModelProperty(notes = "来源系统")
+    @ApiModelProperty(notes = "来源系统", required = true)
     @NotBlank
     private String systemCode;
     /**
      * 账户类型
      */
-    @ApiModelProperty(notes = "账户类型")
+    @ApiModelProperty(notes = "账户类型", required = true)
     @NotBlank
     private String accountType;
     /**

@@ -21,37 +21,37 @@ public class AccountResponse extends BaseEntityDto {
     /**
      * 租户代码
      */
-    @ApiModelProperty(notes = "租户代码")
+    @ApiModelProperty(notes = "租户代码", required = true)
     @NotBlank
     private String tenantCode;
     /**
      * 用户id
      */
-    @ApiModelProperty(notes = "用户id")
+    @ApiModelProperty(notes = "用户id", required = true)
     @NotBlank
     private String userId;
     /**
      * 账号
      */
-    @ApiModelProperty(notes = "账号")
+    @ApiModelProperty(notes = "账号", required = true)
     @NotBlank
     private String account;
     /**
      * 名称
      */
-    @ApiModelProperty(notes = "名称")
+    @ApiModelProperty(notes = "名称", required = true)
     @NotBlank
     private String name;
     /**
      * 来源系统
      */
-    @ApiModelProperty(notes = "来源系统")
+    @ApiModelProperty(notes = "来源系统", required = true)
     @NotBlank
     private String systemCode;
     /**
      * 账户类型
      */
-    @ApiModelProperty(notes = "账户类型")
+    @ApiModelProperty(notes = "账户类型", required = true)
     @NotBlank
     private String accountType;
     /**

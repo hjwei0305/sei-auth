@@ -18,25 +18,25 @@ public class UpdatePasswordRequest implements Serializable {
     /**
      * 租户代码
      */
-    @ApiModelProperty(notes = "租户代码")
+    @ApiModelProperty(notes = "租户代码", required = true)
     @NotBlank
     private String tenant;
     /**
      * 账号
      */
-    @ApiModelProperty(notes = "账号")
+    @ApiModelProperty(notes = "账号", required = true)
     @NotBlank
     private String account;
     /**
      * 新账号密码
      */
-    @ApiModelProperty(notes = "新账号密码.MD5散列后的值", example = "e10adc3949ba59abbe56e057f20f883e")
+    @ApiModelProperty(notes = "新账号密码.MD5散列后的值", required = true, example = "e10adc3949ba59abbe56e057f20f883e")
     @NotBlank
     private String newPassword;
     /**
      * 旧账号密码
      */
-    @ApiModelProperty(notes = "旧账号密码.MD5散列后的值",  example = "e10adc3949ba59abbe56e057f20f883e")
+    @ApiModelProperty(notes = "旧账号密码.MD5散列后的值", required = true,  example = "e10adc3949ba59abbe56e057f20f883e")
     @NotBlank
     private String oldPassword;
 
