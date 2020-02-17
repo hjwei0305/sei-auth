@@ -5,7 +5,7 @@ import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.core.context.SessionUser;
-import com.changhong.sei.core.controller.DefaultBaseEntityController;
+import com.changhong.sei.core.controller.DefaultBaseController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
@@ -30,7 +30,7 @@ import java.util.Objects;
  */
 @RestController
 @Api(value = "AccountApi", tags = "账户接口服务")
-public class AccountController implements DefaultBaseEntityController<Account, AccountResponse>, AccountApi {
+public class AccountController implements DefaultBaseController<Account, AccountResponse>, AccountApi {
 
     @Autowired
     private AccountService accountService;
@@ -236,5 +236,21 @@ public class AccountController implements DefaultBaseEntityController<Account, A
     @Override
     public ResultData<String> locked(String id, boolean locked) {
         return accountService.locked(id, locked);
+    }
+
+    /**
+     * 通过账户id获取已有账户
+     *
+     * @param userId 用户id
+     */
+    @Override
+    public ResultData<List<AccountResponse>> getByUserId(String userId) {
+        List<Account> accounts = accountService.findListByProperty(Account.FIELD_USER_ID, userId);
+        if (Objects.nonNull(accounts)) {
+            List<AccountResponse> responseList = convertToDtos(accounts);
+            return ResultData.success(responseList);
+        } else {
+            return ResultData.fail("用户ID[" + userId + "]未找到对应的账户信息");
+        }
     }
 }

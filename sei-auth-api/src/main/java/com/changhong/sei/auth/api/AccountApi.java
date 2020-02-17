@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * 实现功能：账户访问接口
@@ -82,4 +83,11 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
     @PostMapping(path = "locked")
     @ApiOperation("账户锁定/解锁")
     ResultData<String> locked(@RequestParam("id") @NotBlank String id, @RequestParam("locked") boolean locked);
+
+    /**
+     * 通过账户id获取已有账户
+     */
+    @GetMapping(path = "getByUserId")
+    @ApiOperation("通过用户ID获取已有账户清单")
+    ResultData<List<AccountResponse>> getByUserId(@RequestParam("userId") @NotBlank String userId);
 }

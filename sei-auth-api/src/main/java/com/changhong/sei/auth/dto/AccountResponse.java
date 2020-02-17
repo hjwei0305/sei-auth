@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * 实现功能：
@@ -154,5 +155,23 @@ public class AccountResponse extends BaseEntityDto {
 
     public void setAccountExpired(Date accountExpired) {
         this.accountExpired = accountExpired;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        AccountResponse response = (AccountResponse) o;
+        return Objects.equals(tenantCode, response.tenantCode) &&
+                Objects.equals(account, response.account);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(tenantCode, account);
     }
 }

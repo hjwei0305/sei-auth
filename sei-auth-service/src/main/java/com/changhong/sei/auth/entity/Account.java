@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 public class Account extends BaseEntity implements ITenant {
     private static final long serialVersionUID = 1L;
     public static final String FIELD_ACCOUNT = "account";
+    public static final String FIELD_USER_ID = "userId";
     /**
      * 租户代码
      */
