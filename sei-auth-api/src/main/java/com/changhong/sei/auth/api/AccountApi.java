@@ -52,7 +52,7 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
     /**
      * 更新账户
      */
-    @PostMapping(path = "udapte")
+    @PostMapping(path = "update")
     @ApiOperation("更新账户")
     ResultData<String> update(@RequestBody @Valid UpdateAccountRequest request) throws IllegalAccessException;
 
