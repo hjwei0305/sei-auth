@@ -73,8 +73,8 @@ public class AccountControllerTest extends BaseUnitTest {
             UpdatePasswordRequest request = new UpdatePasswordRequest();
             request.setTenant(response.getTenantCode());
             request.setAccount(response.getAccount());
-            request.setNewPassword("123456");
-            request.setOldPassword("654321");
+            request.setNewPassword(encrypt.encrypt("123456"));
+            request.setOldPassword(encrypt.encrypt("654321"));
             ResultData<String> resultData = service.updatePassword(request);
             System.out.println(JsonUtils.toJson(resultData));
         }

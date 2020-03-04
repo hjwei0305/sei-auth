@@ -164,9 +164,45 @@ public class AccountController implements DefaultBaseController<Account, Account
         account.setName(request.getName());
         account.setSystemCode(request.getSystemCode());
         account.setAccountType(request.getAccountType());
-        account.setFrozen(request.getFrozen());
-        account.setLocked(request.getLocked());
-        account.setAccountExpired(request.getAccountExpired());
+        if (Objects.nonNull(request.getFrozen())) {
+            account.setFrozen(request.getFrozen());
+        }
+        if (Objects.nonNull(request.getLocked())) {
+            account.setLocked(request.getLocked());
+        }
+        if (Objects.nonNull(request.getAccountExpired())) {
+            account.setAccountExpired(request.getAccountExpired());
+        }
+
+        OperateResultWithData<Account> resultWithData = accountService.save(account);
+        if (resultWithData.notSuccessful()) {
+            return ResultData.fail(resultWithData.getMessage());
+        }
+        return ResultData.success(account.getAccount());
+    }
+
+    /**
+     * 更新账户
+     *
+     * @param request 更新账户
+     */
+    @Override
+    public ResultData<String> updateByTenantAccount(UpdateAccountByAccountRequest request) throws IllegalAccessException {
+        Account account = accountService.getByAccountAndTenantCode(request.getAccount(), request.getTenant());
+        if (account == null) {
+            return ResultData.fail("账户数据不存在！");
+        }
+        // 允许修改的账户信息
+        account.setName(request.getName());
+        if (Objects.nonNull(request.getFrozen())) {
+            account.setFrozen(request.getFrozen());
+        }
+        if (Objects.nonNull(request.getLocked())) {
+            account.setLocked(request.getLocked());
+        }
+        if (Objects.nonNull(request.getAccountExpired())) {
+            account.setAccountExpired(request.getAccountExpired());
+        }
 
         OperateResultWithData<Account> resultWithData = accountService.save(account);
         if (resultWithData.notSuccessful()) {

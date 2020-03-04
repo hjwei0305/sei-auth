@@ -57,6 +57,13 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
     ResultData<String> update(@RequestBody @Valid UpdateAccountRequest request) throws IllegalAccessException;
 
     /**
+     * 更新账户
+     */
+    @PostMapping(path = "updateByTenantAccount")
+    @ApiOperation("按租户账号修改账户")
+    ResultData<String> updateByTenantAccount(@RequestBody @Valid UpdateAccountByAccountRequest request) throws IllegalAccessException;
+
+    /**
      * 更新密码
      */
     @PostMapping(path = "updatePassword")

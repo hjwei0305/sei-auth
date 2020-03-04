@@ -56,6 +56,6 @@ public interface AuthenticationApi {
      * @return 功能项键值
      */
     @GetMapping(path = "getAuthorizedFeatures")
-    @ApiOperation(value = "获取用户前端权限检查的功能项键值", notes = "获取用户前端权限检查的功能项键值(以应用模块代码分组)")
+    @ApiOperation(value = "获取用户前端权限检查的功能项键值", notes = "获取用户前端权限检查的功能项键值(以页面路由分组)")
     ResultData<Map<String, Set<String>>> getAuthorizedFeatures(@RequestParam("userId") @NotBlank String userId);
 }
