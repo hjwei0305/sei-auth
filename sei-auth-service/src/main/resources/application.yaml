@@ -5,6 +5,16 @@ application:
 
 # spring 环境配置
 spring:
+  # 模版配置
+  thymeleaf:
+    prefix: classpath:/templates/
+    check-template-location: true
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML5
+    cache: false
+    servlet:
+      content-type: text/html
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://10.4.208.134:3306/sei_auth?characterEncoding=utf8&useSSL=false
@@ -36,7 +46,12 @@ logging:
           clients:
             NetworkClient: error
 
+
 sei:
+  global:
+    log:
+      elk:
+        enable: true
   auth:
     default:
       password: 123456

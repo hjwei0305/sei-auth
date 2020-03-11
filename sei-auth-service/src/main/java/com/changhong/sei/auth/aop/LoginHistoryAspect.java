@@ -10,6 +10,8 @@ import com.changhong.sei.core.util.HttpUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,7 @@ import java.util.Objects;
 @Aspect
 @Component
 public class LoginHistoryAspect {
+    private static final Logger LOG = LoggerFactory.getLogger(LoginHistoryAspect.class);
 
     @Autowired
     private LoginHistoryService historyManager;
@@ -58,7 +61,7 @@ public class LoginHistoryAspect {
                 }
                 historyManager.save(history);
             } catch (Exception e) {
-                LogUtil.error("登录历史记录异常", e);
+                LOG.error(loginRequest.getAccount() + " -登录历史记录异常", e);
             }
         }
     }

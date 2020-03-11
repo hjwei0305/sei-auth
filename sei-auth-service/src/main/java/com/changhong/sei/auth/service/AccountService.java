@@ -5,7 +5,6 @@ import com.changhong.sei.auth.dto.UpdatePasswordRequest;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.service.client.UserClient;
 import com.changhong.sei.auth.service.client.UserInformation;
-import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
