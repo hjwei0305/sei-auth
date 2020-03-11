@@ -8,7 +8,7 @@
 </head>
 <body>
 <!-- 标题 -->
-<h1 style="text-align: center;" th:text="${appName} + '实时日志'">SEI实时日志</h1>
+<h1 style="text-align: center;" th:text="${appName} + '实时日志'">实时日志</h1>
 
 <!-- 显示区 -->
 <div id="loggingText" contenteditable="true"
@@ -25,13 +25,20 @@
     </button>
 </div>
 </body>
+<script type="text/javascript">
+    /*<![CDATA[*/
+    var _server = "[[${#request.serverName}]]:[[${#request.serverPort}]][[${#request.contextPath}]]";
+    /*]]>*/
+</script>
+
 <script th:inline="javascript">
     //websocket对象
     let websocket = null;
 
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
-        websocket = new WebSocket("ws://localhost:8080/websocket/logging");
+        // websocket = new WebSocket("ws://localhost:8080/websocket/logging");
+        websocket = new WebSocket("ws://" + _server + "/websocket/logging");
     } else {
         console.error("不支持WebSocket");
     }
