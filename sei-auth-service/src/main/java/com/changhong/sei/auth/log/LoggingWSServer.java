@@ -56,7 +56,8 @@ public class LoggingWSServer {
                 try {
                     //日志文件路径，获取最新的
 //                    String filePath = System.getProperty("user.home") + "/log/" + new SimpleDateFormat("yyyyMMdd").format(new Date()) + "/"+applicationName+".log";
-                    String filePath = "/Users/chaoma/work_space/sei6.0/sei-auth/sei-auth-service/logs/sei-auth--1.log";
+                    String filePath = "/usr/app/logs/"+applicationName+".log";
+//                    String filePath = "/Users/chaoma/work_space/sei6.0/sei-auth/sei-auth-service/logs/sei-auth--1.log";
 
                     //字符流
                     reader = new BufferedReader(new FileReader(filePath));
