@@ -1,20 +1,31 @@
+# 应用全局配置
+sei:
+  application:
+    code: sei-auth
+    name: 统一账户服务
+    version: 6.0.1
+    env: DEV
+  #    swagger:
+  #      title: "${sei.application.name} API"
+  #      description: "${sei.application.name} 的API文档，运行环境: ${sei.application.env}"
+  #      version: ${sei.application.version}
+  mock: # 本地调试的当前用户配置
+    user:
+      account: admin
+      user-name: 管理员
+      tenant-code: 10044
+
+
 spring:
   application:
-    name: sei-auth
+    name: ${sei.application.code}
   cloud:
     config:
       uri: http://10.4.208.86:8100/config-center
-      profile: DEV
+      profile: ${sei.application.env}
       name: ${spring.application.name}
     zookeeper:
       # zk 地址
       connect-string: 10.4.208.132:2181
       # 关闭zk可用不用依赖zk
       enabled: true
-
-sei:
-  mock: # 本地调试的当前用户配置
-    user:
-      account: admin
-      user-name: 管理员
-      tenant-code: 10044
