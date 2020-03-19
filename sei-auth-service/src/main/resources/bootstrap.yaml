@@ -5,10 +5,12 @@ sei:
     name: 统一账户服务
     version: 6.0.1
     env: DEV
-  #    swagger:
-  #      title: "${sei.application.name} API"
-  #      description: "${sei.application.name} 的API文档，运行环境: ${sei.application.env}"
-  #      version: ${sei.application.version}
+    # 是否是兼容模式
+    compatible: false
+  swagger:
+    title: "${sei.application.name} API"
+    description: "${sei.application.name} 的API文档，运行环境: ${sei.application.env}"
+    version: ${sei.application.version}
   mock: # 本地调试的当前用户配置
     user:
       account: admin
