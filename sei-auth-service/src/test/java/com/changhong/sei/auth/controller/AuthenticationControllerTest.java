@@ -58,7 +58,7 @@ public class AuthenticationControllerTest extends BaseUnitTest {
         String uri = "http://localhost:8080/auth/getAuthorizedFeatures";
 //        String uri = "http://10.4.208.86:20002/sei-auth/auth/getAuthorizedFeatures";
         Map<String, String> params = new HashMap<>();
-        params.put("userId", ContextUtil.getUserId());
+//        params.put("userId", ContextUtil.getUserId());
         ResultData result = apiTemplate.getByUrl(uri, ResultData.class, params);
         System.out.println(JsonUtils.toJson(result));
         Assert.assertTrue(result.successful());

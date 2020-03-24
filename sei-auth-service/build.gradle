@@ -65,8 +65,7 @@ jib {
     // 要生成的镜像的配置
     to {
         image = "$docker_registry_url/$docker_registry_namespace/$rootProject.name"
-        tags = ["${project.version}".toString()]
-//        tags = ["${project.version}".toString(), 'latest']
+        tags = ["${project.version}".toString(), 'latest']
 
         // credHelper：鉴权信息的存放方式，Google 使用 gcr, AWS使用 ecr-login, DockerHub 根据平台使用 osxkeychain, wincred,secretservice,pass中的一种，可以参考 docker-credential-helpers
         //credHelper = 'osxkeychain'
