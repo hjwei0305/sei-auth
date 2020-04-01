@@ -1,13 +1,9 @@
 package com.changhong.sei.auth.service;
 
-import org.apache.commons.lang3.StringUtils;
+import com.changhong.sei.core.cache.CacheBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.BoundValueOperations;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * 实现功能：
@@ -24,8 +20,7 @@ public class RedisSessionService implements SessionService {
     private final static String REDIS_KEY_PREFIX = "auth:login:";
 
     @Autowired
-//    private CacheManager cacheManager;
-    private StringRedisTemplate stringRedisTemplate;
+    private CacheBuilder cacheBuilder;
 
     /**
      * 添加会话
@@ -35,8 +30,7 @@ public class RedisSessionService implements SessionService {
      */
     @Override
     public void addSession(String sid, String value) {
-        BoundValueOperations<String, String> operations = stringRedisTemplate.boundValueOps(REDIS_KEY_PREFIX + sid);
-        operations.set(value, sessionTimeout, TimeUnit.SECONDS);
+        cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, getExpireTime());
     }
 
     /**
@@ -46,12 +40,9 @@ public class RedisSessionService implements SessionService {
      */
     @Override
     public void touchSession(String sid) {
-        BoundValueOperations<String, String> operations = stringRedisTemplate.boundValueOps(REDIS_KEY_PREFIX + sid);
-        String token = operations.get();
-        if (StringUtils.isNotBlank(token)) {
-            // 续期
-            operations.set(token, sessionTimeout, TimeUnit.SECONDS);
-        }
+        String value = cacheBuilder.get(REDIS_KEY_PREFIX + sid);
+        // 续期
+        cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, getExpireTime());
     }
 
     /**
@@ -62,13 +53,11 @@ public class RedisSessionService implements SessionService {
      */
     @Override
     public String getAndTouchSession(String sid) {
-        BoundValueOperations<String, String> operations = stringRedisTemplate.boundValueOps(REDIS_KEY_PREFIX + sid);
-        String token = operations.get();
-        if (StringUtils.isNotBlank(token)) {
-            // 续期
-            operations.set(token, sessionTimeout, TimeUnit.SECONDS);
-        }
-        return token;
+        String value = cacheBuilder.get(REDIS_KEY_PREFIX + sid);
+        // 续期
+        cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, getExpireTime());
+
+        return value;
     }
 
     /**
@@ -78,15 +67,16 @@ public class RedisSessionService implements SessionService {
     @Override
     public void removeSession(String sid, long timeOut) {
         if (timeOut > 0) {
-            BoundValueOperations<String, String> operations = stringRedisTemplate.boundValueOps(REDIS_KEY_PREFIX + sid);
-            String token = operations.get();
-            if (StringUtils.isNotBlank(token)) {
-                // 延迟删除
-                operations.set(token, timeOut, TimeUnit.SECONDS);
-            }
+            String value = cacheBuilder.get(REDIS_KEY_PREFIX + sid);
+            // 续期
+            cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, timeOut);
         } else {
             // 立即删除
-            stringRedisTemplate.delete(REDIS_KEY_PREFIX + sid);
+            cacheBuilder.remove(REDIS_KEY_PREFIX + sid);
         }
+    }
+
+    private long getExpireTime() {
+        return sessionTimeout * 1000;
     }
 }
