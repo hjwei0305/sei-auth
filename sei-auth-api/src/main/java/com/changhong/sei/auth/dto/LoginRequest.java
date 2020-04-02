@@ -22,6 +22,11 @@ public class LoginRequest extends BaseEntityDto {
     @ApiModelProperty(notes = "请求id", required = true)
     private String reqId;
     /**
+     * 验证码
+     */
+    @ApiModelProperty(notes = "验证码")
+    private String verifyCode;
+    /**
      * 代码
      */
     @ApiModelProperty(notes = "租户代码")
@@ -50,6 +55,14 @@ public class LoginRequest extends BaseEntityDto {
 
     public void setReqId(String reqId) {
         this.reqId = reqId;
+    }
+
+    public String getVerifyCode() {
+        return verifyCode;
+    }
+
+    public void setVerifyCode(String verifyCode) {
+        this.verifyCode = verifyCode;
     }
 
     public String getTenant() {

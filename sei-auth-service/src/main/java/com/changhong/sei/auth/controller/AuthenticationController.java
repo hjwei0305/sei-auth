@@ -62,12 +62,22 @@ public class AuthenticationController implements AuthenticationApi {
         String tenant = loginRequest.getTenant();
         String account = loginRequest.getAccount();
         String password = loginRequest.getPassword();
+
         // 认证码检查,登录错误指定次数后要求输入验证码
         ResultData<String> checkLoginData = historyService.checkLoginFailureNum(tenant, account);
         if (checkLoginData.failed()) {
-            LogUtil.warn("租户[{}]账号[{}]: {}", tenant, account, checkLoginData.getMessage());
-            return ResultData.success(SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.captchaError));
+            String verifyCode = loginRequest.getVerifyCode();
+            if (StringUtils.isBlank(verifyCode)) {
+                LogUtil.warn("需输入验证码租户[{}]账号[{}]: {}", tenant, account, checkLoginData.getMessage());
+                return ResultData.success("请输入验证码", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.captchaError));
+            } else {
+                String code = cacheBuilder.get(Constants.VERIFY_CODE_KEY + loginRequest.getReqId());
+                if (!StringUtils.equalsIgnoreCase(verifyCode, code)) {
+                    return ResultData.success("验证码错误", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.captchaError));
+                }
+            }
         }
+
 
         Account entity;
         if (StringUtils.isBlank(tenant)) {
@@ -214,7 +224,7 @@ public class AuthenticationController implements AuthenticationApi {
             LogUtil.info("验证码: {}", code);
 
             // 验证码5分钟有效期
-            cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, (long) (5 * 60 * 1000));
+            cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, 5 * 60 * 1000);
 
             // 返回Base64编码过的字节数组字符串
             String str = Base64.encodeBase64String(verifyCode.getImgBytes());
