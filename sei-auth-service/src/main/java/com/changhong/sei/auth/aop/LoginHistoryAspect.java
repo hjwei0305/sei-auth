@@ -58,7 +58,8 @@ public class LoginHistoryAspect {
                     history.setLoginLog(result.getMessage());
 
                     // 记录登录错误次数
-                    if (SessionUserResponse.LoginStatus.success != dto.getLoginStatus()) {
+                    if (!(SessionUserResponse.LoginStatus.success == dto.getLoginStatus()
+                            || SessionUserResponse.LoginStatus.multiTenant == dto.getLoginStatus())) {
                         historyService.recordLoginFailureNum(loginRequest.getTenant(), loginRequest.getAccount());
                     }
                 } else {
