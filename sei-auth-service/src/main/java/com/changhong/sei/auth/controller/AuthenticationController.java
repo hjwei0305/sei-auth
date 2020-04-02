@@ -224,7 +224,7 @@ public class AuthenticationController implements AuthenticationApi {
             LogUtil.info("验证码: {}", code);
 
             // 验证码5分钟有效期
-            cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, 5 * 60 * 1000);
+            cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, (long)5 * 60 * 1000);
 
             // 返回Base64编码过的字节数组字符串
             String str = Base64.encodeBase64String(verifyCode.getImgBytes());
