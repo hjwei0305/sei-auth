@@ -17,7 +17,17 @@ import org.springframework.stereotype.Component;
 public class TaskService {
     private static final Logger log = LoggerFactory.getLogger(TaskService.class);
 
-    @Async(Constants.TASK_EXECUTOR)
+    public void testError() {
+        log.debug("debug");
+        log.info("info");
+        log.warn("warn");
+        log.error("error");
+        int m = 1;
+        int n = 0;
+        System.out.println(m/n);
+    }
+
+    @Async
     public void doTaskOne() throws Exception {
         log.info("开始做任务一");
         long start = System.currentTimeMillis();
@@ -27,7 +37,7 @@ public class TaskService {
         log.info("完成任务一，耗时：" + (end - start) + "毫秒");
     }
 
-    @Async(Constants.TASK_EXECUTOR)
+    @Async
     public void doTaskTwo() throws Exception {
         log.info("开始做任务二");
         long start = System.currentTimeMillis();

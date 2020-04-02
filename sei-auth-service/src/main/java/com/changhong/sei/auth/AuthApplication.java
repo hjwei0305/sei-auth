@@ -1,5 +1,7 @@
 package com.changhong.sei.auth;
 
+import com.changhong.sei.auth.common.validatecode.IVerifyCodeGen;
+import com.changhong.sei.auth.common.validatecode.SimpleCharVerifyCodeGenImpl;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.encryption.provider.Md5EncryptProvider;
 import org.springframework.boot.SpringApplication;
@@ -26,8 +28,16 @@ public class AuthApplication {
     public IEncrypt encrypt() {
         return new Md5EncryptProvider("");
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Bean
+    public IVerifyCodeGen verifyCodeGen() {
+        return new SimpleCharVerifyCodeGenImpl();
+    }
+
+
 }

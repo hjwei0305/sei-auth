@@ -1,11 +1,12 @@
 package com.changhong.sei.auth.aop;
 
+import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.LoginHistory;
 import com.changhong.sei.auth.service.LoginHistoryService;
+import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -31,7 +32,7 @@ public class LoginHistoryAspect {
     private static final Logger LOG = LoggerFactory.getLogger(LoginHistoryAspect.class);
 
     @Autowired
-    private LoginHistoryService historyManager;
+    private LoginHistoryService historyService;
 
     /**
      * 拦截@see com.changhong.sei.auth.service.AuthenticationServiceImpl#login 方法的返回,记录登录历史
@@ -55,14 +56,24 @@ public class LoginHistoryAspect {
                     SessionUserResponse dto = result.getData();
                     history.setLoginStatus(dto.getLoginStatus());
                     history.setLoginLog(result.getMessage());
+
+                    // 记录登录错误次数
+                    if (SessionUserResponse.LoginStatus.success != dto.getLoginStatus()) {
+                        historyService.recordLoginFailureNum(loginRequest.getTenant(), loginRequest.getAccount());
+                    }
                 } else {
+                    // 记录登录错误次数
+                    historyService.recordLoginFailureNum(loginRequest.getTenant(), loginRequest.getAccount());
+
                     history.setLoginStatus(SessionUserResponse.LoginStatus.failure);
                     history.setLoginLog(result.getMessage());
                 }
-                historyManager.save(history);
+                historyService.save(history);
             } catch (Exception e) {
                 LOG.error(loginRequest.getAccount() + " -登录历史记录异常", e);
             }
         }
     }
+
+
 }

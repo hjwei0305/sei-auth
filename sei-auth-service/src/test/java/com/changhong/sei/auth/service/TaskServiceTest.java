@@ -28,4 +28,9 @@ public class TaskServiceTest extends BaseUnitTest {
 
     }
 
+    @Test
+    public void testError() {
+        taskService.testError();
+    }
+
 }

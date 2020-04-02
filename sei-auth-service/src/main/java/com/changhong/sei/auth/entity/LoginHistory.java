@@ -38,6 +38,11 @@ public class LoginHistory extends BaseEntity implements ITenant {
     @Column(name = "login_ip", length = 50)
     private String loginIp;
     /**
+     * 会话id
+     */
+    @Column(name = "session_id", length = 36)
+    private String sessionId;
+    /**
      * 登录时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -114,5 +119,13 @@ public class LoginHistory extends BaseEntity implements ITenant {
 
     public void setLoginLog(String loginLog) {
         this.loginLog = loginLog;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }

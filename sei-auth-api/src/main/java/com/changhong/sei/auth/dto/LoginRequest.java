@@ -17,6 +17,11 @@ import java.util.StringJoiner;
 public class LoginRequest extends BaseEntityDto {
     private static final long serialVersionUID = -2149001770273260656L;
     /**
+     * 请求id
+     */
+    @ApiModelProperty(notes = "请求id", required = true)
+    private String reqId;
+    /**
      * 代码
      */
     @ApiModelProperty(notes = "租户代码")
@@ -38,6 +43,14 @@ public class LoginRequest extends BaseEntityDto {
      */
     @ApiModelProperty(notes = "语言环境")
     private String locale = "zh_CN";
+
+    public String getReqId() {
+        return reqId;
+    }
+
+    public void setReqId(String reqId) {
+        this.reqId = reqId;
+    }
 
     public String getTenant() {
         return tenant;
