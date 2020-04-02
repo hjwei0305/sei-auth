@@ -61,7 +61,7 @@ install {
 jib {
     // 拉取的镜像的配置
     from {
-        image = 'java:8-jdk-alpine'
+        image = 'rddgit.changhong.com:8083/alpine-java:latest'
 //        image = 'hub.changhong.com/pass/java:8-jdk-alpine'
 //        auth {
 //            username = "${docker_registry_username}"
