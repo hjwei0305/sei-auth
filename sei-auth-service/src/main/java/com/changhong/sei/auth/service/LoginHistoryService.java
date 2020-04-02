@@ -36,7 +36,7 @@ public class LoginHistoryService extends BaseEntityService<LoginHistory> {
     /**
      * 记录登录错误次数
      */
-    public void recordLoginFailureNum(String tenant, String account) {
+    public void recordLoginFailureNum(String tenant, String account, String reqId) {
         if (StringUtils.isBlank(tenant)) {
             tenant = "none";
         }
@@ -45,6 +45,8 @@ public class LoginHistoryService extends BaseEntityService<LoginHistory> {
             num = 0;
         }
         cacheBuilder.set(Constants.LOGIN_NUM_KEY + ":" + tenant + ":" + account, ++num, (long) (30 * 60 * 1000));
+
+        cacheBuilder.remove(Constants.VERIFY_CODE_KEY + reqId);
     }
 
     /**
