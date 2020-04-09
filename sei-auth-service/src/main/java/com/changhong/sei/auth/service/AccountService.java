@@ -127,15 +127,14 @@ public class AccountService extends BaseEntityService<Account> {
         if (Objects.isNull(request)) {
             return ResultData.fail("参数不能为空！");
         }
+
+        if (StringUtils.equals(request.getOldPassword(), request.getNewPassword())) {
+            return ResultData.fail("新密码与原密码相同，请重新输入！");
+        }
         Account account = this.getByAccountAndTenantCode(request.getAccount(), request.getTenant());
         if (Objects.isNull(account)) {
             return ResultData.fail("账户不存在,密码变更失败！");
         }
-
-        if (!StringUtils.equals(request.getOldPassword(), request.getNewPassword())) {
-            return ResultData.fail("新密码与原密码相同，请重新输入！");
-        }
-
         if (!verifyPassword(request.getOldPassword(), account.getPassword())) {
             return ResultData.fail("原密码错误，密码变更失败！");
         }
