@@ -60,11 +60,11 @@ public class LoginHistoryAspect {
                     // 记录登录错误次数
                     if (!(SessionUserResponse.LoginStatus.success == dto.getLoginStatus()
                             || SessionUserResponse.LoginStatus.multiTenant == dto.getLoginStatus())) {
-                        historyService.recordLoginFailureNum(loginRequest.getTenant(), loginRequest.getAccount());
+                        historyService.recordLoginFailureNum(loginRequest.getTenant(), loginRequest.getAccount(), loginRequest.getReqId());
                     }
                 } else {
                     // 记录登录错误次数
-                    historyService.recordLoginFailureNum(loginRequest.getTenant(), loginRequest.getAccount());
+                    historyService.recordLoginFailureNum(loginRequest.getTenant(), loginRequest.getAccount(), loginRequest.getReqId());
 
                     history.setLoginStatus(SessionUserResponse.LoginStatus.failure);
                     history.setLoginLog(result.getMessage());
