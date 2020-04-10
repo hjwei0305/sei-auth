@@ -111,6 +111,8 @@ public class AccountService extends BaseEntityService<Account> {
         }
         // 注册时间
         account.setSinceDate(LocalDateTime.now());
+        // 密码过期时间(默认一个月后)
+        account.setPasswordExpireTime(LocalDateTime.now().plusMonths(1));
 
         dao.save(account);
         return ResultData.success(account.getAccount());
@@ -135,11 +137,12 @@ public class AccountService extends BaseEntityService<Account> {
         if (Objects.isNull(account)) {
             return ResultData.fail("账户不存在,密码变更失败！");
         }
-        if (!verifyPassword(request.getOldPassword(), account.getPassword())) {
-            return ResultData.fail("原密码错误，密码变更失败！");
-        }
+//        if (!verifyPassword(request.getOldPassword(), account.getPassword())) {
+//            return ResultData.fail("原密码错误，密码变更失败！");
+//        }
 
-        int i = dao.updatePassword(account.getId(), this.encodePassword(request.getNewPassword()));
+        // 密码过期时间(默认一个月后)
+        int i = dao.updatePassword(account.getId(), this.encodePassword(request.getNewPassword()), LocalDateTime.now().plusMonths(1));
         if (i != 1) {
             return ResultData.fail("密码更新失败！");
         }
@@ -160,7 +163,8 @@ public class AccountService extends BaseEntityService<Account> {
             return ResultData.fail("账户不存在,密码重置失败！");
         }
 
-        int i = dao.updatePassword(oldAccount.getId(), this.encodePassword(getDefaultPassword()));
+        // 密码过期时间(默认一个月后)
+        int i = dao.updatePassword(oldAccount.getId(), this.encodePassword(getDefaultPassword()), LocalDateTime.now().plusMonths(1));
         if (i != 1) {
             return ResultData.fail("密码重置失败！");
         }

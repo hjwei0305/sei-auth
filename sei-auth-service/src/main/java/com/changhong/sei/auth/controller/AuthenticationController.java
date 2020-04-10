@@ -1,7 +1,6 @@
 package com.changhong.sei.auth.controller;
 
 import com.changhong.sei.auth.api.AuthenticationApi;
-import com.changhong.sei.auth.certification.TokenAuthenticator;
 import com.changhong.sei.auth.certification.TokenAuthenticatorBuilder;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
@@ -12,7 +11,6 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.HttpUtils;
-import com.changhong.sei.util.thread.ThreadLocalHolder;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;

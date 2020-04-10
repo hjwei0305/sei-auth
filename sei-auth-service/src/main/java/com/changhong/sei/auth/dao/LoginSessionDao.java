@@ -4,6 +4,7 @@ import com.changhong.sei.auth.entity.LoginSession;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -23,6 +24,6 @@ public interface LoginSessionDao extends BaseEntityDao<LoginSession> {
      */
     @Modifying
     @Query("update LoginSession a set a.expireDate = :expireDate where a.sid = :sid")
-    void updateExpireDate(String sid, long expireDate);
+    void updateExpireDate(@Param("sid") String sid, @Param("expireDate") long expireDate);
 
 }
