@@ -1,10 +1,10 @@
 package com.changhong.sei.auth.dto;
 
-import com.changhong.sei.core.dto.BaseEntityDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.util.StringJoiner;
 
 /**
@@ -14,7 +14,7 @@ import java.util.StringJoiner;
  * @version 1.0.00  2020-01-14 14:15
  */
 @ApiModel(description = "账户认证登录")
-public class LoginRequest extends BaseEntityDto {
+public class LoginRequest implements Serializable {
     private static final long serialVersionUID = -2149001770273260656L;
     /**
      * 请求id
@@ -48,6 +48,20 @@ public class LoginRequest extends BaseEntityDto {
      */
     @ApiModelProperty(notes = "语言环境")
     private String locale = "zh_CN";
+
+    /**
+     * password: 账号密码
+     * refresh_token: 刷新token
+     * captcha: 验证码+账号密码
+     */
+    @ApiModelProperty(value = "认证类型", example = "captcha", allowableValues = "captcha,password")
+    private String authType = "captcha";
+
+//    /**
+//     * 前端界面点击清空缓存时调用
+//     */
+//    @ApiModelProperty(value = "刷新token")
+//    private String refreshToken;
 
     public String getReqId() {
         return reqId;
@@ -95,6 +109,14 @@ public class LoginRequest extends BaseEntityDto {
 
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    public String getAuthType() {
+        return authType;
+    }
+
+    public void setAuthType(String authType) {
+        this.authType = authType;
     }
 
     @Override

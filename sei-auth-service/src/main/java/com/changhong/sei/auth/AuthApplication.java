@@ -2,6 +2,7 @@ package com.changhong.sei.auth;
 
 import com.changhong.sei.auth.common.validatecode.IVerifyCodeGen;
 import com.changhong.sei.auth.common.validatecode.SimpleCharVerifyCodeGenImpl;
+import com.changhong.sei.auth.event.listener.LoginListener;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.encryption.provider.Md5EncryptProvider;
 import org.springframework.boot.SpringApplication;
@@ -39,5 +40,8 @@ public class AuthApplication {
         return new SimpleCharVerifyCodeGenImpl();
     }
 
-
+    @Bean
+    public LoginListener loginListener() {
+        return new LoginListener();
+    }
 }

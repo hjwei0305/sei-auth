@@ -97,4 +97,12 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
     @GetMapping(path = "getByUserId")
     @ApiOperation("通过用户ID获取已有账户清单")
     ResultData<List<AccountResponse>> getByUserId(@RequestParam("userId") @NotBlank String userId);
+
+    /**
+     * 修改用户头像
+     */
+    @PostMapping(path = "updateAvatar")
+    @ApiOperation("修改用户头像")
+    ResultData<String> updateAvatar(@RequestBody @Valid UpdateAvatarRequest request);
+
 }

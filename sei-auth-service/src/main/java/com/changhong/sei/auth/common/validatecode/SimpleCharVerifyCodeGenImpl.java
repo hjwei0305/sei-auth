@@ -28,10 +28,6 @@ public class SimpleCharVerifyCodeGenImpl implements IVerifyCodeGen {
 
     /**
      * 设置背景颜色及大小，干扰线
-     *
-     * @param graphics
-     * @param width
-     * @param height
      */
     private static void fillBackground(Graphics graphics, int width, int height) {
         // 填充背景
@@ -54,12 +50,6 @@ public class SimpleCharVerifyCodeGenImpl implements IVerifyCodeGen {
 
     /**
      * 生成随机字符
-     *
-     * @param width
-     * @param height
-     * @param os
-     * @return
-     * @throws IOException
      */
     @Override
     public String generate(int width, int height, OutputStream os) throws IOException {
@@ -76,17 +66,13 @@ public class SimpleCharVerifyCodeGenImpl implements IVerifyCodeGen {
 
     /**
      * 验证码生成
-     *
-     * @param width
-     * @param height
-     * @return
      */
     @Override
     public VerifyCode generate(int width, int height) {
-        VerifyCode verifyCode = null;
+        VerifyCode verifyCode;
         try (
                 //将流的初始化放到这里就不需要手动关闭流
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream()
         ) {
             String code = generate(width, height, baos);
             verifyCode = new VerifyCode();
@@ -101,9 +87,6 @@ public class SimpleCharVerifyCodeGenImpl implements IVerifyCodeGen {
 
     /**
      * 设置字符颜色大小
-     *
-     * @param g
-     * @param randomStr
      */
     private void createCharacter(Graphics g, String randomStr) {
         char[] charArray = randomStr.toCharArray();

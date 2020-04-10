@@ -16,7 +16,6 @@ public class RedisSessionService implements SessionService {
 
     @Value("${server.servlet.session.timeout:36000}")
     private Integer sessionTimeout;
-    //@Value("${sei.auth.session.redis.prefix}")
     private final static String REDIS_KEY_PREFIX = "auth:login:";
 
     @Autowired

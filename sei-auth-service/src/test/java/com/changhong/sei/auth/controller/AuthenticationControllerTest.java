@@ -36,6 +36,12 @@ public class AuthenticationControllerTest extends BaseUnitTest {
         ResultData<SessionUserResponse> resultData = controller.login(request);
         System.out.println(JsonUtils.toJson(resultData));
         Assert.assertTrue(resultData.successful());
+
+        try {
+            Thread.sleep(100000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

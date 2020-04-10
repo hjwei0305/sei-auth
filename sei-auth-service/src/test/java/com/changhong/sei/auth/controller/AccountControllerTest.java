@@ -67,17 +67,14 @@ public class AccountControllerTest extends BaseUnitTest {
 
     @Test
     public void updatePassword() {
-        ResultData<AccountResponse> result = service.getById(ID);
-        if (result.successful()) {
-            AccountResponse response = result.getData();
-            UpdatePasswordRequest request = new UpdatePasswordRequest();
-            request.setTenant(response.getTenantCode());
-            request.setAccount(response.getAccount());
-            request.setNewPassword(encrypt.encrypt("123456"));
-            request.setOldPassword(encrypt.encrypt("654321"));
-            ResultData<String> resultData = service.updatePassword(request);
-            System.out.println(JsonUtils.toJson(resultData));
-        }
+//        ResultData<AccountResponse> result = service.getById(ID);
+        UpdatePasswordRequest request = new UpdatePasswordRequest();
+        request.setTenant("global");
+        request.setAccount("sei");
+        request.setNewPassword(encrypt.encrypt("123456"));
+        request.setOldPassword(encrypt.encrypt("654321"));
+        ResultData<String> resultData = service.updatePassword(request);
+        System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test

@@ -23,6 +23,9 @@ dependencies {
             "com.changhong.sei:sei-service-starter:$sei_version"
     )
 
+    // 获取用户浏览器、操作系统等信息
+    implementation 'eu.bitwalker:UserAgentUtils:1.21'
+
     testCompile(
             "com.changhong.sei:sei-test-starter:$sei_version"
 //            "org.springframework.boot:spring-boot-starter-test"

@@ -1,11 +1,13 @@
 package com.changhong.sei.auth.config;
 
+import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.util.JsonUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * <strong>实现功能:</strong>
@@ -15,6 +17,9 @@ import org.junit.Test;
  * @version 1.0.1 2019-12-31 20:32
  */
 public class ContextUtilTest extends BaseUnitTest {
+
+    @Autowired
+    private CacheBuilder cacheBuilder;
 
     @Test
     public void getMessage(){
@@ -27,9 +32,18 @@ public class ContextUtilTest extends BaseUnitTest {
     }
 
     @Test
-    public void getSessionUser(){
+    public void getSessionUser() {
         SessionUser sessionUser = ContextUtil.getSessionUser();
         Assert.assertNotNull(sessionUser);
         System.out.println(JsonUtils.toJson(sessionUser));
+    }
+
+    @Test
+    public void cacheTest() {
+        String key = "test:123456";
+        String value = cacheBuilder.get(key);
+        cacheBuilder.set(key, "123456");
+        value = cacheBuilder.get(key);
+        System.out.println(value);
     }
 }

@@ -2,8 +2,10 @@ package com.changhong.sei.auth.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.ITenant;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -50,22 +52,10 @@ public class Account extends BaseEntity implements ITenant {
     private String name;
 
     /**
-     * 来源系统
+     * 头像
      */
-    @Column(name = "system_code", length = 50)
-    private String systemCode;
-
-    /**
-     * 账户类型
-     */
-    @Column(name = "account_type", length = 50)
-    private String accountType;
-
-    /**
-     * 密码
-     */
-    @Column(name = "password_hash", length = 100, nullable = false)
-    private String password;
+    @Column(name = "avatar")
+    private String avatar;
 
     /**
      * 冻结
@@ -92,6 +82,30 @@ public class Account extends BaseEntity implements ITenant {
      */
     @Column(name = "account_expired")
     private LocalDate accountExpired;
+
+    /**
+     * 密码
+     */
+    @Column(name = "password_hash", length = 100, nullable = false)
+    private String password;
+
+    /**
+     * 密码过期时间
+     */
+    @Column(name = "password_expire_time")
+    private LocalDateTime passwordExpireTime;
+
+    /**
+     * 来源系统
+     */
+    @Column(name = "system_code", length = 50)
+    private String systemCode;
+
+    /**
+     * 账户类型
+     */
+    @Column(name = "account_type", length = 50)
+    private String accountType;
 
     @Override
     public String getTenantCode() {
@@ -127,28 +141,12 @@ public class Account extends BaseEntity implements ITenant {
         this.name = name;
     }
 
-    public String getSystemCode() {
-        return systemCode;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setSystemCode(String systemCode) {
-        this.systemCode = systemCode;
-    }
-
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Boolean getFrozen() {
@@ -181,5 +179,37 @@ public class Account extends BaseEntity implements ITenant {
 
     public void setAccountExpired(LocalDate accountExpired) {
         this.accountExpired = accountExpired;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public LocalDateTime getPasswordExpireTime() {
+        return passwordExpireTime;
+    }
+
+    public void setPasswordExpireTime(LocalDateTime passwordExpireTime) {
+        this.passwordExpireTime = passwordExpireTime;
+    }
+
+    public String getSystemCode() {
+        return systemCode;
+    }
+
+    public void setSystemCode(String systemCode) {
+        this.systemCode = systemCode;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
     }
 }

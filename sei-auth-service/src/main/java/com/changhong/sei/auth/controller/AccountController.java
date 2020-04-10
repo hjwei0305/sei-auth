@@ -5,7 +5,7 @@ import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.core.context.SessionUser;
-import com.changhong.sei.core.controller.DefaultBaseController;
+import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
@@ -13,11 +13,11 @@ import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,45 +30,15 @@ import java.util.Objects;
  */
 @RestController
 @Api(value = "AccountApi", tags = "账户接口服务")
-public class AccountController implements DefaultBaseController<Account, AccountResponse>, AccountApi {
+public class AccountController extends BaseEntityController<Account, AccountResponse> implements AccountApi {
 
     @Autowired
     private AccountService accountService;
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Override
     public BaseEntityService<Account> getService() {
         return accountService;
     }
-
-    @Override
-    public ModelMapper getModelMapper() {
-        return modelMapper;
-    }
-
-    /**
-     * 获取数据实体的类型
-     *
-     * @return 类型Class
-     */
-    @Override
-    public Class<Account> getEntityClass() {
-        return Account.class;
-    }
-
-    /**
-     * 获取传输实体的类型
-     *
-     * @return 类型Class
-     */
-    @Override
-    public Class<AccountResponse> getDtoClass() {
-        return AccountResponse.class;
-    }
-
-    ///////////////////////
-
 
     /**
      * 通过租户和账号获取已有账户
@@ -288,5 +258,13 @@ public class AccountController implements DefaultBaseController<Account, Account
         } else {
             return ResultData.fail("用户ID[" + userId + "]未找到对应的账户信息");
         }
+    }
+
+    /**
+     * 修改用户头像
+     */
+    @Override
+    public ResultData<String> updateAvatar(@Valid UpdateAvatarRequest request) {
+        return ResultData.fail("规划中");
     }
 }

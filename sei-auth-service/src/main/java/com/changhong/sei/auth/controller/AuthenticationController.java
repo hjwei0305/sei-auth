@@ -1,32 +1,26 @@
 package com.changhong.sei.auth.controller;
 
 import com.changhong.sei.auth.api.AuthenticationApi;
-import com.changhong.sei.auth.common.Constants;
-import com.changhong.sei.auth.common.validatecode.IVerifyCodeGen;
-import com.changhong.sei.auth.common.validatecode.VerifyCode;
+import com.changhong.sei.auth.certification.TokenAuthenticator;
+import com.changhong.sei.auth.certification.TokenAuthenticatorBuilder;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
-import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.service.AccountService;
-import com.changhong.sei.auth.service.LoginHistoryService;
 import com.changhong.sei.auth.service.SessionService;
-import com.changhong.sei.core.cache.CacheBuilder;
+import com.changhong.sei.auth.service.ValidateCodeService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
+import com.changhong.sei.util.thread.ThreadLocalHolder;
+import com.changhong.sei.util.thread.ThreadLocalUtil;
 import io.swagger.annotations.Api;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -42,13 +36,11 @@ public class AuthenticationController implements AuthenticationApi {
     @Autowired
     private AccountService accountService;
     @Autowired
-    private LoginHistoryService historyService;
-    @Autowired
     private SessionService sessionService;
     @Autowired
-    private IVerifyCodeGen iVerifyCodeGen;
+    private ValidateCodeService validateCodeService;
     @Autowired
-    private CacheBuilder cacheBuilder;
+    private TokenAuthenticatorBuilder authenticatorBuilder;
 
     /**
      * 登录
@@ -59,96 +51,13 @@ public class AuthenticationController implements AuthenticationApi {
      */
     @Override
     public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
-        String tenant = loginRequest.getTenant();
-        String account = loginRequest.getAccount();
-        String password = loginRequest.getPassword();
+        HttpServletRequest req = HttpUtils.getRequest();
+        // 客户端ip
+        ThreadLocalUtil.setTranVar("ClientIP", HttpUtils.getClientIP(req));
+        // 浏览器信息
+        ThreadLocalUtil.setTranVar("UserAgent", req.getHeader("user-agent"));
 
-        // 认证码检查,登录错误指定次数后要求输入验证码
-        ResultData<String> checkLoginData = historyService.checkLoginFailureNum(tenant, account);
-        if (checkLoginData.failed()) {
-            String verifyCode = loginRequest.getVerifyCode();
-            if (StringUtils.isBlank(verifyCode)) {
-                LogUtil.warn("需输入验证码租户[{}]账号[{}]: {}", tenant, account, checkLoginData.getMessage());
-                return ResultData.success("请输入验证码", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.captchaError));
-            } else {
-                String code = cacheBuilder.get(Constants.VERIFY_CODE_KEY + loginRequest.getReqId());
-                if (!StringUtils.equalsIgnoreCase(verifyCode, code)) {
-                    return ResultData.success("验证码错误", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.captchaError));
-                }
-            }
-        }
-
-
-        Account entity;
-        if (StringUtils.isBlank(tenant)) {
-            List<Account> accounts = accountService.getByAccount(account);
-            if (CollectionUtils.isEmpty(accounts)) {
-                return ResultData.fail("账号密码错误,认证失败!");
-            }
-
-            if (accounts.size() > 1) {
-                return ResultData.success("请指定租户代码", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.multiTenant));
-            }
-            entity = accounts.get(0);
-        } else {
-            entity = accountService.getByAccountAndTenantCode(account, tenant);
-        }
-
-        if (Objects.isNull(entity)) {
-            return ResultData.fail("账号密码错误,认证失败!");
-        }
-
-        // 验证密码
-        if (!accountService.verifyPassword(password, entity.getPassword())) {
-            return ResultData.fail("账号密码错误,认证失败!");
-        }
-        // 检查是否被锁定
-        if (accountService.checkLocked(entity)) {
-            return ResultData.success("账号被锁定,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.locked));
-        }
-        // 检查是否被冻结
-        if (accountService.checkFrozen(entity)) {
-            return ResultData.success("账号被冻结,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.frozen));
-        }
-        // 检查账户是否在有效期内
-        if (!accountService.checkAccountExpired(entity)) {
-            return ResultData.success("账号已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
-        }
-
-        String ipAddr = "";
-        try {
-            // 请求ip
-            ipAddr = HttpUtils.getIpAddr(HttpUtils.getRequest());
-        } catch (Exception ignored) {
-        }
-
-        ResultData<SessionUser> resultData = accountService.getSessionUser(entity, ipAddr, loginRequest.getLocale());
-        if (resultData.successful()) {
-            SessionUser sessionUser = resultData.getData();
-
-            // 生产token
-            ContextUtil.generateToken(sessionUser);
-
-            SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
-            dto.setSessionId(sessionUser.getSessionId());
-            dto.setTenantCode(sessionUser.getTenantCode());
-            dto.setUserId(sessionUser.getUserId());
-            dto.setAccount(sessionUser.getAccount());
-            dto.setUserName(sessionUser.getUserName());
-            dto.setUserType(sessionUser.getUserType());
-            dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
-            dto.setLocale(sessionUser.getLocale());
-
-            try {
-                // 会话id关联token(redis或db等)
-                sessionService.addSession(sessionUser.getSessionId(), sessionUser.getToken());
-                return ResultData.success(dto);
-            } catch (Exception e) {
-                return ResultData.fail("登录认证异常:" + e.getMessage());
-            }
-        } else {
-            return ResultData.fail("登录认证失败:" + resultData.getMessage());
-        }
+        return authenticatorBuilder.getAuthenticator(loginRequest.getAuthType()).auth(loginRequest);
     }
 
     /**
@@ -217,21 +126,6 @@ public class AuthenticationController implements AuthenticationApi {
      */
     @Override
     public ResultData<String> verifyCode(String reqId) {
-        try {
-            //设置长宽
-            VerifyCode verifyCode = iVerifyCodeGen.generate(80, 28);
-            String code = verifyCode.getCode();
-            LogUtil.info("验证码: {}", code);
-
-            // 验证码5分钟有效期
-            cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, (long)5 * 60 * 1000);
-
-            // 返回Base64编码过的字节数组字符串
-            String str = Base64.encodeBase64String(verifyCode.getImgBytes());
-            return ResultData.success("data:image/jpeg;base64," + str);
-        } catch (IOException e) {
-            LogUtil.error("验证码错误", e);
-            return ResultData.fail("验证码错误");
-        }
+        return validateCodeService.generate(reqId);
     }
 }

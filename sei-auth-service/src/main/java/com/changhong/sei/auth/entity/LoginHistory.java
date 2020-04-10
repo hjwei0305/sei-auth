@@ -62,6 +62,16 @@ public class LoginHistory extends BaseEntity implements ITenant {
 
     @Column(name = "login_log")
     private String loginLog;
+    /**
+     * 浏览器
+     */
+    @Column(name = "browser")
+    private String browser;
+    /**
+     * 操作系统名
+     */
+    @Column(name = "os_name")
+    private String osName;
 
     @Override
     public String getTenantCode() {
@@ -127,5 +137,21 @@ public class LoginHistory extends BaseEntity implements ITenant {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public void setBrowser(String browser) {
+        this.browser = browser;
+    }
+
+    public String getOsName() {
+        return osName;
+    }
+
+    public void setOsName(String osName) {
+        this.osName = osName;
     }
 }
