@@ -82,9 +82,9 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
     @PostMapping(path = "resetPass")
     @ApiOperation("重置密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "tenant", required = true),
-            @ApiImplicitParam(name = "account", required = true),
-            @ApiImplicitParam(name = "password", example = "密码(MD5散列值). 为空时,为配置的默认密码")
+            @ApiImplicitParam(name = "tenant", value = "租户代码", required = true),
+            @ApiImplicitParam(name = "account", value = "账号", required = true),
+            @ApiImplicitParam(name = "password", value = "密码(MD5散列值). 为空时,为配置的默认密码")
     })
     ResultData<String> resetPassword(@RequestParam("tenant") @NotBlank String tenant,
                                      @RequestParam("account") @NotBlank String account,
