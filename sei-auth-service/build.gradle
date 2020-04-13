@@ -15,9 +15,9 @@ dependencyManagement {
 }
 
 dependencies {
-    compile project(':sei-auth-api')
+    implementation project(':sei-auth-api')
 
-    compile(
+    implementation(
             "org.hibernate:hibernate-java8:5.3.7.Final",
             "mysql:mysql-connector-java:$mysqlVersion",
             "com.changhong.sei:sei-service-starter:$sei_version"
@@ -26,7 +26,7 @@ dependencies {
     // 获取用户浏览器、操作系统等信息
     implementation 'eu.bitwalker:UserAgentUtils:1.21'
 
-    testCompile(
+    testImplementation(
             "com.changhong.sei:sei-test-starter:$sei_version"
 //            "org.springframework.boot:spring-boot-starter-test"
     )

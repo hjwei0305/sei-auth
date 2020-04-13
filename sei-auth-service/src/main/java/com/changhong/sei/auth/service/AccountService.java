@@ -157,14 +157,18 @@ public class AccountService extends BaseEntityService<Account> {
      * @return 密码重置结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<String> resetPassword(@NotBlank String tenant, @NotBlank String account) {
+    public ResultData<String> resetPassword(@NotBlank String tenant, @NotBlank String account, String password) {
         Account oldAccount = this.getByAccountAndTenantCode(account, tenant);
         if (Objects.isNull(oldAccount)) {
             return ResultData.fail("账户不存在,密码重置失败！");
         }
 
+        if (StringUtils.isBlank(password)) {
+            password = getDefaultPassword();
+        }
+
         // 密码过期时间(默认一个月后)
-        int i = dao.updatePassword(oldAccount.getId(), this.encodePassword(getDefaultPassword()), LocalDateTime.now().plusMonths(1));
+        int i = dao.updatePassword(oldAccount.getId(), this.encodePassword(password), LocalDateTime.now().plusMonths(1));
         if (i != 1) {
             return ResultData.fail("密码重置失败！");
         }

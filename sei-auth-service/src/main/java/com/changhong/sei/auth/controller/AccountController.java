@@ -201,8 +201,8 @@ public class AccountController extends BaseEntityController<Account, AccountResp
      * @param account 账号
      */
     @Override
-    public ResultData<String> resetPassword(String tenant, String account) {
-        return accountService.resetPassword(tenant, account);
+    public ResultData<String> resetPassword(String tenant, String account, String password) {
+        return accountService.resetPassword(tenant, account, password);
     }
 
     /**
