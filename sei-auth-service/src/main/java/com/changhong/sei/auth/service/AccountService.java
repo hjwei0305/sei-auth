@@ -41,8 +41,16 @@ public class AccountService extends BaseEntityService<Account> {
     @Autowired
     private UserClient userClient;
 
+    /**
+     * 默认密码
+     */
     @Value("${sei.auth.default.password:123456}")
     private String defaultPassword;
+    /**
+     * 密码默认过期天数
+     */
+    @Value("${sei.auth.default.password_expire:30}")
+    private int defaultPasswordExpire;
 
     @Autowired
     private IEncrypt encrypt;
@@ -112,7 +120,7 @@ public class AccountService extends BaseEntityService<Account> {
         // 注册时间
         account.setSinceDate(LocalDateTime.now());
         // 密码过期时间(默认一个月后)
-        account.setPasswordExpireTime(LocalDateTime.now().plusMonths(1));
+        account.setPasswordExpireTime(LocalDate.now().plusDays(defaultPasswordExpire));
 
         dao.save(account);
         return ResultData.success(account.getAccount());
@@ -137,15 +145,12 @@ public class AccountService extends BaseEntityService<Account> {
         if (Objects.isNull(account)) {
             return ResultData.fail("账户不存在,密码变更失败！");
         }
-//        if (!verifyPassword(request.getOldPassword(), account.getPassword())) {
-//            return ResultData.fail("原密码错误，密码变更失败！");
-//        }
-
-        // 密码过期时间(默认一个月后)
-        int i = dao.updatePassword(account.getId(), this.encodePassword(request.getNewPassword()), LocalDateTime.now().plusMonths(1));
-        if (i != 1) {
-            return ResultData.fail("密码更新失败！");
+        if (!verifyPassword(request.getOldPassword(), account.getPassword())) {
+            return ResultData.fail("原密码错误，密码变更失败！");
         }
+
+        updatePassword(account.getId(), request.getNewPassword(), defaultPasswordExpire);
+
         return ResultData.success("密码更新成功！", request.getAccount());
     }
 
@@ -167,12 +172,25 @@ public class AccountService extends BaseEntityService<Account> {
             password = getDefaultPassword();
         }
 
-        // 密码过期时间(默认一个月后)
-        int i = dao.updatePassword(oldAccount.getId(), this.encodePassword(password), LocalDateTime.now().plusMonths(1));
-        if (i != 1) {
-            return ResultData.fail("密码重置失败！");
-        }
+        updatePassword(oldAccount.getId(), password, defaultPasswordExpire);
+
         return ResultData.success("密码重置新成功！", account);
+    }
+
+    /**
+     * 更新密码,同时更新密码过期时间
+     *
+     * @param accountId      账号id
+     * @param password       密码
+     * @param passwordExpire 过期时间(天)
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void updatePassword(String accountId, String password, int passwordExpire) {
+        if (passwordExpire > 1) {
+            throw new IllegalArgumentException("密码过期时间天数不能小于1");
+        }
+        // 密码过期时间(默认一个月后)
+        dao.updatePassword(accountId, this.encodePassword(password), LocalDateTime.now().plusDays(passwordExpire));
     }
 
     /**
@@ -234,26 +252,6 @@ public class AccountService extends BaseEntityService<Account> {
      */
     public Account getByAccountAndTenantCode(String account, String tenant) {
         return dao.findByAccountAndTenantCode(account, tenant);
-    }
-
-    /**
-     * 检查账户是否被冻结
-     *
-     * @param account 账户
-     * @return 冻结返回true, 反之返回false
-     */
-    public boolean checkFrozen(Account account) {
-        return account.getFrozen();
-    }
-
-    /**
-     * 检查账户是否被锁定
-     *
-     * @param account 账户
-     * @return 锁定返回true, 反之返回false
-     */
-    public boolean checkLocked(Account account) {
-        return account.getLocked();
     }
 
     /**

@@ -26,6 +26,10 @@ dependencies {
     // 获取用户浏览器、操作系统等信息
     implementation 'eu.bitwalker:UserAgentUtils:1.21'
 
+
+    //长虹单点登录组件包
+    implementation group: 'com.auth0', name: 'java-jwt', version: '2.3.0'
+
     testImplementation(
             "com.changhong.sei:sei-test-starter:$sei_version"
 //            "org.springframework.boot:spring-boot-starter-test"

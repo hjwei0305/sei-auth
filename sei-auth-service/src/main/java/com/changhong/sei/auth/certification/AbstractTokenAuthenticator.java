@@ -15,6 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,25 +80,40 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
             return result;
         }
         // 检查是否被锁定
-        if (accountService.checkLocked(entity)) {
+        if (entity.getLocked()) {
             result = ResultData.success("账号被锁定,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.locked));
             // 发布登录账号被锁定事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
         }
         // 检查是否被冻结
-        if (accountService.checkFrozen(entity)) {
+        if (entity.getFrozen()) {
             result = ResultData.success("账号被冻结,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.frozen));
             // 发布登录账号被冻结事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
         }
         // 检查账户是否在有效期内
-        if (!accountService.checkAccountExpired(entity)) {
-            result = ResultData.success("账号已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
-            // 发布登录账号已过期事件
-            ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
-            return result;
+        LocalDate validityDate = entity.getAccountExpired();
+        if (Objects.nonNull(validityDate)) {
+            if (validityDate.isBefore(LocalDate.now())) {
+                result = ResultData.success("账号已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
+                // 发布登录账号已过期事件
+                ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
+                return result;
+            }
+        }
+
+        // 密码过期时间
+        LocalDate passwordExpire = entity.getPasswordExpireTime();
+        if (Objects.nonNull(passwordExpire)) {
+            // 密码过期
+            if (passwordExpire.isBefore(LocalDate.now())) {
+                result = ResultData.success("密码已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.passwordExpire));
+                // 发布登录账号已过期事件
+                ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
+                return result;
+            }
         }
 
         // 客户端ip

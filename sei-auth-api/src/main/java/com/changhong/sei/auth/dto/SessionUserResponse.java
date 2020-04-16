@@ -171,7 +171,12 @@ public class SessionUserResponse implements Serializable {
         /**
          * 账号过期
          */
-        expire
+        expire,
+
+        /**
+         * 密码过期
+         */
+        passwordExpire
     }
 
     public static SessionUserResponse build() {

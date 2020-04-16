@@ -2,10 +2,8 @@ package com.changhong.sei.auth.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.ITenant;
-import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -93,7 +91,7 @@ public class Account extends BaseEntity implements ITenant {
      * 密码过期时间
      */
     @Column(name = "password_expire_time")
-    private LocalDateTime passwordExpireTime;
+    private LocalDate passwordExpireTime;
 
     /**
      * 来源系统
@@ -189,11 +187,11 @@ public class Account extends BaseEntity implements ITenant {
         this.password = password;
     }
 
-    public LocalDateTime getPasswordExpireTime() {
+    public LocalDate getPasswordExpireTime() {
         return passwordExpireTime;
     }
 
-    public void setPasswordExpireTime(LocalDateTime passwordExpireTime) {
+    public void setPasswordExpireTime(LocalDate passwordExpireTime) {
         this.passwordExpireTime = passwordExpireTime;
     }
 
