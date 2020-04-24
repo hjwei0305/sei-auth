@@ -1,7 +1,7 @@
 # Docker for java  sei-auth
 
 # 基础镜像
-FROM java:8-jdk-alpine
+FROM docker.io/frolvlad/alpine-java:latest
 
 # 作者
 LABEL maintainer="hua.feng@changhong.com"
