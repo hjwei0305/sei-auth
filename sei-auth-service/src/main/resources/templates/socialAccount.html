@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="base/base :: base_head"/>
+    <title>账号绑定</title>
+</head>
+<body>
+<div>
+    <form id="aForm" action="/" th:action="@{/file/upload}" enctype="multipart/form-data"
+          method="post">
+        <input type="text" name="viewfile" id="viewfile" placeholder="未选择文件" disabled autocomplete="off"
+               class="form-control">
+        <input type="file" name="file" style="display: none" onchange="reShow();" id="upload"/>
+    </form>
+</div>
+</body>
+<script type="text/javascript" th:inline="javascript">
+    var docId = "";
+
+    function ocr(type) {
+        var viewfile = $("#viewfile").val();
+        if (viewfile === "") {
+            $("#msg").html("文件名不能为空");
+            return;
+        }
+        $("#aForm").ajaxSubmit({
+            url: _ctxPath + "/file/upload?ocr=" + type,
+            success: function (data) {
+                if (data.success) {
+                    docId = data.data.docId;
+                    alert(data.data.ocrData);
+                } else {
+                    docId = "";
+                    alert(data.message);
+                }
+            }
+        });
+    }
+</script>
+<script src="/js/jquery.min.js" th:src="@{/js/jquery-3.0.0.min.js}"></script>
+<script src="/js/jquery.form.js" th:src="@{/js/jquery.form.min.js}"></script>
+</html>

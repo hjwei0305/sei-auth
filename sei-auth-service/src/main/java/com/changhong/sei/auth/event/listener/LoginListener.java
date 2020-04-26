@@ -5,10 +5,8 @@ import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.LoginHistory;
 import com.changhong.sei.auth.event.LoginEvent;
-import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.auth.service.LoginHistoryService;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -21,7 +19,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 /**

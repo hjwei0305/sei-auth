@@ -81,7 +81,7 @@ public class AccountControllerTest extends BaseUnitTest {
     public void resetPassword() {
         ResultData<AccountResponse> result = service.getById(ID);
         AccountResponse dto = result.getData();
-        ResultData<String> resultData = service.resetPassword(dto.getTenantCode(), dto.getAccount());
+        ResultData<String> resultData = service.resetPassword(dto.getTenantCode(), dto.getAccount(), "");
         System.out.println(JsonUtils.toJson(resultData));
     }
 

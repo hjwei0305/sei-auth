@@ -24,8 +24,8 @@ import java.util.Map;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-04-18 08:24
  */
-public class WeiXinUtil {
-    private static final Logger log = LoggerFactory.getLogger(WeiXinUtil.class);
+public class WeChatUtil {
+    private static final Logger log = LoggerFactory.getLogger(WeChatUtil.class);
 
     /**
      * 获取access_token
@@ -160,7 +160,7 @@ public class WeiXinUtil {
         // 添加URL中的cropid和cropsecret的值
         String url = String.format(ACCESS_TOKEN_URL, cropId, cropSecret);
         // 根据url通过https请求获取accesstoken
-        Map<String, Object> returnMap = WeiXinUtil.httpRequest(url, "GET", null);
+        Map<String, Object> returnMap = WeChatUtil.httpRequest(url, "GET", null);
         if (null != returnMap && returnMap.size() > 0) {
             // access_token
             accessToken = MapUtils.getString(returnMap, "access_token");

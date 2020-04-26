@@ -1,13 +1,18 @@
 package com.changhong.sei.auth.config;
 
 import com.changhong.sei.core.cache.CacheBuilder;
+import com.changhong.sei.core.context.mock.MockUser;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.util.JsonUtils;
+import com.changhong.sei.util.thread.ThreadLocalHolder;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * <strong>实现功能:</strong>
@@ -16,10 +21,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author 王锦光 wangj
  * @version 1.0.1 2019-12-31 20:32
  */
-public class ContextUtilTest extends BaseUnitTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class ContextUtilTest /*extends BaseUnitTest*/ {
 
     @Autowired
     private CacheBuilder cacheBuilder;
+    @Autowired
+    private MockUser mockUser;
 
     @Test
     public void getMessage(){
@@ -33,9 +42,15 @@ public class ContextUtilTest extends BaseUnitTest {
 
     @Test
     public void getSessionUser() {
-        SessionUser sessionUser = ContextUtil.getSessionUser();
+        // 初始化当前线程容器
+        ThreadLocalHolder.begin();
+        SessionUser sessionUser = mockUser.mockUser("10044", "admin");
+        // 编写业务逻辑
+        // SessionUser sessionUser = ContextUtil.getSessionUser();
         Assert.assertNotNull(sessionUser);
         System.out.println(JsonUtils.toJson(sessionUser));
+        // 释放当前线程资源占用
+        ThreadLocalHolder.end();
     }
 
     @Test
