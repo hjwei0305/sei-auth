@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 实现功能：企业微信单点集成
@@ -28,7 +29,8 @@ import java.util.Map;
 @Component("weChatAuthenticator")
 public class WeChatAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator {
     private static final Logger LOG = LoggerFactory.getLogger(WeChatAuthenticator.class);
-    private static final String CACHE_KEY = "WeChat:AccessToken";
+    private static final String CACHE_KEY_TOKEN = "WeChat:AccessToken";
+    private static final String CACHE_KEY_OPENID = "WeChat:OpenId";
     private static final String SOCIAL_CHANNEL = "WeChat";
 
     private final SocialAccountService socialAccountService;
@@ -52,7 +54,15 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      */
     @Override
     public String getLogoutUrl() {
-        return "/binding/socialAccount";
+        StringBuilder url = new StringBuilder();
+        url.append("http://localhost:8080/sso/binding/socialAccount");
+        SessionUserResponse userResponse = cacheBuilder.get(CACHE_KEY_OPENID);
+        if (Objects.nonNull(userResponse)) {
+            url.append("?tenant=").append(StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "");
+            url.append("&account=").append(StringUtils.isNotBlank(userResponse.getAccount()) ? userResponse.getAccount() : "");
+            url.append("&openId=").append(StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
+        }
+        return url.toString();
     }
 
     /**
@@ -91,6 +101,8 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
 
     /**
      * 获取用户信息
+     *
+     * @return
      */
     @Override
     public ResultData<SessionUserResponse> auth(HttpServletRequest request, HttpServletResponse response) {
@@ -104,13 +116,13 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         String state = request.getParameter("state");
 
         // 检查缓存中是否存在有效token
-        String accessToken = cacheBuilder.get(CACHE_KEY);
+        String accessToken = cacheBuilder.get(CACHE_KEY_TOKEN);
         if (StringUtils.isBlank(accessToken)) {
             // 不存在,获取新的有效token
             accessToken = WeChatUtil.getAccessToken(cropId, cropSecret);
             if (StringUtils.isNotBlank(accessToken)) {
                 // 微信默认token过期时间为7200秒, 为防止过期缓存有效时间设置为7000秒
-                cacheBuilder.set(CACHE_KEY, accessToken, 7000000);
+                cacheBuilder.set(CACHE_KEY_TOKEN, accessToken, 7000000);
             }
         }
 
@@ -118,17 +130,30 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         LOG.debug(JsonUtils.toJson(userMap));
         // 社交平台开放ID
         String openId = (String) userMap.get("OpenId");
+//        String openId = code;
+
+        SessionUserResponse userResponse = new SessionUserResponse();
+        userResponse.setLoginStatus(SessionUserResponse.LoginStatus.failure);
+        userResponse.setOpenId(openId);
+
         // 检查是否有账号绑定
         ResultData<Account> resultData = socialAccountService.checkAccount(SOCIAL_CHANNEL, openId);
         if (resultData.successful()) {
             Account account = resultData.getData();
+
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setTenant(account.getTenantCode());
             loginRequest.setAccount(account.getAccount());
             loginRequest.setReqId(code);
-            return login(loginRequest, account);
+            ResultData<SessionUserResponse> result = login(loginRequest, account);
+            userResponse.setTenantCode(account.getTenantCode());
+            userResponse.setAccount(account.getAccount());
+            SessionUserResponse sessionUserResponse = result.getData();
+            if (Objects.nonNull(sessionUserResponse)) {
+                userResponse.setLoginStatus(sessionUserResponse.getLoginStatus());
+            }
         }
-
-        return ResultData.fail(resultData.getMessage());
+        cacheBuilder.set(CACHE_KEY_OPENID, userResponse, 100000);
+        return ResultData.success(userResponse);
     }
 }

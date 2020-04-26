@@ -4,34 +4,71 @@
 <head>
     <th:block th:include="base/base :: base_head"/>
     <title>账号绑定</title>
+    <style type="text/css">
+        .main{
+            text-align: center; /*让div内部文字居中*/
+            background-color: #fff;
+            border-radius: 20px;
+            width: 300px;
+            height: 350px;
+            margin: auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+    </style>
 </head>
 <body>
-<div>
-    <form id="aForm" action="/" th:action="@{/file/upload}" enctype="multipart/form-data"
-          method="post">
-        <input type="text" name="viewfile" id="viewfile" placeholder="未选择文件" disabled autocomplete="off"
-               class="form-control">
-        <input type="file" name="file" style="display: none" onchange="reShow();" id="upload"/>
+<div class="main">
+    <form id="aForm" action="/" th:action="@{/sso/binding/socialAccount}" method="post">
+        <table>
+            <tr>
+                <td>租户代码</td>
+                <td><input type="text" name="tenantDisplay" id="tenantDisplay" value="" th:value="${tenant}" disabled="disabled"/></td>
+            </tr>
+            <tr>
+                <td>账号</td>
+                <td><input type="text" name="account" id="account" value="" th:value="${account}"/></td>
+            </tr>
+            <tr>
+                <td>密码</td>
+                <td><input type="password" name="password" id="password" value=""/></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type="hidden" name="tenant" id="tenant" value="" th:value="${tenant}"/>
+                    <input type="hidden" name="openId" id="openId" value="" th:value="${openId}"/>
+                    <input type="button" name="submitBtn" id="submitBtn" value="绑定" onclick="submitForm();"/>
+                </td>
+            </tr>
+        </table>
     </form>
 </div>
 </body>
 <script type="text/javascript" th:inline="javascript">
-    var docId = "";
-
-    function ocr(type) {
-        var viewfile = $("#viewfile").val();
-        if (viewfile === "") {
-            $("#msg").html("文件名不能为空");
-            return;
+    function submitForm() {
+        // alert(1);
+        if ($("#account").val() == '') {
+            alert("请输入绑定账号");
+            $("#account").focus();$("#account").selected();
+            return false;
         }
+        var pass = $("#password").val();
+        if (pass == '') {
+            alert("请输入绑定账号密码");
+            $("#password").focus();$("#password").selected();
+            return false;
+        }
+        $("#password").val($.md5(pass));
         $("#aForm").ajaxSubmit({
-            url: _ctxPath + "/file/upload?ocr=" + type,
+            url: _ctxPath + "/sso/binding/socialAccount",
             success: function (data) {
                 if (data.success) {
-                    docId = data.data.docId;
-                    alert(data.data.ocrData);
+                    var sid = data.data;
+                    window.location = _ctxPath + "/sso/redirectMainPage?sid=" + sid;
                 } else {
-                    docId = "";
                     alert(data.message);
                 }
             }
@@ -40,4 +77,5 @@
 </script>
 <script src="/js/jquery.min.js" th:src="@{/js/jquery-3.0.0.min.js}"></script>
 <script src="/js/jquery.form.js" th:src="@{/js/jquery.form.min.js}"></script>
+<script src="/js/jquery.md5.js" th:src="@{/js/jquery.md5.js}"></script>
 </html>

@@ -3,6 +3,7 @@ package com.changhong.sei.auth.controller;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.WebException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,12 +11,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
 import java.util.Objects;
 
@@ -39,10 +44,9 @@ public class SingleSignOnController {
     @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
     @RequestMapping(AUTHORIZE_URI)
     public String authorize(HttpServletRequest request, HttpServletResponse response) throws Exception {
-//https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwdc99e9511ccac381&redirect_uri=http%3A%2F%2Ftsei.changhong.com%3A8090%2Fapi-gateway%2Fsei-auth%2Fsso%2FgetUser&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
         /*
-        http://tsei.changhong.com:8090/api-gateway/sei-auth/sso/getUser
-        https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwdc99e9511ccac381&redirect_uri=http%3A%2F%2Ftsei.changhong.com%3A8090%2Fapi-gateway%2Fsei-auth%2Fsso%2FgetUser&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
+        http://tsei.changhong.com:8090/api-gateway/sei-auth/sso/login
+        https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwdc99e9511ccac381&redirect_uri=http%3A%2F%2Ftsei.changhong.com%3A8090%2Fapi-gateway%2Fsei-auth%2Fsso%2Flogin&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
          */
         //这个方法的三个参数分别是授权后的重定向url、获取用户信息类型和state
         String redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect";
@@ -64,13 +68,22 @@ public class SingleSignOnController {
             throw new WebException("单点登录失败：未单点登录配置[sei.sso]不正确！");
         }
         ResultData<SessionUserResponse> result = authenticator.auth(request, response);
-        if (result.failed()) {
+        if (result.getSuccess()) {
+            SessionUserResponse userResponse = result.getData();
+            if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
+                return redirectMainPage(userResponse.getSessionId());
+            } else {
+                // 单点登录地址
+                String loginUrl = authenticator.getLogoutUrl();
+                LOG.error("单点登录失败：未获取到当前登录用户！");
+                return "redirect:" + loginUrl;
+            }
+        } else {
             // 单点登录地址
             String loginUrl = authenticator.getLogoutUrl();
             LOG.error("单点登录失败：未获取到当前登录用户！");
             return "redirect:" + loginUrl;
         }
-        return redirectMainPage(result.getData().getSessionId());
     }
 
     @ApiOperation(value = "跳转地址", notes = "单点登录跳转地址")
@@ -99,8 +112,11 @@ public class SingleSignOnController {
 
     @ApiOperation(value = "单点登录", notes = "PC应用单点登录")
     @RequestMapping(value = "/sso/binding/socialAccount")
-    public Object binding(HttpServletRequest request) {
+    public Object binding(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (StringUtils.endsWithIgnoreCase("get", request.getMethod())) {
+            model.addAttribute("tenant", request.getParameter("tenant"));
+            model.addAttribute("account", request.getParameter("account"));
+            model.addAttribute("openId", request.getParameter("openId"));
             // 跳转绑定页面
             return "socialAccount";
         } else if (StringUtils.endsWithIgnoreCase("post", request.getMethod())) {
@@ -110,14 +126,11 @@ public class SingleSignOnController {
             String openId = request.getParameter("openId");
 
             ResultData<String> resultData = authenticator.bindingAccount(tenant, account, password, openId);
-            if (resultData.successful()) {
-                // 绑定成功
-                String sid = resultData.getData();
-
-            } else {
-                // 绑定失败
-
-            }
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
+            writer.write(JsonUtils.toJson(resultData));
+            writer.close();
         }
         return null;
     }

@@ -22,6 +22,11 @@ public class SessionUserResponse implements Serializable {
     @ApiModelProperty(notes = "会话id")
     private String sessionId;
     /**
+     * 社交平台开放ID
+     */
+    @ApiModelProperty(notes = "社交平台开放ID")
+    private String openId;
+    /**
      * 用户id，平台唯一
      */
     @ApiModelProperty(notes = "用户id")
@@ -68,6 +73,14 @@ public class SessionUserResponse implements Serializable {
 
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
     public String getUserId() {
