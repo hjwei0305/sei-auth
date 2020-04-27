@@ -129,7 +129,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         Map<String, Object> userMap = WeChatUtil.getUserInfo(accessToken, code);
         LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
         // 社交平台开放ID
-        String openId = (String) userMap.get("OpenId");
+        String openId = (String) userMap.get("UserId");
 //        String openId = code;
 
         SessionUserResponse userResponse = new SessionUserResponse();
