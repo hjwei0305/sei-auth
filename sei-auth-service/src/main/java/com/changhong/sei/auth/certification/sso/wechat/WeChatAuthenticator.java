@@ -55,7 +55,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
     @Override
     public String getLogoutUrl() {
         StringBuilder url = new StringBuilder();
-        url.append("http://localhost:8080/sso/binding/socialAccount");
+        url.append("http://tsei.changhong.com:8090/api-gateway/sei-auth/sso/binding/socialAccount");
         SessionUserResponse userResponse = cacheBuilder.get(CACHE_KEY_OPENID);
         if (Objects.nonNull(userResponse)) {
             url.append("?tenant=").append(StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "");
