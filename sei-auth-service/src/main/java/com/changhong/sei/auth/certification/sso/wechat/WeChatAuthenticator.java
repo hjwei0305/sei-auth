@@ -127,7 +127,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         }
 
         Map<String, Object> userMap = WeChatUtil.getUserInfo(accessToken, code);
-        LOG.debug(JsonUtils.toJson(userMap));
+        LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
         // 社交平台开放ID
         String openId = (String) userMap.get("OpenId");
 //        String openId = code;
@@ -135,9 +135,11 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         SessionUserResponse userResponse = new SessionUserResponse();
         userResponse.setLoginStatus(SessionUserResponse.LoginStatus.failure);
         userResponse.setOpenId(openId);
+        LOG.info("OpenId: {}", openId);
 
         // 检查是否有账号绑定
         ResultData<Account> resultData = socialAccountService.checkAccount(SOCIAL_CHANNEL, openId);
+        LOG.info("检查是否有账号绑定: {}", resultData);
         if (resultData.successful()) {
             Account account = resultData.getData();
 
