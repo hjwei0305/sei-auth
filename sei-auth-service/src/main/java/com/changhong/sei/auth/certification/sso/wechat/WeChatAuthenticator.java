@@ -30,7 +30,6 @@ import java.util.Objects;
 public class WeChatAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator {
     private static final Logger LOG = LoggerFactory.getLogger(WeChatAuthenticator.class);
     private static final String CACHE_KEY_TOKEN = "WeChat:AccessToken";
-    private static final String CACHE_KEY_OPENID = "WeChat:OpenId";
     private static final String SOCIAL_CHANNEL = "WeChat";
 
     private final SocialAccountService socialAccountService;
@@ -54,27 +53,16 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      */
     @Override
     public String getLogoutUrl() {
-        StringBuilder url = new StringBuilder();
-        url.append("http://tsei.changhong.com:8090/api-gateway/sei-auth/sso/binding/socialAccount");
-        SessionUserResponse userResponse = cacheBuilder.get(CACHE_KEY_OPENID);
-        if (Objects.nonNull(userResponse)) {
-            url.append("?tenant=").append(StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "");
-            url.append("&account=").append(StringUtils.isNotBlank(userResponse.getAccount()) ? userResponse.getAccount() : "");
-            url.append("&openId=").append(StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
-        }
-        return url.toString();
+        return "http://tsei.changhong.com:8090/sei-portal-web/#/sso/socialAccount";
     }
 
     /**
      * 绑定账号
      */
     @Override
-    public ResultData<String> bindingAccount(String tenant, String account, String password, String openId) {
-        LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setTenant(tenant);
-        loginRequest.setAccount(account);
-        loginRequest.setPassword(password);
-        loginRequest.setReqId(openId);
+    public ResultData<String> bindingAccount(LoginRequest loginRequest) {
+        // 社交平台开放ID
+        String openId = loginRequest.getReqId();
         ResultData<SessionUserResponse> resultData = login(loginRequest);
         if (resultData.successful()) {
             SessionUserResponse response = resultData.getData();
@@ -155,7 +143,6 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
                 userResponse.setLoginStatus(sessionUserResponse.getLoginStatus());
             }
         }
-        cacheBuilder.set(CACHE_KEY_OPENID, userResponse, 100000);
         return ResultData.success(userResponse);
     }
 }

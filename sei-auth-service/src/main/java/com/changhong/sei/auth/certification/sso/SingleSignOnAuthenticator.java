@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.certification.sso;
 
 import com.changhong.sei.auth.certification.TokenAuthenticator;
+import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
 
@@ -28,7 +29,7 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
     /**
      * 绑定账号
      */
-    ResultData<String> bindingAccount(String tenant, String account, String password, String openId);
+    ResultData<String> bindingAccount(LoginRequest loginRequest);
 
     /**
      * 获取用户信息

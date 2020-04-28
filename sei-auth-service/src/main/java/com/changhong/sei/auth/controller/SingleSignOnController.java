@@ -1,9 +1,9 @@
 package com.changhong.sei.auth.controller;
 
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
+import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.WebException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,16 +11,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedWriter;
-import java.io.OutputStreamWriter;
 import java.net.URLEncoder;
 import java.util.Objects;
 
@@ -75,6 +73,10 @@ public class SingleSignOnController {
             } else {
                 // 单点登录地址
                 String loginUrl = authenticator.getLogoutUrl();
+                if (StringUtils.isNotBlank(userResponse.getOpenId())) {
+                    loginUrl = loginUrl + "?tenant=" + (StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "");
+                    loginUrl = loginUrl + "&openId=" + (StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
+                }
                 LOG.error("单点登录失败：未获取到当前登录用户！");
                 return "redirect:" + loginUrl;
             }
@@ -110,28 +112,10 @@ public class SingleSignOnController {
         return "redirect:/index";
     }
 
-    @ApiOperation(value = "单点登录", notes = "PC应用单点登录")
-    @RequestMapping(value = "/sso/binding/socialAccount")
-    public Object binding(Model model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (StringUtils.endsWithIgnoreCase("get", request.getMethod())) {
-            model.addAttribute("tenant", request.getParameter("tenant"));
-            model.addAttribute("account", request.getParameter("account"));
-            model.addAttribute("openId", request.getParameter("openId"));
-            // 跳转绑定页面
-            return "socialAccount";
-        } else if (StringUtils.endsWithIgnoreCase("post", request.getMethod())) {
-            String tenant = request.getParameter("tenant");
-            String account = request.getParameter("account");
-            String password = request.getParameter("password");
-            String openId = request.getParameter("openId");
-
-            ResultData<String> resultData = authenticator.bindingAccount(tenant, account, password, openId);
-            response.setCharacterEncoding("UTF-8");
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
-            writer.write(JsonUtils.toJson(resultData));
-            writer.close();
-        }
-        return null;
+    @ResponseBody
+    @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
+    @RequestMapping(value = "/sso/binding/socialAccount", method = RequestMethod.POST)
+    public Object binding(LoginRequest loginRequest) {
+        return authenticator.bindingAccount(loginRequest);
     }
 }

@@ -10,14 +10,17 @@ import com.changhong.sei.auth.service.ValidateCodeService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotBlank;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +34,8 @@ import java.util.Set;
 @Api(value = "AuthenticationApi", tags = "账户认证服务")
 public class AuthenticationController implements AuthenticationApi {
 
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -125,5 +130,28 @@ public class AuthenticationController implements AuthenticationApi {
     @Override
     public ResultData<String> verifyCode(String reqId) {
         return validateCodeService.generate(reqId);
+    }
+
+    /**
+     * 获取指定会话用户信息
+     */
+    @Override
+    public ResultData<SessionUserResponse> getSessionUser(String sid) {
+        // 获取会话并续期
+        String token = sessionService.getAndTouchSession(sid);
+        if (StringUtils.isNotBlank(token)) {
+            SessionUserResponse response = new SessionUserResponse();
+            try {
+                SessionUser user = ContextUtil.getSessionUser(token);
+                modelMapper.map(user, response);
+
+                return ResultData.success(response);
+            } catch (Exception e) {
+                LogUtil.error("获取会话信息异常", e);
+                return ResultData.fail("获取会话信息异常:" + e.getMessage());
+            }
+        } else {
+            return ResultData.fail("无会话信息");
+        }
     }
 }

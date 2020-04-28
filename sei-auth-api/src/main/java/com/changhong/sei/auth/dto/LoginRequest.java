@@ -18,8 +18,10 @@ public class LoginRequest implements Serializable {
     private static final long serialVersionUID = -2149001770273260656L;
     /**
      * 请求id
+     * 社交账号绑定时是openId
      */
-    @ApiModelProperty(notes = "请求id", required = true)
+    @NotBlank
+    @ApiModelProperty(notes = "请求id.社交账号绑定时是openId的值", required = true)
     private String reqId;
     /**
      * 验证码
