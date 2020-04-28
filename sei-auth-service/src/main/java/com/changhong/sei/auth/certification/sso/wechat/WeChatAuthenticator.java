@@ -53,7 +53,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      */
     @Override
     public String getLogoutUrl() {
-        return "http://tsei.changhong.com:8090/sei-portal-web/#/sso/socialAccount";
+        return "http://tsei.changhong.com:8090/sei-portal-web";
     }
 
     /**

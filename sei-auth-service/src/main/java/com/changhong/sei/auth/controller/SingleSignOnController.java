@@ -74,7 +74,7 @@ public class SingleSignOnController {
                 // 单点登录地址
                 String loginUrl = authenticator.getLogoutUrl();
                 if (StringUtils.isNotBlank(userResponse.getOpenId())) {
-                    loginUrl = loginUrl + "?tenant=" + (StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "");
+                    loginUrl = loginUrl + "/#/sso/socialAccount?tenant=" + (StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "");
                     loginUrl = loginUrl + "&openId=" + (StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
                 }
                 LOG.error("单点登录失败：未获取到当前登录用户！");
@@ -104,7 +104,7 @@ public class SingleSignOnController {
         // 跳转到新版(react)的页面
         url = authenticator.getIndexUrl();
         if (StringUtils.isNotBlank(url)) {
-            url = url + "SsoWrapperPage?_s=" + sid;
+            url = url + "/#/sso/ssoWrapperPage?sid=" + sid;
             return "redirect:" + url;
         }
 //        }

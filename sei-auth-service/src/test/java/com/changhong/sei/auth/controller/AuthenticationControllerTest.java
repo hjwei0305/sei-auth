@@ -46,10 +46,10 @@ public class AuthenticationControllerTest extends BaseUnitTest {
 
     @Test
     public void loginApi(){
-//        String uri = "http://localhost:8080/auth/login";
-        String uri = "http://10.4.208.86:20002/sei-auth/auth/login";
+        String uri = "http://localhost:8080/auth/login";
+//        String uri = "http://10.4.208.86:20002/sei-auth/auth/login";
         LoginRequest request = new LoginRequest();
-        request.setTenant("10044");
+        request.setTenant("EPPEN");
         request.setAccount("admin");
 //        System.out.println("e10adc3949ba59abbe56e057f20f883e".equals(encrypt.encrypt("123456")));
         request.setPassword("e10adc3949ba59abbe56e057f20f883e");

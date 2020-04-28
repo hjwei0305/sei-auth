@@ -1,0 +1,31 @@
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    compile project(':sei-auth-api')
+
+    compile("com.changhong.sei:sei-service-starter:$sei_version")
+
+    testCompile(
+            "com.changhong.sei:sei-test-starter:$sei_version"
+    )
+}
+
+//打包源代码jar包
+bootJar { enabled = false }
+jar { enabled = false }
+
+//上传到nexus
+uploadArchives {
+    enabled = false
+}
+
+install {
+    enabled = false
+}

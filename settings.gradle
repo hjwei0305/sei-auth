@@ -1,3 +1,5 @@
 rootProject.name = 'sei-auth'
 include 'sei-auth-service'
 include 'sei-auth-api'
+include 'api-test'
+
