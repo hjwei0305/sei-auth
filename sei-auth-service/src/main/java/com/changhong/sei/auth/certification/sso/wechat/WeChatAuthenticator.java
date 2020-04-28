@@ -45,7 +45,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      */
     @Override
     public String getIndexUrl() {
-        return null;
+        return "http://tsei.changhong.com:8090/sei-portal-web";
     }
 
     /**
