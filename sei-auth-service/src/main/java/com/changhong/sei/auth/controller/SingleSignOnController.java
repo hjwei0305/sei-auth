@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.net.URLEncoder;
 import java.util.Objects;
 
@@ -115,7 +116,7 @@ public class SingleSignOnController {
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
     @RequestMapping(value = "/sso/binding/socialAccount", method = RequestMethod.POST)
-    public Object binding(LoginRequest loginRequest) {
+    public Object binding(@Valid LoginRequest loginRequest) {
         return authenticator.bindingAccount(loginRequest);
     }
 }
