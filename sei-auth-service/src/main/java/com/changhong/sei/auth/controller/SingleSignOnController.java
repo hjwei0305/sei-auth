@@ -66,6 +66,7 @@ public class SingleSignOnController {
             throw new WebException("单点登录失败：未单点登录配置[sei.sso]不正确！");
         }
         ResultData<SessionUserResponse> result = authenticator.auth(request, response);
+        LOG.info("单点登录验证结果：{}", request);
         if (result.getSuccess()) {
             SessionUserResponse userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
@@ -105,6 +106,7 @@ public class SingleSignOnController {
         url = authenticator.getIndexUrl();
         if (StringUtils.isNotBlank(url)) {
             url = url + "/#/sso/ssoWrapperPage?sid=" + sid;
+            LOG.info("单点登录跳转地址: {}", url);
             return "redirect:" + url;
         }
 //        }
