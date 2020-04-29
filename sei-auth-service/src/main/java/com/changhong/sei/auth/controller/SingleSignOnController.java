@@ -66,7 +66,7 @@ public class SingleSignOnController {
             throw new WebException("单点登录失败：未单点登录配置[sei.sso]不正确！");
         }
         ResultData<SessionUserResponse> result = authenticator.auth(request, response);
-        LOG.info("单点登录验证结果：{}", request);
+        LOG.info("单点登录验证结果：{}", result);
         if (result.getSuccess()) {
             SessionUserResponse userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {

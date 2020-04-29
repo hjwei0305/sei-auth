@@ -136,10 +136,12 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
             loginRequest.setAccount(account.getAccount());
             loginRequest.setReqId(code);
             ResultData<SessionUserResponse> result = login(loginRequest, account);
+            LOG.info("微信关联账号登录验证: {}", result);
             userResponse.setTenantCode(account.getTenantCode());
             userResponse.setAccount(account.getAccount());
             SessionUserResponse sessionUserResponse = result.getData();
             if (Objects.nonNull(sessionUserResponse)) {
+                userResponse.setSessionId(sessionUserResponse.getSessionId());
                 userResponse.setLoginStatus(sessionUserResponse.getLoginStatus());
             }
         }
