@@ -186,7 +186,7 @@ public class AccountService extends BaseEntityService<Account> {
      */
     @Transactional(rollbackFor = Exception.class)
     public void updatePassword(String accountId, String password, int passwordExpire) {
-        if (passwordExpire > 1) {
+        if (passwordExpire < 1) {
             throw new IllegalArgumentException("密码过期时间天数不能小于1");
         }
         // 密码过期时间(默认一个月后)
