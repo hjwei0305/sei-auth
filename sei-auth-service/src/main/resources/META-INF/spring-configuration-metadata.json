@@ -22,6 +22,12 @@
       "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties"
     },
     {
+      "name": "sei.auth.api-base-url",
+      "type": "java.lang.String",
+      "description": "服务网关根url地址",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties"
+    },
+    {
       "name": "sei.auth.password",
       "type": "java.lang.String",
       "description": "默认密码",

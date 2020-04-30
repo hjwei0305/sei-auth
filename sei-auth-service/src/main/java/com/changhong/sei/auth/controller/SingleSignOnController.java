@@ -6,6 +6,7 @@ import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.WebException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,10 +16,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Map;
 
 /**
  * 实现功能： 单点登录
@@ -46,6 +51,21 @@ public class SingleSignOnController implements Constants {
         String endpoint = authenticator.getAuthorizeEndpoint(request);
         LOG.info("【微信网页授权】获取code, endpoint={}", endpoint);
         return "redirect:" + endpoint;
+    }
+
+    @ResponseBody
+    @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
+    @RequestMapping("/sso/authorizeData")
+    public Map<String, String> authorizeData(HttpServletRequest request) throws Exception {
+        String authType = request.getParameter("authType");
+        if (StringUtils.isBlank(authType)) {
+            throw new WebException("单点登录失败：authType不能为空！");
+        }
+        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
+
+        Map<String, String> data = authenticator.getAuthorizeData(request);
+        LOG.info("【微信网页授权】获取code, data = {}", JsonUtils.toJson(data));
+        return data;
     }
 
     @ApiOperation(value = "单点登录", notes = "PC应用单点登录")
@@ -79,7 +99,7 @@ public class SingleSignOnController implements Constants {
         return "redirect:" + loginUrl;
     }
 
-//    @ApiOperation(value = "跳转地址", notes = "单点登录跳转地址")
+    //    @ApiOperation(value = "跳转地址", notes = "单点登录跳转地址")
 //    @RequestMapping(value = "/sso/redirectMainPage")
 //    public String redirectMainPage(@RequestParam("sid") String sid, @RequestParam("authType") String authType) {
     private String redirectMainPage(String sid, String authType) {

@@ -7,6 +7,7 @@ import com.changhong.sei.core.dto.ResultData;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * 实现功能：
@@ -22,6 +23,11 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
      */
     String getWebBaseUrl();
     /**
+     * 服务网关根url地址
+     * 如:http://tsei.changhong.com:8090/api-gateway
+     */
+    String getApiBaseUrl();
+    /**
      * 登录成功url地址
      */
     String getIndexUrl();
@@ -35,6 +41,8 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
      * oauth2授权路由端点
      */
     String getAuthorizeEndpoint(HttpServletRequest request);
+
+    Map<String, String> getAuthorizeData(HttpServletRequest request);
 
     /**
      * 绑定账号

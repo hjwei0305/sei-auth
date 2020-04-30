@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -59,6 +60,15 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
     }
 
     /**
+     * 服务网关根url地址
+     * 如:http://tsei.changhong.com:8090/api-gateway
+     */
+    @Override
+    public String getApiBaseUrl() {
+        return properties.getApiBaseUrl();
+    }
+
+    /**
      * 登录成功url地址
      */
     @Override
@@ -79,22 +89,45 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      */
     @Override
     public String getAuthorizeEndpoint(HttpServletRequest request) {
-       /*
-        http://tsei.changhong.com:8090/api-gateway/sei-auth/sso/login
-        https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwdc99e9511ccac381&redirect_uri=http%3A%2F%2Ftsei.changhong.com%3A8090%2Fapi-gateway%2Fsei-auth%2Fsso%2Flogin&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
-         */
+       Map<String, String> data = getAuthorizeData(request);
         //这个方法的三个参数分别是授权后的重定向url、获取用户信息类型和state
         String redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect";
+
+        redirectUrl = String.format(redirectUrl, properties.getSso().getAppId(), data.get("redirect_uri"), data.get("state"));
+        return redirectUrl;
+    }
+
+    @Override
+    public Map<String, String> getAuthorizeData(HttpServletRequest request) {
+       /*
+        http://tsei.changhong.com:8090/api-gateway/sei-auth/sso/login?authType=weChat
+        https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwdc99e9511ccac381&redirect_uri=http%3A%2F%2Ftsei.changhong.com%3A8090%2Fapi-gateway%2Fsei-auth%2Fsso%2Flogin%3FauthType%3DweChat&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
+         */
+        AuthProperties.SingleSignOnProperties sso = properties.getSso();
+
         // 微信定义的一个参数，用户可以传入自定义的参数
         String state = "sei";
         // 用户微信授权登录后重定向的页面路由
-        String redirect_uri = request.getRequestURL().toString().replace(AUTHORIZE_ENDPOINT, SSO_LOGIN_ENDPOINT);
+        String redirectUri = getApiBaseUrl() + request.getContextPath() + SSO_LOGIN_ENDPOINT + "?authType=weChat";
         try {
-            redirectUrl = String.format(redirectUrl, properties.getSso().getAppId(), URLEncoder.encode(redirect_uri, "UTF-8"), state);
+            redirectUri = URLEncoder.encode(redirectUri, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        return redirectUrl;
+
+        Map<String, String> data = new HashMap<>();
+        // 企业微信的CorpID，在企业微信管理端查看
+        data.put("appid", sso.getAppId());
+        // 授权方的网页应用ID，在具体的网页应用中查看
+        data.put("agentid", sso.getAgentId());
+        // 重定向地址，需要进行UrlEncode
+        data.put("redirect_uri", redirectUri);
+        // 用于保持请求和回调的状态，授权请求后原样带回给企业。该参数可用于防止csrf攻击（跨站请求伪造攻击），建议企业带上该参数，可设置为简单的随机数加session进行校验
+        data.put("state", state);
+        // 自定义样式链接，企业可根据实际需求覆盖默认样式
+        data.put("href", "");
+
+        return data;
     }
 
     /**
@@ -140,8 +173,10 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         // 检查缓存中是否存在有效token
         String accessToken = cacheBuilder.get(CACHE_KEY_TOKEN);
         if (StringUtils.isBlank(accessToken)) {
+            AuthProperties.SingleSignOnProperties sso = properties.getSso();
+
             // 不存在,获取新的有效token
-            accessToken = WeChatUtil.getAccessToken(properties.getSso().getAppId(), properties.getSso().getCropSecret());
+            accessToken = WeChatUtil.getAccessToken(sso.getAppId(), sso.getCropSecret());
             if (StringUtils.isNotBlank(accessToken)) {
                 // 微信默认token过期时间为7200秒, 为防止过期缓存有效时间设置为7000秒
                 cacheBuilder.set(CACHE_KEY_TOKEN, accessToken, 7000000);

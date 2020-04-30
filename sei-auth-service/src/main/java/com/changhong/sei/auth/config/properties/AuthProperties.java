@@ -16,6 +16,11 @@ public class AuthProperties {
      */
     private String webBaseUrl;
     /**
+     * 服务网关根url地址
+     * 如:http://tsei.changhong.com:8090/api-gateway
+     */
+    private String apiBaseUrl;
+    /**
      * 默认密码
      */
     private String password = "123456";
@@ -32,6 +37,14 @@ public class AuthProperties {
 
     public void setWebBaseUrl(String webBaseUrl) {
         this.webBaseUrl = webBaseUrl;
+    }
+
+    public String getApiBaseUrl() {
+        return apiBaseUrl;
+    }
+
+    public void setApiBaseUrl(String apiBaseUrl) {
+        this.apiBaseUrl = apiBaseUrl;
     }
 
     public String getPassword() {
