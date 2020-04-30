@@ -89,7 +89,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      */
     @Override
     public String getAuthorizeEndpoint(HttpServletRequest request) {
-       Map<String, String> data = getAuthorizeData(request);
+       Map<String, String> data = getAuthorizeData(request).getData();
         //这个方法的三个参数分别是授权后的重定向url、获取用户信息类型和state
         String redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect";
 
@@ -98,7 +98,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
     }
 
     @Override
-    public Map<String, String> getAuthorizeData(HttpServletRequest request) {
+    public ResultData<Map<String, String>> getAuthorizeData(HttpServletRequest request) {
        /*
         http://tsei.changhong.com:8090/api-gateway/sei-auth/sso/login?authType=weChat
         https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwdc99e9511ccac381&redirect_uri=http%3A%2F%2Ftsei.changhong.com%3A8090%2Fapi-gateway%2Fsei-auth%2Fsso%2Flogin%3FauthType%3DweChat&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
@@ -127,7 +127,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         // 自定义样式链接，企业可根据实际需求覆盖默认样式
         data.put("href", "");
 
-        return data;
+        return ResultData.success(data);
     }
 
     /**

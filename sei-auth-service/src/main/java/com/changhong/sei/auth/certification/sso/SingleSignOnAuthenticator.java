@@ -42,7 +42,7 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
      */
     String getAuthorizeEndpoint(HttpServletRequest request);
 
-    Map<String, String> getAuthorizeData(HttpServletRequest request);
+    ResultData<Map<String, String>> getAuthorizeData(HttpServletRequest request);
 
     /**
      * 绑定账号

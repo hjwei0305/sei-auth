@@ -56,16 +56,16 @@ public class SingleSignOnController implements Constants {
     @ResponseBody
     @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
     @RequestMapping("/sso/authorizeData")
-    public Map<String, String> authorizeData(HttpServletRequest request) throws Exception {
+    public ResultData<Map<String, String>> authorizeData(HttpServletRequest request) throws Exception {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
             throw new WebException("单点登录失败：authType不能为空！");
         }
         SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
 
-        Map<String, String> data = authenticator.getAuthorizeData(request);
-        LOG.info("【微信网页授权】获取code, data = {}", JsonUtils.toJson(data));
-        return data;
+        ResultData<Map<String, String>> result = authenticator.getAuthorizeData(request);
+        LOG.info("【微信网页授权】获取code, result = {}", JsonUtils.toJson(result));
+        return result;
     }
 
     @ApiOperation(value = "单点登录", notes = "PC应用单点登录")
