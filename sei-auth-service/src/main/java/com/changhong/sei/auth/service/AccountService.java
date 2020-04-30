@@ -190,7 +190,7 @@ public class AccountService extends BaseEntityService<Account> {
             throw new IllegalArgumentException("密码过期时间天数不能小于1");
         }
         // 密码过期时间(默认一个月后)
-        dao.updatePassword(accountId, this.encodePassword(password), LocalDateTime.now().plusDays(passwordExpire));
+        dao.updatePassword(accountId, this.encodePassword(password), LocalDate.now().plusDays(passwordExpire));
     }
 
     /**
