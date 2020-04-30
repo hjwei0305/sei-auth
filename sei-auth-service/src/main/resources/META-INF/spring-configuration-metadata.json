@@ -1,0 +1,78 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "name": "sei.auth",
+      "type": "com.changhong.sei.auth.config.properties.AuthProperties",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties"
+    },
+    {
+      "name": "sei.auth.sso",
+      "type": "com.changhong.sei.auth.config.properties.AuthProperties$SingleSignOnProperties",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties",
+      "sourceMethod": "getSso()"
+    }
+
+  ],
+  "properties": [
+    {
+      "name": "sei.auth.web-base-url",
+      "type": "java.lang.String",
+      "description": "前端web根url地址",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties"
+    },
+    {
+      "name": "sei.auth.password",
+      "type": "java.lang.String",
+      "description": "默认密码",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties",
+      "defaultValue": "123456"
+    },
+    {
+      "name": "sei.auth.password-expire",
+      "type": "java.lang.Integer",
+      "description": "密码默认过期天数",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties",
+      "defaultValue": 180
+    },
+
+    {
+      "name": "sei.auth.sso.index-url",
+      "type": "java.lang.String",
+      "description": "登录成功url地址",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties$SingleSignOnProperties"
+    },
+    {
+      "name": "sei.auth.sso.logout-url",
+      "type": "java.lang.String",
+      "description": "登录失败url地址",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties$SingleSignOnProperties"
+    },
+    {
+      "name": "sei.auth.sso.auth-type",
+      "type": "java.lang.String",
+      "description": "认证类型:weChat",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties$SingleSignOnProperties"
+    },
+    {
+      "name": "sei.auth.sso.app-id",
+      "type": "java.lang.String",
+      "description": "社交平台分发给SEI平台的id",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties$SingleSignOnProperties"
+    },
+    {
+      "name": "sei.auth.sso.agent-id",
+      "type": "java.lang.String",
+      "description": "企业微信:自建应用id",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties$SingleSignOnProperties"
+    },
+    {
+      "name": "sei.auth.sso.crop-secret",
+      "type": "java.lang.String",
+      "description": "访问密钥",
+      "sourceType": "com.changhong.sei.auth.config.properties.AuthProperties$SingleSignOnProperties"
+    }
+
+
+  ]
+}

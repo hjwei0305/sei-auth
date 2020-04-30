@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.certification.sso.wechat;
 
 import com.changhong.sei.auth.dto.LoginRequest;
+import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.core.util.JsonUtils;
@@ -29,7 +30,7 @@ public class WeChatAuthenticatorTest {
     public void bindingAccount() {
         String json = "{\"account\":\"admin\",\"password\":\"e10adc3949ba59abbe56e057f20f883e\",\"reqId\":\"vision.ma\"}";
         LoginRequest request = JsonUtils.fromJson(json, LoginRequest.class);
-        ResultData<String> resultData = authenticator.bindingAccount(request);
+        ResultData<SessionUserResponse> resultData = authenticator.bindingAccount(request);
         System.out.println(resultData);
     }
 

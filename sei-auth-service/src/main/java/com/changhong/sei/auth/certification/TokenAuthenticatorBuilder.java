@@ -1,5 +1,6 @@
 package com.changhong.sei.auth.certification;
 
+import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.exception.ServiceException;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +38,25 @@ public class TokenAuthenticatorBuilder {
             throw new ServiceException("authType 不支持，请传递正确的 authType 参数:[captcha,password]");
         } else {
             return tokenGranter;
+        }
+    }
+
+    /**
+     * 获取TokenAuthenticator
+     *
+     * @param authType 认证类型
+     * @return TokenAuthenticator
+     */
+    public SingleSignOnAuthenticator getSingleSignOnAuthenticator(String authType) {
+        TokenAuthenticator tokenGranter = granterPool.get(authType);
+        if (Objects.isNull(tokenGranter)) {
+            throw new ServiceException(authType + " 不支持，请传递正确的 authType 参数:[weChatAuthenticator]");
+        } else {
+            if (tokenGranter instanceof SingleSignOnAuthenticator) {
+                return (SingleSignOnAuthenticator) tokenGranter;
+            } else {
+                throw new ServiceException(authType + "不是SingleSignOnAuthenticator的实例");
+            }
         }
     }
 

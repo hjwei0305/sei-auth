@@ -45,7 +45,6 @@ public class SocialAccount extends BaseEntity {
     /**
      * 渠道code
      */
-//    @Enumerated(EnumType.STRING)
     @Column(name = "channel_code", length = 100, nullable = false)
     private String channelCode;
     /**

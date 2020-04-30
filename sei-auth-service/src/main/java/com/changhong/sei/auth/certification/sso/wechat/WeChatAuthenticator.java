@@ -2,7 +2,9 @@ package com.changhong.sei.auth.certification.sso.wechat;
 
 import com.changhong.sei.auth.certification.AbstractTokenAuthenticator;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
+import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.common.weixin.WeChatUtil;
+import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
@@ -16,7 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,18 +29,33 @@ import java.util.Objects;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-04-23 17:27
  */
-@Component("weChatAuthenticator")
-public class WeChatAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator {
+@Component(SingleSignOnAuthenticator.AUTH_TYPE_WE_CHAT)
+public class WeChatAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator, Constants {
     private static final Logger LOG = LoggerFactory.getLogger(WeChatAuthenticator.class);
     private static final String CACHE_KEY_TOKEN = "WeChat:AccessToken";
     private static final String SOCIAL_CHANNEL = "WeChat";
 
+//    private String cropId = "wwdc99e9511ccac381";
+//    private String agentId = "1000003";
+//    private String cropSecret = "xIKMGprmIKWrK1VJ5oALdgeUAFng3DzxIpmPgT56XAA";
+
     private final SocialAccountService socialAccountService;
     private final CacheBuilder cacheBuilder;
+    private final AuthProperties properties;
 
-    public WeChatAuthenticator(SocialAccountService socialAccountService, CacheBuilder cacheBuilder) {
+    public WeChatAuthenticator(AuthProperties properties, SocialAccountService socialAccountService, CacheBuilder cacheBuilder) {
         this.socialAccountService = socialAccountService;
         this.cacheBuilder = cacheBuilder;
+        this.properties = properties;
+    }
+
+    /**
+     * 前端web根url地址
+     * 如:http://tsei.changhong.com:8090/sei-portal-web
+     */
+    @Override
+    public String getWebBaseUrl() {
+        return properties.getWebBaseUrl();
     }
 
     /**
@@ -45,7 +63,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      */
     @Override
     public String getIndexUrl() {
-        return "http://tsei.changhong.com:8090/sei-portal-web";
+        return null;
     }
 
     /**
@@ -53,14 +71,37 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      */
     @Override
     public String getLogoutUrl() {
-        return "http://tsei.changhong.com:8090/sei-portal-web";
+        return null;
+    }
+
+    /**
+     * openId绑定失败,需要跳转到绑定页面
+     */
+    @Override
+    public String getAuthorizeEndpoint(HttpServletRequest request) {
+       /*
+        http://tsei.changhong.com:8090/api-gateway/sei-auth/sso/login
+        https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwdc99e9511ccac381&redirect_uri=http%3A%2F%2Ftsei.changhong.com%3A8090%2Fapi-gateway%2Fsei-auth%2Fsso%2Flogin&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
+         */
+        //这个方法的三个参数分别是授权后的重定向url、获取用户信息类型和state
+        String redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect";
+        // 微信定义的一个参数，用户可以传入自定义的参数
+        String state = "sei";
+        // 用户微信授权登录后重定向的页面路由
+        String redirect_uri = request.getRequestURL().toString().replace(AUTHORIZE_ENDPOINT, SSO_LOGIN_ENDPOINT);
+        try {
+            redirectUrl = String.format(redirectUrl, properties.getSso().getAppId(), URLEncoder.encode(redirect_uri, "UTF-8"), state);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return redirectUrl;
     }
 
     /**
      * 绑定账号
      */
     @Override
-    public ResultData<String> bindingAccount(LoginRequest loginRequest) {
+    public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest) {
         // 社交平台开放ID
         String openId = loginRequest.getReqId();
         ResultData<SessionUserResponse> resultData = login(loginRequest);
@@ -68,7 +109,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
             SessionUserResponse response = resultData.getData();
             ResultData<String> rd = socialAccountService.bindingAccount(response.getTenantCode(), response.getAccount(), openId, SOCIAL_CHANNEL);
             if (rd.successful()) {
-                return ResultData.success(response.getSessionId());
+                return ResultData.success(response);
             } else {
                 return ResultData.fail(rd.getMessage());
             }
@@ -89,16 +130,9 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
 
     /**
      * 获取用户信息
-     *
-     * @return
      */
     @Override
-    public ResultData<SessionUserResponse> auth(HttpServletRequest request, HttpServletResponse response) {
-        // todo 配置
-        String cropId = "wwdc99e9511ccac381";
-        String agentId = "1000003";
-        String cropSecret = "xIKMGprmIKWrK1VJ5oALdgeUAFng3DzxIpmPgT56XAA";
-
+    public ResultData<SessionUserResponse> auth(HttpServletRequest request) {
         // 授权码
         String code = request.getParameter("code");
         String state = request.getParameter("state");
@@ -107,7 +141,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         String accessToken = cacheBuilder.get(CACHE_KEY_TOKEN);
         if (StringUtils.isBlank(accessToken)) {
             // 不存在,获取新的有效token
-            accessToken = WeChatUtil.getAccessToken(cropId, cropSecret);
+            accessToken = WeChatUtil.getAccessToken(properties.getSso().getAppId(), properties.getSso().getCropSecret());
             if (StringUtils.isNotBlank(accessToken)) {
                 // 微信默认token过期时间为7200秒, 为防止过期缓存有效时间设置为7000秒
                 cacheBuilder.set(CACHE_KEY_TOKEN, accessToken, 7000000);

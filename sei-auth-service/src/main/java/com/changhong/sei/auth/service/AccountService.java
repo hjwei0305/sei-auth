@@ -44,12 +44,12 @@ public class AccountService extends BaseEntityService<Account> {
     /**
      * 默认密码
      */
-    @Value("${sei.auth.default.password:123456}")
+    @Value("${sei.auth.password:123456}")
     private String defaultPassword;
     /**
      * 密码默认过期天数
      */
-    @Value("${sei.auth.default.password_expire:30}")
+    @Value("${sei.auth.password_expire:30}")
     private int defaultPasswordExpire;
 
     @Autowired

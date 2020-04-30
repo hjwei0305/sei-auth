@@ -15,4 +15,13 @@ public interface Constants {
      * 半小时内登陆错误次数
      */
     String LOGIN_NUM_KEY = "sei:auth:login:num:";
+
+    /**
+     * oauth2授权端点
+     */
+    String AUTHORIZE_ENDPOINT = "/sso/authorize";
+    /**
+     * 单点登录端点
+     */
+    String SSO_LOGIN_ENDPOINT = "/sso/login";
 }

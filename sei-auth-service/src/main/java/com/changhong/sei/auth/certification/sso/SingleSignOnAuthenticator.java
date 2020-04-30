@@ -17,6 +17,11 @@ import javax.servlet.http.HttpServletResponse;
 public interface SingleSignOnAuthenticator extends TokenAuthenticator {
 
     /**
+     * 前端web根url地址
+     * 如:http://tsei.changhong.com:8090/sei-portal-web
+     */
+    String getWebBaseUrl();
+    /**
      * 登录成功url地址
      */
     String getIndexUrl();
@@ -27,12 +32,17 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
     String getLogoutUrl();
 
     /**
+     * oauth2授权路由端点
+     */
+    String getAuthorizeEndpoint(HttpServletRequest request);
+
+    /**
      * 绑定账号
      */
-    ResultData<String> bindingAccount(LoginRequest loginRequest);
+    ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest);
 
     /**
      * 获取用户信息
      */
-    ResultData<SessionUserResponse> auth(HttpServletRequest request, HttpServletResponse response);
+    ResultData<SessionUserResponse> auth(HttpServletRequest request);
 }

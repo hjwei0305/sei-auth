@@ -20,6 +20,10 @@ public interface TokenAuthenticator {
      * 账号密码认证
      */
     String AUTH_TYPE_PASSWORD = "password";
+    /**
+     * 微信
+     */
+    String AUTH_TYPE_WE_CHAT = "weChat";
 
     /**
      * 获取用户信息

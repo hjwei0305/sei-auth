@@ -52,11 +52,12 @@ public class LoginRequest implements Serializable {
     private String locale = "zh_CN";
 
     /**
+     * weChat: 微信
      * password: 账号密码
      * refresh_token: 刷新token
      * captcha: 验证码+账号密码
      */
-    @ApiModelProperty(value = "认证类型", example = "captcha", allowableValues = "captcha,password")
+    @ApiModelProperty(value = "认证类型", example = "captcha", allowableValues = "captcha,password,weChat")
     private String authType = "captcha";
 
 //    /**

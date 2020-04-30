@@ -1,6 +1,8 @@
 package com.changhong.sei.auth.controller;
 
+import com.changhong.sei.auth.certification.TokenAuthenticatorBuilder;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
+import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
@@ -13,14 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.net.URLEncoder;
-import java.util.Objects;
 
 /**
  * 实现功能： 单点登录
@@ -30,94 +28,78 @@ import java.util.Objects;
  */
 @Controller
 @Api(value = "SingleSignOnApi", tags = "单点登录服务")
-public class SingleSignOnController {
+public class SingleSignOnController implements Constants {
     private static final Logger LOG = LoggerFactory.getLogger(SingleSignOnController.class);
 
-    private static final String AUTHORIZE_URI = "/sso/authorize";
-    private static final String SSO_LOGIN_URI = "/sso/login";
-
-    @Autowired(required = false)
-    private SingleSignOnAuthenticator authenticator;
+    @Autowired
+    private TokenAuthenticatorBuilder builder;
 
     @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
-    @RequestMapping(AUTHORIZE_URI)
-    public String authorize(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        /*
-        http://tsei.changhong.com:8090/api-gateway/sei-auth/sso/login
-        https://open.weixin.qq.com/connect/oauth2/authorize?appid=wwdc99e9511ccac381&redirect_uri=http%3A%2F%2Ftsei.changhong.com%3A8090%2Fapi-gateway%2Fsei-auth%2Fsso%2Flogin&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect
-         */
-        //这个方法的三个参数分别是授权后的重定向url、获取用户信息类型和state
-        String redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect";
-        String corpid = "";
-        // 微信定义的一个参数，用户可以传入自定义的参数
-        String state = "sei";
-        // 用户微信授权登录后重定向的页面路由
-        String redirect_uri = request.getRequestURL().toString().replace(AUTHORIZE_URI, SSO_LOGIN_URI);
-        redirectUrl = String.format(redirectUrl, corpid, URLEncoder.encode(redirect_uri, "UTF-8"), state);
+    @RequestMapping(AUTHORIZE_ENDPOINT)
+    public String authorize(HttpServletRequest request) throws Exception {
+        String authType = request.getParameter("authType");
+        if (StringUtils.isBlank(authType)) {
+            throw new WebException("单点登录失败：authType不能为空！");
+        }
+        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
 
-        LOG.info("【微信网页授权】获取code,redirectUrl={}", redirectUrl);
-        return "redirect:" + redirectUrl;
+        String endpoint = authenticator.getAuthorizeEndpoint(request);
+        LOG.info("【微信网页授权】获取code, endpoint={}", endpoint);
+        return "redirect:" + endpoint;
     }
 
     @ApiOperation(value = "单点登录", notes = "PC应用单点登录")
-    @RequestMapping(value = {SSO_LOGIN_URI})
-    public Object ssoLogin(HttpServletRequest request, HttpServletResponse response) {
-        if (Objects.isNull(authenticator)) {
-            throw new WebException("单点登录失败：未单点登录配置[sei.sso]不正确！");
+    @RequestMapping(value = {SSO_LOGIN_ENDPOINT})
+    public Object ssoLogin(HttpServletRequest request) {
+        String authType = request.getParameter("authType");
+        if (StringUtils.isBlank(authType)) {
+            throw new WebException("单点登录失败：authType不能为空！");
         }
-        ResultData<SessionUserResponse> result = authenticator.auth(request, response);
+        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
+
+        // 单点登录地址
+        String loginUrl = authenticator.getLogoutUrl();
+        ResultData<SessionUserResponse> result = authenticator.auth(request);
         LOG.info("单点登录验证结果：{}", result);
         if (result.getSuccess()) {
             SessionUserResponse userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
-                return redirectMainPage(userResponse.getSessionId());
+                return redirectMainPage(userResponse.getSessionId(), authType);
             } else {
-                // 单点登录地址
-                String loginUrl = authenticator.getLogoutUrl();
                 if (StringUtils.isNotBlank(userResponse.getOpenId())) {
-                    loginUrl = loginUrl + "/#/sso/socialAccount?tenant=" + (StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "");
-                    loginUrl = loginUrl + "&openId=" + (StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
+                    // 账号绑定页面
+                    loginUrl = authenticator.getWebBaseUrl() + "/#/sso/socialAccount?authType=" + authType
+                            + "&tenant=" + (StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "")
+                            + "&openId=" + (StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
+                    LOG.error("单点登录失败：需要绑定平台账号！");
                 }
-                LOG.error("单点登录失败：未获取到当前登录用户！");
-                return "redirect:" + loginUrl;
             }
-        } else {
-            // 单点登录地址
-            String loginUrl = authenticator.getLogoutUrl();
-            LOG.error("单点登录失败：未获取到当前登录用户！");
-            return "redirect:" + loginUrl;
         }
+        LOG.error("单点登录失败：未获取到当前登录用户！");
+        return "redirect:" + loginUrl;
     }
 
-    @ApiOperation(value = "跳转地址", notes = "单点登录跳转地址")
-    @RequestMapping(value = "/sso/redirectMainPage")
-    public String redirectMainPage(@RequestParam("sid") String sid) {
-        String url;
-//        url = request.getParameter("url");
-//        if (StringUtils.isNotBlank(url)) {
-//            if (url.contains("?")) {
-//                url = url + "&_s=" + sid;
-//            } else {
-//                url = url + "?_s=" + sid;
-//            }
-//            return "redirect:" + url;
-//        } else {
+//    @ApiOperation(value = "跳转地址", notes = "单点登录跳转地址")
+//    @RequestMapping(value = "/sso/redirectMainPage")
+//    public String redirectMainPage(@RequestParam("sid") String sid, @RequestParam("authType") String authType) {
+    private String redirectMainPage(String sid, String authType) {
+        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
+
         // 跳转到新版(react)的页面
-        url = authenticator.getIndexUrl();
-        if (StringUtils.isNotBlank(url)) {
-            url = url + "/#/sso/ssoWrapperPage?sid=" + sid;
+        String url = authenticator.getIndexUrl();
+        if (StringUtils.isBlank(url)) {
+            url = authenticator.getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + sid;
             LOG.info("单点登录跳转地址: {}", url);
             return "redirect:" + url;
         }
-//        }
         //单点错误页面
-        return "redirect:/index";
+        return "redirect:" + url;
     }
 
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
     @RequestMapping(value = "/sso/binding/socialAccount", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public Object binding(@RequestBody @Valid LoginRequest loginRequest) {
-        return authenticator.bindingAccount(loginRequest);
+    public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest) {
+        return builder.getSingleSignOnAuthenticator(loginRequest.getAuthType()).bindingAccount(loginRequest);
     }
 }
