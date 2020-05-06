@@ -14,7 +14,9 @@ import com.changhong.sei.core.service.bo.OperateResultWithData;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -30,6 +32,7 @@ import java.util.Objects;
  */
 @RestController
 @Api(value = "AccountApi", tags = "账户接口服务")
+@RequestMapping(path = AccountApi.PATH, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AccountController extends BaseEntityController<Account, AccountResponse> implements AccountApi {
 
     @Autowired

@@ -12,7 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @author 王锦光 wangj
  * @version 1.0.1 2019-12-18 10:41
  */
-@EnableFeignClients(basePackages = {"com.changhong.sei.auth.service.client"})
+@EnableFeignClients(basePackages = {"com.changhong.sei.auth.api","com.changhong.sei.auth.service.client"})
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class ApiTestApplication {
     public static void main(String[] args) {

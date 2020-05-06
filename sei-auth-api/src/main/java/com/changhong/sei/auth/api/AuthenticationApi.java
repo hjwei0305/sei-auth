@@ -4,8 +4,11 @@ import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -18,8 +21,12 @@ import java.util.Set;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-01-14 14:13
  */
-@RequestMapping(path = "auth", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@FeignClient(name = "sei-auth", path = AuthenticationApi.PATH)
 public interface AuthenticationApi {
+    /**
+     * 服务访问目录
+     */
+    String PATH = "auth";
 
     /**
      * 登录
@@ -68,5 +75,5 @@ public interface AuthenticationApi {
      */
     @GetMapping(path = "getSessionUser")
     @ApiOperation("获取指定会话用户信息")
-    ResultData<SessionUserResponse> getSessionUser(@RequestParam("sid") @NotBlank  String sid);
+    ResultData<SessionUserResponse> getSessionUser(@RequestParam("sid") @NotBlank String sid);
 }

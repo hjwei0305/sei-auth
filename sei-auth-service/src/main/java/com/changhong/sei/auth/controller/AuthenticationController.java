@@ -17,10 +17,11 @@ import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotBlank;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +33,7 @@ import java.util.Set;
  */
 @RestController
 @Api(value = "AuthenticationApi", tags = "账户认证服务")
+@RequestMapping(path = AuthenticationApi.PATH, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class AuthenticationController implements AuthenticationApi {
 
     @Autowired

@@ -10,7 +10,8 @@ dependencyManagement {
 dependencies {
     compile project(':sei-auth-api')
 
-    compile("com.changhong.sei:sei-service-starter:$sei_version")
+    compile("com.changhong.sei:sei-cloud-consul-starter:$sei_version")
+//    compile("com.changhong.sei:sei-service-starter:$sei_version")
 
     testCompile(
             "com.changhong.sei:sei-test-starter:$sei_version"
