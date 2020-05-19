@@ -1,11 +1,8 @@
 package com.changhong.sei.auth.common.weixin;
 
-import com.changhong.sei.auth.common.RandomUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.util.SerializeUtils;
-import com.changhong.sei.util.Signature;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +42,11 @@ public class WeChatUtil {
     /**
      * 获取企业的jsapi_ticket
      */
-    private static final String GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=%s";
+//    private static final String GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=%s";
+    /**
+     * 获取应用的jsapi_ticket
+     */
+    private static final String GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/ticket/get?access_token=%s&type=agent_config";
 
     /**
      * 发起https请求并获取结果

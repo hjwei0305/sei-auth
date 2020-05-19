@@ -212,10 +212,8 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
     @Override
     public ResultData<Map<String, String>> jsapi_ticket() {
         ResultData<Map<String, String>> result;
-        AuthProperties.SingleSignOnProperties sso = properties.getSso();
 
-        // 必填，企业微信的corpID
-        String appId = sso.getAppId();
+
         // 必填，生成签名的时间戳
         String timestamp = String.valueOf(System.currentTimeMillis());
         // 必填，生成签名的随机串
@@ -231,9 +229,16 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
             String str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", ticket, nonceStr, timestamp, url);
             signature = Signature.sign(str);
 
+            AuthProperties.SingleSignOnProperties sso = properties.getSso();
+
             Map<String, String> data = new HashMap<>();
-            data.put("appId", appId);
+            // 必填，企业微信的corpid，必须与当前登录的企业一致
+            data.put("corpid", sso.getAppId());
+            // 必填，企业微信的应用id （e.g. 1000247）
+            data.put("agentid", sso.getAgentId());
+            // 必填，生成签名的时间戳
             data.put("timestamp", timestamp);
+            // 必填，生成签名的随机串
             data.put("nonceStr", nonceStr);
             data.put("signature", signature);
             result = ResultData.success(data);
