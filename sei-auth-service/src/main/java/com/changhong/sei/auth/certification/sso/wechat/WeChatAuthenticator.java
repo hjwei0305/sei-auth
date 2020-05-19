@@ -222,12 +222,16 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
 
         // 必填，签名，见 附录-JS-SDK使用权限签名算法
         String signature = "";
+        String agentSignature = "";
 
         String accessToken = getAccessToken();
         String ticket = WeChatUtil.getJsApiTicket(accessToken);
+        String agentTicket = WeChatUtil.getJsApiAppTicket(accessToken);
         if (StringUtils.isNotBlank(ticket)) {
             String str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", ticket, nonceStr, timestamp, url);
             signature = Signature.sign(str);
+            str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", agentTicket, nonceStr, timestamp, url);
+            agentSignature = Signature.sign(str);
 
             AuthProperties.SingleSignOnProperties sso = properties.getSso();
 
@@ -241,6 +245,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
             // 必填，生成签名的随机串
             data.put("nonceStr", nonceStr);
             data.put("signature", signature);
+            data.put("agentSignature", agentSignature);
             result = ResultData.success(data);
         } else {
             result = ResultData.fail("获取企业的jsapi_ticket异常");

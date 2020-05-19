@@ -42,11 +42,11 @@ public class WeChatUtil {
     /**
      * 获取企业的jsapi_ticket
      */
-//    private static final String GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=%s";
+    private static final String GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=%s";
     /**
      * 获取应用的jsapi_ticket
      */
-    private static final String GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/ticket/get?access_token=%s&type=agent_config";
+    private static final String GET_JSAPI_APP_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/ticket/get?access_token=%s&type=agent_config";
 
     /**
      * 发起https请求并获取结果
@@ -186,6 +186,24 @@ public class WeChatUtil {
         String ticket = "";
         // 获取企业的jsapi_ticket URL
         String url = String.format(GET_JSAPI_TICKET, accessToken);
+        // 根据url通过https请求获取accesstoken
+        Map<String, Object> returnMap = WeChatUtil.httpRequest(url, "GET", null);
+        if (null != returnMap && returnMap.size() > 0) {
+            // access_token
+            ticket = MapUtils.getString(returnMap, "ticket");
+        } else {
+            log.error("accesstoken获取失败");
+        }
+        return ticket;
+    }
+
+    /**
+     * 获取企业的jsapi_ticket
+     */
+    public static String getJsApiAppTicket(String accessToken) {
+        String ticket = "";
+        // 获取企业的jsapi_ticket URL
+        String url = String.format(GET_JSAPI_APP_TICKET, accessToken);
         // 根据url通过https请求获取accesstoken
         Map<String, Object> returnMap = WeChatUtil.httpRequest(url, "GET", null);
         if (null != returnMap && returnMap.size() > 0) {
