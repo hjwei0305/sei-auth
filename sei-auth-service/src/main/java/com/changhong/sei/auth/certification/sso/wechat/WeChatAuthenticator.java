@@ -219,8 +219,8 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         // 必填，生成签名的时间戳
         String timestamp = String.valueOf(System.currentTimeMillis());
         // 必填，生成签名的随机串
-        String nonceStr = RandomUtils.randomString(10);
-        String url = getWebBaseUrl();
+        String nonceStr = RandomUtils.randomString(16);
+        String url = getWebBaseUrl() + "/";
 
         // 必填，签名，见 附录-JS-SDK使用权限签名算法
         String signature = "";
