@@ -122,4 +122,16 @@ public class SingleSignOnController implements Constants {
     public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest) {
         return builder.getSingleSignOnAuthenticator(loginRequest.getAuthType()).bindingAccount(loginRequest);
     }
+
+    @ResponseBody
+    @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
+    @RequestMapping(value = "/sso/js/sdk", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResultData<Map<String, String>> jsSdk(HttpServletRequest request) {
+        String authType = request.getParameter("authType");
+        if (StringUtils.isBlank(authType)) {
+            throw new WebException("单点登录失败：authType不能为空！");
+        }
+        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
+        return authenticator.jsapi_ticket();
+    }
 }

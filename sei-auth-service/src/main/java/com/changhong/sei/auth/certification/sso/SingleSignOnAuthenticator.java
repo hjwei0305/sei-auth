@@ -53,4 +53,6 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
      * 获取用户信息
      */
     ResultData<SessionUserResponse> auth(HttpServletRequest request);
+
+    ResultData<Map<String, String>> jsapi_ticket();
 }

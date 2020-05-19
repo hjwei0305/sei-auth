@@ -49,10 +49,11 @@ public class AuthenticationControllerTest extends BaseUnitTest {
         String uri = "http://localhost:8080/auth/login";
 //        String uri = "http://10.4.208.86:20002/sei-auth/auth/login";
         LoginRequest request = new LoginRequest();
-        request.setTenant("EPPEN");
+        request.setTenant("10044");
         request.setAccount("admin");
 //        System.out.println("e10adc3949ba59abbe56e057f20f883e".equals(encrypt.encrypt("123456")));
         request.setPassword("e10adc3949ba59abbe56e057f20f883e");
+        request.setReqId("e10adc3949ba59abbe56e057f20f883e");
 //        request = JsonUtils.fromJson(" {\"id\":null,\"tenant\":null,\"account\":\"admin\",\"password\":\"e10adc3949ba59abbe56e057f20f883e\",\"locale\":\"zh_CN\"}", LoginRequest.class);
         ResultData result = apiTemplate.postByUrl(uri, ResultData.class, request);
         System.out.println(JsonUtils.toJson(result));
@@ -64,7 +65,7 @@ public class AuthenticationControllerTest extends BaseUnitTest {
         String uri = "http://localhost:8080/auth/getAuthorizedFeatures";
 //        String uri = "http://10.4.208.86:20002/sei-auth/auth/getAuthorizedFeatures";
         Map<String, String> params = new HashMap<>();
-//        params.put("userId", ContextUtil.getUserId());
+        params.put("userId", ContextUtil.getUserId());
         ResultData result = apiTemplate.getByUrl(uri, ResultData.class, params);
         System.out.println(JsonUtils.toJson(result));
         Assert.assertTrue(result.successful());

@@ -1,8 +1,11 @@
 package com.changhong.sei.auth.common.weixin;
 
+import com.changhong.sei.auth.common.RandomUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.util.SerializeUtils;
+import com.changhong.sei.util.Signature;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +42,10 @@ public class WeChatUtil {
      * 获取访问用户
      */
     private static final String GET_USER_URL = "https://qyapi.weixin.qq.com/cgi-bin/user/get?access_token=%s&userid=%s";
-
+    /**
+     * 获取企业的jsapi_ticket
+     */
+    private static final String GET_JSAPI_TICKET = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=%s";
 
     /**
      * 发起https请求并获取结果
@@ -170,6 +176,24 @@ public class WeChatUtil {
             log.error("accesstoken获取失败");
         }
         return accessToken;
+    }
+
+    /**
+     * 获取企业的jsapi_ticket
+     */
+    public static String getJsApiTicket(String accessToken) {
+        String ticket = "";
+        // 获取企业的jsapi_ticket URL
+        String url = String.format(GET_JSAPI_TICKET, accessToken);
+        // 根据url通过https请求获取accesstoken
+        Map<String, Object> returnMap = WeChatUtil.httpRequest(url, "GET", null);
+        if (null != returnMap && returnMap.size() > 0) {
+            // access_token
+            ticket = MapUtils.getString(returnMap, "ticket");
+        } else {
+            log.error("accesstoken获取失败");
+        }
+        return ticket;
     }
 
     /**

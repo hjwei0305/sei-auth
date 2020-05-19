@@ -3,6 +3,7 @@ package com.changhong.sei.auth.certification.sso.wechat;
 import com.changhong.sei.auth.certification.AbstractTokenAuthenticator;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.common.Constants;
+import com.changhong.sei.auth.common.RandomUtils;
 import com.changhong.sei.auth.common.weixin.WeChatUtil;
 import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.dto.LoginRequest;
@@ -12,6 +13,7 @@ import com.changhong.sei.auth.service.SocialAccountService;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.JsonUtils;
+import com.changhong.sei.util.Signature;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +91,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      */
     @Override
     public String getAuthorizeEndpoint(HttpServletRequest request) {
-       Map<String, String> data = getAuthorizeData(request).getData();
+        Map<String, String> data = getAuthorizeData(request).getData();
         //这个方法的三个参数分别是授权后的重定向url、获取用户信息类型和state
         String redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect";
 
@@ -171,17 +173,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
         String state = request.getParameter("state");
 
         // 检查缓存中是否存在有效token
-        String accessToken = cacheBuilder.get(CACHE_KEY_TOKEN);
-        if (StringUtils.isBlank(accessToken)) {
-            AuthProperties.SingleSignOnProperties sso = properties.getSso();
-
-            // 不存在,获取新的有效token
-            accessToken = WeChatUtil.getAccessToken(sso.getAppId(), sso.getCropSecret());
-            if (StringUtils.isNotBlank(accessToken)) {
-                // 微信默认token过期时间为7200秒, 为防止过期缓存有效时间设置为7000秒
-                cacheBuilder.set(CACHE_KEY_TOKEN, accessToken, 7000000);
-            }
-        }
+        String accessToken = getAccessToken();
 
         Map<String, Object> userMap = WeChatUtil.getUserInfo(accessToken, code);
         LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
@@ -215,5 +207,58 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
             }
         }
         return ResultData.success(userResponse);
+    }
+
+    @Override
+    public ResultData<Map<String, String>> jsapi_ticket() {
+        ResultData<Map<String, String>> result;
+        AuthProperties.SingleSignOnProperties sso = properties.getSso();
+
+        // 必填，企业微信的corpID
+        String appId = sso.getAppId();
+        // 必填，生成签名的时间戳
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        // 必填，生成签名的随机串
+        String nonceStr = RandomUtils.randomString(10);
+        String url = getWebBaseUrl();
+
+        // 必填，签名，见 附录-JS-SDK使用权限签名算法
+        String signature = "";
+
+        String accessToken = getAccessToken();
+        String ticket = WeChatUtil.getJsApiTicket(accessToken);
+        if (StringUtils.isNotBlank(ticket)) {
+            String str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", ticket, nonceStr, timestamp, url);
+            signature = Signature.sign(str);
+
+            Map<String, String> data = new HashMap<>();
+            data.put("appId", appId);
+            data.put("timestamp", timestamp);
+            data.put("nonceStr", nonceStr);
+            data.put("signature", signature);
+            result = ResultData.success(data);
+        } else {
+            result = ResultData.fail("获取企业的jsapi_ticket异常");
+        }
+        return result;
+    }
+
+    /**
+     * 获取AccessToken
+     */
+    private String getAccessToken() {
+        // 检查缓存中是否存在有效token
+        String accessToken = cacheBuilder.get(CACHE_KEY_TOKEN);
+        if (StringUtils.isBlank(accessToken)) {
+            AuthProperties.SingleSignOnProperties sso = properties.getSso();
+
+            // 不存在,获取新的有效token
+            accessToken = WeChatUtil.getAccessToken(sso.getAppId(), sso.getCropSecret());
+            if (StringUtils.isNotBlank(accessToken)) {
+                // 微信默认token过期时间为7200秒, 为防止过期缓存有效时间设置为7000秒
+                cacheBuilder.set(CACHE_KEY_TOKEN, accessToken, 7000000);
+            }
+        }
+        return accessToken;
     }
 }

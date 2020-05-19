@@ -5,6 +5,7 @@ import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.core.util.JsonUtils;
+import com.changhong.sei.util.Signature;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,15 @@ public class WeChatAuthenticatorTest {
 
     @Test
     public void auth() {
+    }
+
+    @Test
+    public void sign() {
+        String signature = "";
+        String str = "jsapi_ticket=sM4AOVdWfPE4DxkXGEs8VMCPGGVi4C3VM0P37wVUCFvkVAy_90u5h9nbSlYy3-Sl-HhTdfl2fzFy1AOcHKP7qg&noncestr=Wm3WZYTPz0wzccnW&timestamp=1414587457&url=http://mp.weixin.qq.com?params=value";
+        signature = Signature.sign(str);
+        System.out.println("0f9de62fce790f9a083d5c99e95740ceb90c27ed".equals(signature));
+        System.out.println(signature);
     }
 
 }
