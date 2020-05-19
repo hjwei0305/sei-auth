@@ -246,6 +246,9 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
             data.put("nonceStr", nonceStr);
             data.put("signature", signature);
             data.put("agentSignature", agentSignature);
+            data.put("ticket", ticket);
+            data.put("agentTicket", agentTicket);
+            data.put("url", url);
             result = ResultData.success(data);
         } else {
             result = ResultData.fail("获取企业的jsapi_ticket异常");
