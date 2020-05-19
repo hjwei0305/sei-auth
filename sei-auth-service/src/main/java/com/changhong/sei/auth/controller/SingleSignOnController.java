@@ -125,7 +125,7 @@ public class SingleSignOnController implements Constants {
 
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
-    @RequestMapping(value = "/sso/js/sdk", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/sso/js/sdk", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultData<Map<String, String>> jsSdk(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
