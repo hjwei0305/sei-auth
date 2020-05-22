@@ -16,6 +16,11 @@ public class AuthProperties {
      */
     private String webBaseUrl;
     /**
+     * APP根url地址
+     * 如:http://tsei.changhong.com:8090/sei-app
+     */
+    private String appBaseUrl;
+    /**
      * 服务网关根url地址
      * 如:http://tsei.changhong.com:8090/api-gateway
      */
@@ -37,6 +42,14 @@ public class AuthProperties {
 
     public void setWebBaseUrl(String webBaseUrl) {
         this.webBaseUrl = webBaseUrl;
+    }
+
+    public String getAppBaseUrl() {
+        return appBaseUrl;
+    }
+
+    public void setAppBaseUrl(String appBaseUrl) {
+        this.appBaseUrl = appBaseUrl;
     }
 
     public String getApiBaseUrl() {

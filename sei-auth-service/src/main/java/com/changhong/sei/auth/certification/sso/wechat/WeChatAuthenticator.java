@@ -62,6 +62,15 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
     }
 
     /**
+     * APP根url地址
+     * 如:http://tsei.changhong.com:8090/sei-portal-web
+     */
+    @Override
+    public String getAppBaseUrl() {
+        return properties.getWebBaseUrl();
+    }
+
+    /**
      * 服务网关根url地址
      * 如:http://tsei.changhong.com:8090/api-gateway
      */

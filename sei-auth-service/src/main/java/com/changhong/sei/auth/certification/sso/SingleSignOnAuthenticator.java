@@ -23,8 +23,13 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
      */
     String getWebBaseUrl();
     /**
+     * APP根url地址
+     * 如:http://tsei.changhong.com:8090/sei-app
+     */
+    String getAppBaseUrl();
+    /**
      * 服务网关根url地址
-     * 如:http://tsei.changhong.com:8090/api-gateway
+     * 如:http://tsei.changhong.com:8090/sei-app
      */
     String getApiBaseUrl();
     /**
