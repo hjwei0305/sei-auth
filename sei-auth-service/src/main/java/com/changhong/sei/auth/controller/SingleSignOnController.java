@@ -140,7 +140,7 @@ public class SingleSignOnController implements Constants {
         } else {
             // APP：跳转到移动端
             if (StringUtils.isBlank(url)) {
-                url = authenticator.getAppBaseUrl() + "/index.html#/main?sid=" + sid;
+                url = authenticator.getAppBaseUrl() + "/#/main?sid=" + sid;
                 LOG.error("单点登录跳转地址: {}", url);
                 return "redirect:" + url;
             }
