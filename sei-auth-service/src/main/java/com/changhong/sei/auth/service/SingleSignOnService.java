@@ -24,8 +24,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 @Service
 public class SingleSignOnService {
-    @Autowired
-    private TokenAuthenticatorBuilder builder;
 
     private static final Logger LOG = LoggerFactory.getLogger(SingleSignOnService.class);
 
@@ -74,7 +72,6 @@ public class SingleSignOnService {
     public String redirectMainPage(String sid,  HttpServletRequest request,SingleSignOnAuthenticator authenticator) {
         //浏览器客户端信息
         String ua = request.getHeader("User-Agent");
-        String authType = request.getParameter("authType");
         //客户端是否是pc
         boolean pcAgent = true;
         if (checkAgentIsMobile(ua)) {
