@@ -157,7 +157,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
             ResultData<String> rd = socialAccountService.bindingAccount(response.getTenantCode(), response.getAccount(), openId, SOCIAL_CHANNEL);
             if (rd.successful()) {
                 //设置跳转地址
-                response.setRedirectUrl(singleSignOnService.redirectMainPage(response.getSessionId(),request));
+                response.setRedirectUrl(singleSignOnService.redirectMainPage(response.getSessionId(),request,this));
                 return ResultData.success(response);
             } else {
                 return ResultData.fail(rd.getMessage());

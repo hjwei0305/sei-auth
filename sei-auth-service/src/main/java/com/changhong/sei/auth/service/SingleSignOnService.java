@@ -71,7 +71,7 @@ public class SingleSignOnService {
      * @param request
      * @return
      */
-    public String redirectMainPage(String sid,  HttpServletRequest request) {
+    public String redirectMainPage(String sid,  HttpServletRequest request,SingleSignOnAuthenticator authenticator) {
         //浏览器客户端信息
         String ua = request.getHeader("User-Agent");
         String authType = request.getParameter("authType");
@@ -83,7 +83,6 @@ public class SingleSignOnService {
         } else {
             request.setAttribute("LoginType", "SSO");
         }
-        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
         String url = authenticator.getIndexUrl();
         if (pcAgent) {
             // PC登录：跳转到新版(react)的页面

@@ -87,7 +87,7 @@ public class SingleSignOnController implements Constants {
         if (result.getSuccess()) {
             SessionUserResponse userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
-                String url= service.redirectMainPage(userResponse.getSessionId(), request);
+                String url= service.redirectMainPage(userResponse.getSessionId(), request,authenticator);
                 return "redirect:" + url;
             } else {
                 if (StringUtils.isNotBlank(userResponse.getOpenId())) {
