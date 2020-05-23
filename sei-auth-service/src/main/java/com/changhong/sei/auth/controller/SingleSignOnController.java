@@ -105,7 +105,7 @@ public class SingleSignOnController implements Constants {
         // 单点登录地址
         String loginUrl = authenticator.getLogoutUrl();
         ResultData<SessionUserResponse> result = authenticator.auth(request);
-        LOG.info("单点登录验证结果：{}", result);
+        LOG.error("单点登录验证结果：{}", result);
         if (result.getSuccess()) {
             SessionUserResponse userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
@@ -134,14 +134,14 @@ public class SingleSignOnController implements Constants {
             // PC登录：跳转到新版(react)的页面
             if (StringUtils.isBlank(url)) {
                 url = authenticator.getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + sid;
-                LOG.info("单点登录跳转地址: {}", url);
+                LOG.error("单点登录跳转地址: {}", url);
                 return "redirect:" + url;
             }
         } else {
-            // PC登录：跳转到新版(react)的页面
+            // APP：跳转到移动端
             if (StringUtils.isBlank(url)) {
-                url = authenticator.getAppBaseUrl() + "/index.html#/main";
-                LOG.info("单点登录跳转地址: {}", url);
+                url = authenticator.getAppBaseUrl() + "/index.html#/main?sid=" + sid;
+                LOG.error("单点登录跳转地址: {}", url);
                 return "redirect:" + url;
             }
         }
