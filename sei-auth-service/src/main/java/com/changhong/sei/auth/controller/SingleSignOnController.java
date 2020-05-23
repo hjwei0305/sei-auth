@@ -5,6 +5,7 @@ import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
+import com.changhong.sei.auth.service.SingleSignOnService;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.WebException;
@@ -38,22 +39,8 @@ public class SingleSignOnController implements Constants {
 
     @Autowired
     private TokenAuthenticatorBuilder builder;
-
-    private final static String[] AGENT = {"iphone", "android", "ipad", "phone", "mobile", "wap", "netfront", "java", "operamobi",
-            "operamini", "ucweb", "windowsce", "symbian", "series", "webos", "sony", "blackberry", "dopod",
-            "nokia", "samsung", "palmsource", "xda", "pieplus", "meizu", "midp", "cldc", "motorola", "foma",
-            "docomo", "up.browser", "up.link", "blazer", "helio", "hosin", "huawei", "novarra", "coolpad", "webos",
-            "techfaith", "palmsource", "alcatel", "amoi", "ktouch", "nexian", "ericsson", "philips", "sagem",
-            "wellcom", "bunjalloo", "maui", "smartphone", "iemobile", "spice", "bird", "zte-", "longcos",
-            "pantech", "gionee", "portalmmm", "jigbrowser", "hiptop", "benq", "haier", "^lct", "320x320",
-            "240x320", "176x220", "w3c", "acs-", "alav", "alca", "amoi", "audi", "avan", "benq", "bird", "blac",
-            "blaz", "brew", "cell", "cldc", "cmd-", "dang", "doco", "eric", "hipt", "inno", "ipaq", "java", "jigs",
-            "kddi", "keji", "leno", "lg-c", "lg-d", "lg-g", "lge-", "maui", "maxo", "midp", "mits", "mmef", "mobi",
-            "mot-", "moto", "mwbp", "nec-", "newt", "noki", "oper", "palm", "pana", "pant", "phil", "play", "port",
-            "prox", "qwap", "sage", "sams", "sany", "sch-", "sec-", "send", "seri", "sgh-", "shar", "sie-", "siem",
-            "smal", "smar", "sony", "sph-", "symb", "t-mo", "teli", "tim-", "tosh", "tsm-", "upg1", "upsi", "vk-v",
-            "voda", "wap-", "wapa", "wapi", "wapp", "wapr", "webc", "winw", "winw", "xda", "xda-",
-            "googlebot-mobile"};
+    @Autowired
+    private SingleSignOnService service;
 
     @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
     @RequestMapping(AUTHORIZE_ENDPOINT)
@@ -92,16 +79,7 @@ public class SingleSignOnController implements Constants {
             throw new WebException("单点登录失败：authType不能为空！");
         }
         SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
-        //浏览器客户端信息
-        String ua = request.getHeader("User-Agent");
-        //客户端是否是pc
-        boolean pcAgent = true;
-        if (checkAgentIsMobile(ua)) {
-            pcAgent = false;
-            request.setAttribute("LoginType", "APP");
-        } else {
-            request.setAttribute("LoginType", "SSO");
-        }
+
         // 单点登录地址
         String loginUrl = authenticator.getLogoutUrl();
         ResultData<SessionUserResponse> result = authenticator.auth(request);
@@ -109,7 +87,8 @@ public class SingleSignOnController implements Constants {
         if (result.getSuccess()) {
             SessionUserResponse userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
-                return redirectMainPage(userResponse.getSessionId(), authType, pcAgent);
+                String url= service.redirectMainPage(userResponse.getSessionId(), request);
+                return "redirect:" + url;
             } else {
                 if (StringUtils.isNotBlank(userResponse.getOpenId())) {
                     // 账号绑定页面
@@ -127,52 +106,14 @@ public class SingleSignOnController implements Constants {
     //    @ApiOperation(value = "跳转地址", notes = "单点登录跳转地址")
 //    @RequestMapping(value = "/sso/redirectMainPage")
 //    public String redirectMainPage(@RequestParam("sid") String sid, @RequestParam("authType") String authType) {
-    private String redirectMainPage(String sid, String authType, boolean pcAgent) {
-        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
-        String url = authenticator.getIndexUrl();
-        if (pcAgent) {
-            // PC登录：跳转到新版(react)的页面
-            if (StringUtils.isBlank(url)) {
-                url = authenticator.getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + sid;
-                LOG.error("单点登录跳转地址: {}", url);
-                return "redirect:" + url;
-            }
-        } else {
-            // APP：跳转到移动端
-            if (StringUtils.isBlank(url)) {
-                url = authenticator.getAppBaseUrl() + "/#/main?sid=" + sid;
-                LOG.error("单点登录跳转地址: {}", url);
-                return "redirect:" + url;
-            }
-        }
-        //单点错误页面
-        return "redirect:" + url;
-    }
 
-    /**
-     * 判断User-Agent 是不是来自于手机
-     *
-     * @param ua
-     * @return
-     */
-    public static boolean checkAgentIsMobile(String ua) {
-        LOG.error("User-Agent的类型为:" + ua);
-        if (ua != null) {
-            ua = ua.toLowerCase();
-            // 排除 苹果桌面系统
-            if (!ua.contains("windows nt") && !ua.contains("macintosh")) {
-                //移动端
-                return StringUtils.containsAny(ua, AGENT);
-            }
-        }
-        return false;
-    }
+
 
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
     @RequestMapping(value = "/sso/binding/socialAccount", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest) {
-        return builder.getSingleSignOnAuthenticator(loginRequest.getAuthType()).bindingAccount(loginRequest);
+    public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest,HttpServletRequest request) {
+        return builder.getSingleSignOnAuthenticator(loginRequest.getAuthType()).bindingAccount(loginRequest,request);
     }
 
     @ResponseBody

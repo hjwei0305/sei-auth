@@ -9,6 +9,7 @@ import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
+import com.changhong.sei.auth.service.SingleSignOnService;
 import com.changhong.sei.auth.service.SocialAccountService;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.dto.ResultData;
@@ -45,11 +46,13 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
     private final SocialAccountService socialAccountService;
     private final CacheBuilder cacheBuilder;
     private final AuthProperties properties;
+    private final SingleSignOnService singleSignOnService;
 
-    public WeChatAuthenticator(AuthProperties properties, SocialAccountService socialAccountService, CacheBuilder cacheBuilder) {
+    public WeChatAuthenticator(AuthProperties properties, SocialAccountService socialAccountService, CacheBuilder cacheBuilder,SingleSignOnService singleSignOnService) {
         this.socialAccountService = socialAccountService;
         this.cacheBuilder = cacheBuilder;
         this.properties = properties;
+        this.singleSignOnService=singleSignOnService;
     }
 
     /**
@@ -145,7 +148,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
      * 绑定账号
      */
     @Override
-    public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest) {
+    public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest,HttpServletRequest request) {
         // 社交平台开放ID
         String openId = loginRequest.getReqId();
         ResultData<SessionUserResponse> resultData = login(loginRequest);
@@ -153,6 +156,8 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
             SessionUserResponse response = resultData.getData();
             ResultData<String> rd = socialAccountService.bindingAccount(response.getTenantCode(), response.getAccount(), openId, SOCIAL_CHANNEL);
             if (rd.successful()) {
+                //设置跳转地址
+                response.setRedirectUrl(singleSignOnService.redirectMainPage(response.getSessionId(),request));
                 return ResultData.success(response);
             } else {
                 return ResultData.fail(rd.getMessage());

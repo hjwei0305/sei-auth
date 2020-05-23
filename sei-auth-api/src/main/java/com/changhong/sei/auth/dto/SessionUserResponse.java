@@ -62,10 +62,16 @@ public class SessionUserResponse implements Serializable {
     @ApiModelProperty(notes = "语言环境")
     private String locale = "zh_CN";
     /**
-     * 客户端IP
+     * 登录状态
      */
     @ApiModelProperty(notes = "登录状态(enum)")
     private LoginStatus loginStatus;
+
+    /**
+     * 跳转地址
+     */
+    @ApiModelProperty(notes = "跳转地址")
+    private String redirectUrl;
 
     public String getSessionId() {
         return sessionId;
@@ -196,4 +202,11 @@ public class SessionUserResponse implements Serializable {
         return new SessionUserResponse();
     }
 
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
 }

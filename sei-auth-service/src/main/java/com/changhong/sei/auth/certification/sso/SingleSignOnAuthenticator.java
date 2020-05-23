@@ -52,7 +52,7 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
     /**
      * 绑定账号
      */
-    ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest);
+    ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest,HttpServletRequest request);
 
     /**
      * 获取用户信息
