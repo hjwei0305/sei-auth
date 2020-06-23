@@ -6,8 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -70,13 +69,13 @@ public class AccountResponse extends BaseEntityDto {
      */
     @ApiModelProperty(notes = "注册时间", example = "2020-01-14 22:18:48")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime sinceDate;
+    private Date sinceDate;
     /**
      * 截止有效期
      */
     @ApiModelProperty(notes = "截止有效期", example = "2099-01-14")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate accountExpired;
+    private Date accountExpired;
 
     public String getTenantCode() {
         return tenantCode;
@@ -142,19 +141,19 @@ public class AccountResponse extends BaseEntityDto {
         this.locked = locked;
     }
 
-    public LocalDateTime getSinceDate() {
+    public Date getSinceDate() {
         return sinceDate;
     }
 
-    public void setSinceDate(LocalDateTime sinceDate) {
+    public void setSinceDate(Date sinceDate) {
         this.sinceDate = sinceDate;
     }
 
-    public LocalDate getAccountExpired() {
+    public Date getAccountExpired() {
         return accountExpired;
     }
 
-    public void setAccountExpired(LocalDate accountExpired) {
+    public void setAccountExpired(Date accountExpired) {
         this.accountExpired = accountExpired;
     }
 

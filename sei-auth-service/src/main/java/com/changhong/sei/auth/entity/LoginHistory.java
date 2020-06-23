@@ -8,7 +8,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 实现功能：登录历史
@@ -45,9 +45,9 @@ public class LoginHistory extends BaseEntity implements ITenant {
     /**
      * 登录时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "login_date", updatable = false)
-    private LocalDateTime loginDate;
+    private Date loginDate;
     /**
      * 登录用户代理
      */
@@ -56,7 +56,7 @@ public class LoginHistory extends BaseEntity implements ITenant {
     /**
      * 登录日志
      */
-    @Enumerated(value= EnumType.STRING)
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "login_status")
     private SessionUserResponse.LoginStatus loginStatus;
 
@@ -99,11 +99,11 @@ public class LoginHistory extends BaseEntity implements ITenant {
         this.loginIp = loginIp;
     }
 
-    public LocalDateTime getLoginDate() {
+    public Date getLoginDate() {
         return loginDate;
     }
 
-    public void setLoginDate(LocalDateTime loginDate) {
+    public void setLoginDate(Date loginDate) {
         this.loginDate = loginDate;
     }
 

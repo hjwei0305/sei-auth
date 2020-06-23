@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -45,7 +45,7 @@ public class LoginHistoryAspect {
             LoginHistory history = new LoginHistory();
             history.setAccount(loginRequest.getAccount());
             history.setTenantCode(loginRequest.getTenant());
-            history.setLoginDate(LocalDateTime.now());
+            history.setLoginDate(new Date());
             try {
                 HttpServletRequest req = HttpUtils.getRequest();
                 history.setLoginIp(HttpUtils.getClientIP(req));

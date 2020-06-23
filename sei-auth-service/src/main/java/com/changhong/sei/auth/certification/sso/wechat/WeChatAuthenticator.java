@@ -236,16 +236,16 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
 
         // 必填，签名，见 附录-JS-SDK使用权限签名算法
         String signature = "";
-        String agentSignature = "";
+//        String agentSignature = "";
 
         String accessToken = getAccessToken();
         String ticket = WeChatUtil.getJsApiTicket(accessToken);
-        String agentTicket = WeChatUtil.getJsApiAppTicket(accessToken);
+//        String agentTicket = WeChatUtil.getJsApiAppTicket(accessToken);
         if (StringUtils.isNotBlank(ticket)) {
             String str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", ticket, nonceStr, timestamp, url);
             signature = Signature.sign(str);
-            str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", agentTicket, nonceStr, timestamp, url);
-            agentSignature = Signature.sign(str);
+//            str = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", agentTicket, nonceStr, timestamp, url);
+//            agentSignature = Signature.sign(str);
 
             AuthProperties.SingleSignOnProperties sso = properties.getSso();
 
@@ -253,15 +253,15 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements S
             // 必填，企业微信的corpid，必须与当前登录的企业一致
             data.put("corpid", sso.getAppId());
             // 必填，企业微信的应用id （e.g. 1000247）
-            data.put("agentid", sso.getAgentId());
+//            data.put("agentid", sso.getAgentId());
             // 必填，生成签名的时间戳
             data.put("timestamp", timestamp);
             // 必填，生成签名的随机串
             data.put("nonceStr", nonceStr);
             data.put("signature", signature);
-            data.put("agentSignature", agentSignature);
+//            data.put("agentSignature", agentSignature);
             data.put("ticket", ticket);
-            data.put("agentTicket", agentTicket);
+//            data.put("agentTicket", agentTicket);
             data.put("url", url);
             result = ResultData.success(data);
         } else {

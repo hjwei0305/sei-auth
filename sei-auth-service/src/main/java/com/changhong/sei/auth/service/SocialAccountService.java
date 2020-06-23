@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -81,7 +81,7 @@ public class SocialAccountService extends BaseEntityService<SocialAccount> {
         socialAccount.setAccount(account);
         socialAccount.setChannelCode(channel);
         socialAccount.setOpenId(openId);
-        socialAccount.setSinceDate(LocalDateTime.now());
+        socialAccount.setSinceDate(new Date());
 
         this.save(socialAccount);
 

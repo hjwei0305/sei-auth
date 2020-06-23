@@ -1,11 +1,12 @@
 package com.changhong.sei.auth.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 实现功能：社交账户
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 @Table(name = "social_account")
 @DynamicInsert
 @DynamicUpdate
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SocialAccount extends BaseEntity {
     private static final long serialVersionUID = 1L;
     public static final String FIELD_CHANNEL_CODE = "channelCode";
@@ -55,8 +57,9 @@ public class SocialAccount extends BaseEntity {
     /**
      * 注册时间
      */
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "since_date", updatable = false)
-    private LocalDateTime sinceDate;
+    private Date sinceDate;
 
     public String getTenantCode() {
         return tenantCode;
@@ -90,11 +93,11 @@ public class SocialAccount extends BaseEntity {
         this.openId = openId;
     }
 
-    public LocalDateTime getSinceDate() {
+    public Date getSinceDate() {
         return sinceDate;
     }
 
-    public void setSinceDate(LocalDateTime sinceDate) {
+    public void setSinceDate(Date sinceDate) {
         this.sinceDate = sinceDate;
     }
 }

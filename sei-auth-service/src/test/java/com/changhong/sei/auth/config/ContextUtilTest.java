@@ -55,8 +55,9 @@ public class ContextUtilTest /*extends BaseUnitTest*/ {
 
     @Test
     public void cacheTest() {
-        String key = "test:123456";
+        String key = "test:654321";
         String value = cacheBuilder.get(key);
+        System.out.println(value);
         cacheBuilder.set(key, "123456");
         value = cacheBuilder.get(key);
         System.out.println(value);

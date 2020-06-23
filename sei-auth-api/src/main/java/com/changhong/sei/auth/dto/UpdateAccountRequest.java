@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * 实现功能：
@@ -50,7 +50,7 @@ public class UpdateAccountRequest extends BaseEntityDto {
      */
     @ApiModelProperty(notes = "截止有效期", example = "2020-01-21")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate accountExpired;
+    private Date accountExpired;
 
     public String getName() {
         return name;
@@ -92,11 +92,11 @@ public class UpdateAccountRequest extends BaseEntityDto {
         this.locked = locked;
     }
 
-    public LocalDate getAccountExpired() {
+    public Date getAccountExpired() {
         return accountExpired;
     }
 
-    public void setAccountExpired(LocalDate accountExpired) {
+    public void setAccountExpired(Date accountExpired) {
         this.accountExpired = accountExpired;
     }
 }

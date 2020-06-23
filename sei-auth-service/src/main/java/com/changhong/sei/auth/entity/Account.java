@@ -2,14 +2,13 @@ package com.changhong.sei.auth.entity;
 
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.ITenant;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * 实现功能：平台账户实体
@@ -21,6 +20,7 @@ import java.time.LocalDateTime;
 @Table(name = "auth_account")
 @DynamicInsert
 @DynamicUpdate
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Account extends BaseEntity implements ITenant {
     private static final long serialVersionUID = 1L;
     public static final String FIELD_ACCOUNT = "account";
@@ -72,14 +72,16 @@ public class Account extends BaseEntity implements ITenant {
     /**
      * 注册时间
      */
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "since_date", updatable = false)
-    private LocalDateTime sinceDate;
+    private Date sinceDate;
 
     /**
      * 账户有效期
      */
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "account_expired")
-    private LocalDate accountExpired;
+    private Date accountExpired;
 
     /**
      * 密码
@@ -90,8 +92,9 @@ public class Account extends BaseEntity implements ITenant {
     /**
      * 密码过期时间
      */
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "password_expire_time")
-    private LocalDate passwordExpireTime;
+    private Date passwordExpireTime;
 
     /**
      * 来源系统
@@ -163,19 +166,19 @@ public class Account extends BaseEntity implements ITenant {
         this.locked = locked;
     }
 
-    public LocalDateTime getSinceDate() {
+    public Date getSinceDate() {
         return sinceDate;
     }
 
-    public void setSinceDate(LocalDateTime sinceDate) {
+    public void setSinceDate(Date sinceDate) {
         this.sinceDate = sinceDate;
     }
 
-    public LocalDate getAccountExpired() {
+    public Date getAccountExpired() {
         return accountExpired;
     }
 
-    public void setAccountExpired(LocalDate accountExpired) {
+    public void setAccountExpired(Date accountExpired) {
         this.accountExpired = accountExpired;
     }
 
@@ -187,11 +190,11 @@ public class Account extends BaseEntity implements ITenant {
         this.password = password;
     }
 
-    public LocalDate getPasswordExpireTime() {
+    public Date getPasswordExpireTime() {
         return passwordExpireTime;
     }
 
-    public void setPasswordExpireTime(LocalDate passwordExpireTime) {
+    public void setPasswordExpireTime(Date passwordExpireTime) {
         this.passwordExpireTime = passwordExpireTime;
     }
 

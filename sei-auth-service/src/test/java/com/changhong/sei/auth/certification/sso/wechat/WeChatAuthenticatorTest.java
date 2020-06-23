@@ -31,8 +31,8 @@ public class WeChatAuthenticatorTest {
     public void bindingAccount() {
         String json = "{\"account\":\"admin\",\"password\":\"e10adc3949ba59abbe56e057f20f883e\",\"reqId\":\"vision.ma\"}";
         LoginRequest request = JsonUtils.fromJson(json, LoginRequest.class);
-        ResultData<SessionUserResponse> resultData = authenticator.bindingAccount(request);
-        System.out.println(resultData);
+//        ResultData<SessionUserResponse> resultData = authenticator.bindingAccount(request);
+//        System.out.println(resultData);
     }
 
     @Test

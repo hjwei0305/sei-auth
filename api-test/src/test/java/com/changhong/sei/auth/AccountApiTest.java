@@ -17,9 +17,9 @@ import org.springframework.test.context.junit4.SpringRunner;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-05-06 16:09
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class AccountApiTest /*extends BaseUnitTest*/ {
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
+public class AccountApiTest extends BaseUnitTest {
     @Autowired
     private AccountApi api;
 

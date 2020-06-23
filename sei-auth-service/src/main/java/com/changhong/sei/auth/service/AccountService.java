@@ -10,6 +10,7 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.util.DateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,12 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 实现功能：平台账户业务逻辑实现
@@ -112,15 +108,17 @@ public class AccountService extends BaseEntityService<Account> {
         }
         // 对密码md5散列值进行再次散列
         account.setPassword(encodePassword(account.getPassword()));
+
+        Date now = new Date();
         // 有效期
         if (Objects.isNull(account.getAccountExpired())) {
             // 无有效期设置默认有效期
-            account.setAccountExpired(LocalDate.of(2099, 12, 31));
+            account.setAccountExpired(DateUtils.nYearsAfter(50, now));
         }
         // 注册时间
-        account.setSinceDate(LocalDateTime.now());
+        account.setSinceDate(now);
         // 密码过期时间(默认一个月后)
-        account.setPasswordExpireTime(LocalDate.now().plusDays(defaultPasswordExpire));
+        account.setPasswordExpireTime(DateUtils.nDaysAfter(defaultPasswordExpire, now));
 
         dao.save(account);
         return ResultData.success(account.getAccount());
@@ -190,7 +188,7 @@ public class AccountService extends BaseEntityService<Account> {
             throw new IllegalArgumentException("密码过期时间天数不能小于1");
         }
         // 密码过期时间(默认一个月后)
-        dao.updatePassword(accountId, this.encodePassword(password), LocalDate.now().plusDays(passwordExpire));
+        dao.updatePassword(accountId, this.encodePassword(password), DateUtils.nDaysAfter(passwordExpire, new Date()));
     }
 
     /**
@@ -261,9 +259,9 @@ public class AccountService extends BaseEntityService<Account> {
      * @return 在有效期中返回true, 反之返回false
      */
     public boolean checkAccountExpired(Account account) {
-        LocalDate validityDate = account.getAccountExpired();
+        Date validityDate = account.getAccountExpired();
         if (Objects.nonNull(validityDate)) {
-            return validityDate.isAfter(LocalDate.now());
+            return validityDate.after(new Date());
         } else {
             return true;
         }

@@ -1,5 +1,6 @@
 package com.changhong.sei.auth.controller;
 
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.core.dto.ResultData;
@@ -8,6 +9,7 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.util.JsonUtils;
 import org.junit.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
@@ -19,7 +21,7 @@ public class AccountControllerTest extends BaseUnitTest {
     @Autowired
     private IEncrypt encrypt;
 
-    private final static String ID = "58092E60-3B5F-11EA-B974-1063C8D2143D";
+    private final static String ID = "62D5F24D-43F8-11EA-B9FC-CEA14F741438";
 
     @Test
     public void md5() {
@@ -32,13 +34,21 @@ public class AccountControllerTest extends BaseUnitTest {
     public void getById() {
         ResultData<AccountResponse> resultData = service.getById(ID);
         System.out.println(JsonUtils.toJson(resultData));
+        resultData = service.getById(ID);
+        System.out.println(JsonUtils.toJson(resultData));
+    }
+
+    @Test
+    public void getByTenantAccount() {
+        ResultData<SessionUserResponse> resultData = service.getByTenantAccount("10044", "mac321");
+        System.out.println(JsonUtils.toJson(resultData));
     }
 
     @Test
     public void register() {
         RegisterAccountRequest request = new RegisterAccountRequest();
         request.setUserId(UUID.randomUUID().toString());
-        request.setAccount("mac");
+        request.setAccount("mac321");
         request.setName("mac测试");
         request.setPassword(encrypt.encrypt("123456"));
 
@@ -60,9 +70,12 @@ public class AccountControllerTest extends BaseUnitTest {
     @Test
     public void update() throws IllegalAccessException {
         ResultData<AccountResponse> result = service.getById(ID);
-//        UpdateAccountRequest request = (UpdateAccountRequest) result.getData();
-//        ResultData<String> resultData = service.update(request);
-//        System.out.println(JsonUtils.toJson(resultData));
+        UpdateAccountRequest request = new ModelMapper().map(result.getData(), UpdateAccountRequest.class);
+        request.setName("系统管理员"); // 系统管理员
+        ResultData<String> resultData = service.update(request);
+        System.out.println(JsonUtils.toJson(resultData));
+        result = service.getById(ID);
+        System.out.println(JsonUtils.toJson(result));
     }
 
     @Test
@@ -88,6 +101,8 @@ public class AccountControllerTest extends BaseUnitTest {
     @Test
     public void findByPage() {
         Search search = new Search();
+        search.addFilter(new SearchFilter("sinceDate", "2020-06-30 12:12:34", SearchFilter.Operator.LE, "date"));
+
         ResultData<PageResult<AccountResponse>> resultData = service.findByPage(search);
         System.out.println(JsonUtils.toJson(resultData));
     }

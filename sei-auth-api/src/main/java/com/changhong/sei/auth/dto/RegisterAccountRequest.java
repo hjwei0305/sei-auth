@@ -3,8 +3,6 @@ package com.changhong.sei.auth.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
-
 /**
  * 实现功能：
  *
