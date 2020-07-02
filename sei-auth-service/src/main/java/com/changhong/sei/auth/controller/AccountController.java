@@ -101,7 +101,7 @@ public class AccountController extends BaseEntityController<Account, AccountResp
             return ResultData.fail("参数不能为空！");
         }
 
-        return accountService.createAccount(account);
+        return accountService.createAccount(account, false);
     }
 
     /**
@@ -117,7 +117,7 @@ public class AccountController extends BaseEntityController<Account, AccountResp
         }
         account.setPassword(StringUtils.EMPTY);
 
-        return accountService.createAccount(account);
+        return accountService.createAccount(account, true);
     }
 
     /**

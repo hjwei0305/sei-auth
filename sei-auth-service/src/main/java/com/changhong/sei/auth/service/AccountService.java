@@ -90,7 +90,7 @@ public class AccountService extends BaseEntityService<Account> {
      * @return 创建账户结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<String> createAccount(Account account) {
+    public ResultData<String> createAccount(Account account, boolean isUpdateUserId) {
         if (Objects.isNull(account)) {
             return ResultData.fail("参数不能为空！");
         }
@@ -98,7 +98,11 @@ public class AccountService extends BaseEntityService<Account> {
         // 检查账户是否已存在
         Account oldAccount = dao.findByAccountAndTenantCode(account.getAccount(), account.getTenantCode());
         if (Objects.nonNull(oldAccount)) {
-            return ResultData.fail(String.format("账户[%s]已在租户[%s]下存在！", account.getAccount(), account.getTenantCode()));
+            if (!isUpdateUserId) {
+                return ResultData.fail(String.format("账户[%s]已在租户[%s]下存在！", account.getAccount(), account.getTenantCode()));
+            } else {
+                account.setId(oldAccount.getId());
+            }
         }
 
         // 检查是否有密码
