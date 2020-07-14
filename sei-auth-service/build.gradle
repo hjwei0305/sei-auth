@@ -114,5 +114,5 @@ jib {
         //format = 'OCI'
     }
     // 如果私有镜像仓库没有启用https，设置allowInsecureRegistries参数为true
-    allowInsecureRegistries = true
+    allowInsecureRegistries = false
 }
