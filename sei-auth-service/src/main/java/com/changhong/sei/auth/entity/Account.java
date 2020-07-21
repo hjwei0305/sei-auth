@@ -8,7 +8,8 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 实现功能：平台账户实体
@@ -72,16 +73,16 @@ public class Account extends BaseEntity implements ITenant {
     /**
      * 注册时间
      */
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "since_date", updatable = false)
-    private Date sinceDate;
+    private LocalDateTime sinceDate;
 
     /**
      * 账户有效期
      */
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "account_expired")
-    private Date accountExpired;
+    private LocalDate accountExpired;
 
     /**
      * 密码
@@ -92,9 +93,9 @@ public class Account extends BaseEntity implements ITenant {
     /**
      * 密码过期时间
      */
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "password_expire_time")
-    private Date passwordExpireTime;
+    private LocalDate passwordExpireTime;
 
     /**
      * 来源系统
@@ -166,19 +167,19 @@ public class Account extends BaseEntity implements ITenant {
         this.locked = locked;
     }
 
-    public Date getSinceDate() {
+    public LocalDateTime getSinceDate() {
         return sinceDate;
     }
 
-    public void setSinceDate(Date sinceDate) {
+    public void setSinceDate(LocalDateTime sinceDate) {
         this.sinceDate = sinceDate;
     }
 
-    public Date getAccountExpired() {
+    public LocalDate getAccountExpired() {
         return accountExpired;
     }
 
-    public void setAccountExpired(Date accountExpired) {
+    public void setAccountExpired(LocalDate accountExpired) {
         this.accountExpired = accountExpired;
     }
 
@@ -190,11 +191,11 @@ public class Account extends BaseEntity implements ITenant {
         this.password = password;
     }
 
-    public Date getPasswordExpireTime() {
+    public LocalDate getPasswordExpireTime() {
         return passwordExpireTime;
     }
 
-    public void setPasswordExpireTime(Date passwordExpireTime) {
+    public void setPasswordExpireTime(LocalDate passwordExpireTime) {
         this.passwordExpireTime = passwordExpireTime;
     }
 

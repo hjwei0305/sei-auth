@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -45,7 +47,7 @@ public class AccountService extends BaseEntityService<Account> {
     /**
      * 密码默认过期天数
      */
-    @Value("${sei.auth.password_expire:30}")
+    @Value("${sei.auth.password-expire:30}")
     private int defaultPasswordExpire;
 
     @Autowired
@@ -112,17 +114,15 @@ public class AccountService extends BaseEntityService<Account> {
         }
         // 对密码md5散列值进行再次散列
         account.setPassword(encodePassword(account.getPassword()));
-
-        Date now = new Date();
         // 有效期
         if (Objects.isNull(account.getAccountExpired())) {
             // 无有效期设置默认有效期
-            account.setAccountExpired(DateUtils.nYearsAfter(50, now));
+            account.setAccountExpired(LocalDate.of(2099, 12, 31));
         }
         // 注册时间
-        account.setSinceDate(now);
+        account.setSinceDate(LocalDateTime.now());
         // 密码过期时间(默认一个月后)
-        account.setPasswordExpireTime(DateUtils.nDaysAfter(defaultPasswordExpire, now));
+        account.setPasswordExpireTime(LocalDate.now().plusDays(defaultPasswordExpire));
 
         dao.save(account);
         return ResultData.success(account.getAccount());
@@ -192,7 +192,7 @@ public class AccountService extends BaseEntityService<Account> {
             throw new IllegalArgumentException("密码过期时间天数不能小于1");
         }
         // 密码过期时间(默认一个月后)
-        dao.updatePassword(accountId, this.encodePassword(password), DateUtils.nDaysAfter(passwordExpire, new Date()));
+        dao.updatePassword(accountId, this.encodePassword(password), LocalDate.now().plusDays(passwordExpire));
     }
 
     /**
@@ -263,9 +263,9 @@ public class AccountService extends BaseEntityService<Account> {
      * @return 在有效期中返回true, 反之返回false
      */
     public boolean checkAccountExpired(Account account) {
-        Date validityDate = account.getAccountExpired();
+        LocalDate validityDate = account.getAccountExpired();
         if (Objects.nonNull(validityDate)) {
-            return validityDate.after(new Date());
+            return validityDate.isAfter(LocalDate.now());
         } else {
             return true;
         }

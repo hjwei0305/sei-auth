@@ -15,7 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -80,10 +80,10 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
             return result;
         }
         // 密码过期时间
-        Date passwordExpire = entity.getPasswordExpireTime();
+        LocalDate passwordExpire = entity.getPasswordExpireTime();
         if (Objects.nonNull(passwordExpire)) {
             // 密码过期
-            if (passwordExpire.before(new Date())) {
+            if (passwordExpire.isBefore(LocalDate.now())) {
                 SessionUserResponse userResponse = SessionUserResponse.build();
                 userResponse.setTenantCode(entity.getTenantCode());
                 userResponse.setAccount(entity.getAccount());
@@ -115,9 +115,9 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
             return result;
         }
         // 检查账户是否在有效期内
-        Date validityDate = entity.getAccountExpired();
+        LocalDate validityDate = entity.getAccountExpired();
         if (Objects.nonNull(validityDate)) {
-            if (validityDate.before(new Date())) {
+            if (validityDate.isBefore(LocalDate.now())) {
                 result = ResultData.success("账号已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
                 // 发布登录账号已过期事件
                 ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));

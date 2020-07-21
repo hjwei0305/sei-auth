@@ -68,7 +68,8 @@ install {
 jib {
     // 拉取的镜像的配置
     from {
-        image = 'rddgit.changhong.com:8083/alpine-java:latest'
+//        image = 'rddgit.changhong.com:8083/alpine-java:latest'
+        image = 'rddhub.changhong.com/library/frolvlad-alpine-java:1.18.0'
 //        image = 'hub.changhong.com/pass/java:8-jdk-alpine'
 //        auth {
 //            username = "${docker_registry_username}"
@@ -94,9 +95,11 @@ jib {
         jvmFlags = [
                 '-Djava.security.egd=file:/dev/./urandom',
                 '-Dfile.encoding=utf-8',
-                '-Duser.timezone=GMT+08'
+                '-Duser.timezone=GMT+08',
+                '-server',
+                '-Xms512m',
+                '-Xmx1024m'
         ]
-        // jvmFlags = ['-Xms512m', '-Xdebug', '-Xmy:flag=jib-rules']
         // 启动类限定名
         mainClass = MainClass
         // main 方法的传入参数

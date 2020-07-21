@@ -3,12 +3,12 @@ package com.changhong.sei.auth.entity;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.ITenant;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * 实现功能：登录历史
@@ -45,9 +45,9 @@ public class LoginHistory extends BaseEntity implements ITenant {
     /**
      * 登录时间
      */
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "login_date", updatable = false)
-    private Date loginDate;
+    private LocalDateTime loginDate;
     /**
      * 登录用户代理
      */
@@ -99,11 +99,11 @@ public class LoginHistory extends BaseEntity implements ITenant {
         this.loginIp = loginIp;
     }
 
-    public Date getLoginDate() {
+    public LocalDateTime getLoginDate() {
         return loginDate;
     }
 
-    public void setLoginDate(Date loginDate) {
+    public void setLoginDate(LocalDateTime loginDate) {
         this.loginDate = loginDate;
     }
 
@@ -153,5 +153,27 @@ public class LoginHistory extends BaseEntity implements ITenant {
 
     public void setOsName(String osName) {
         this.osName = osName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        LoginHistory that = (LoginHistory) o;
+        return Objects.equals(tenantCode, that.tenantCode) &&
+                Objects.equals(account, that.account) &&
+                Objects.equals(sessionId, that.sessionId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), tenantCode, account, sessionId);
     }
 }

@@ -6,6 +6,8 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -57,9 +59,9 @@ public class SocialAccount extends BaseEntity {
     /**
      * 注册时间
      */
-    @Temporal(TemporalType.TIMESTAMP)
+//    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "since_date", updatable = false)
-    private Date sinceDate;
+    private LocalDate sinceDate;
 
     public String getTenantCode() {
         return tenantCode;
@@ -93,11 +95,11 @@ public class SocialAccount extends BaseEntity {
         this.openId = openId;
     }
 
-    public Date getSinceDate() {
+    public LocalDate getSinceDate() {
         return sinceDate;
     }
 
-    public void setSinceDate(Date sinceDate) {
+    public void setSinceDate(LocalDate sinceDate) {
         this.sinceDate = sinceDate;
     }
 }

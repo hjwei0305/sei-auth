@@ -19,7 +19,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * 登录事件监听，用于记录登录日志
@@ -68,7 +68,7 @@ public class LoginListener {
         LoginHistory history = new LoginHistory();
         history.setAccount(request.getAccount());
         history.setTenantCode(request.getTenant());
-        history.setLoginDate(new Date());
+        history.setLoginDate(LocalDateTime.now());
 
         try {
             history.setLoginIp(ThreadLocalUtil.getTranVar("ClientIP"));

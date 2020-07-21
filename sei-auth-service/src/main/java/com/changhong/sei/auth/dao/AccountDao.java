@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface AccountDao extends BaseEntityDao<Account> {
      */
     @Modifying
     @Query("update Account a set a.password = :password, a.passwordExpireTime = :passwordExpireTime where a.id = :id")
-    int updatePassword(@Param("id") String id, @Param("password") String password, @Param("passwordExpireTime") Date passwordExpireTime);
+    int updatePassword(@Param("id") String id, @Param("password") String password, @Param("passwordExpireTime") LocalDate passwordExpireTime);
 
     /**
      * 更新账户冻结状态

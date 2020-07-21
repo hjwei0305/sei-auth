@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -50,7 +51,7 @@ public class UpdateAccountByAccountRequest implements Serializable {
      */
     @ApiModelProperty(notes = "截止有效期", example = "2020-01-21")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date accountExpired;
+    private LocalDate accountExpired;
 
     public String getTenant() {
         return tenant;
@@ -92,11 +93,11 @@ public class UpdateAccountByAccountRequest implements Serializable {
         this.locked = locked;
     }
 
-    public Date getAccountExpired() {
+    public LocalDate getAccountExpired() {
         return accountExpired;
     }
 
-    public void setAccountExpired(Date accountExpired) {
+    public void setAccountExpired(LocalDate accountExpired) {
         this.accountExpired = accountExpired;
     }
 }
