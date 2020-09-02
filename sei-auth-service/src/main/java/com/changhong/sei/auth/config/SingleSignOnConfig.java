@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.config;
 
 import com.changhong.sei.auth.config.properties.AuthProperties;
+import com.changhong.sei.auth.config.properties.SsoProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0.00  2020-04-30 10:37
  */
 @Configuration
-@EnableConfigurationProperties({AuthProperties.class})
+@EnableConfigurationProperties({AuthProperties.class, SsoProperties.class})
 public class SingleSignOnConfig {
 
 

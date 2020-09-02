@@ -17,15 +17,24 @@ sei:
       user-name: 管理员
       tenant-code: 10044
 
+#knife4j:
+#  basic:
+#    enable: true
+    ## Basic认证用户名
+#    username: admin
+    ## Basic认证密码
+#    password: 123456
 
 spring:
   application:
     name: ${sei.application.code}
   cloud:
     config:
-      uri: http://10.4.208.86:8100/config-center
+      uri: http://dsei.changhong.com/config-center
+#      uri: http://base-service.changhong.com/config-center
       profile: ${sei.application.env}
       name: ${spring.application.name}
+      enabled: true
     zookeeper:
       # zookeeper注册中心开关
       enabled: true
@@ -39,3 +48,6 @@ spring:
       discovery:
         # 注册到consul的服务名称
         service-name: ${spring.application.name}
+#        healthCheckInterval: 15s
+#        health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
+#        hostname: ${spring.application.name}.industry

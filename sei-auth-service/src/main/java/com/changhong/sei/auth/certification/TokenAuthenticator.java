@@ -21,9 +21,13 @@ public interface TokenAuthenticator {
      */
     String AUTH_TYPE_PASSWORD = "password";
     /**
-     * 微信
+     * 微信认证
      */
     String AUTH_TYPE_WE_CHAT = "weChat";
+    /**
+     * 长虹GT单点认证
+     */
+    String AUTH_TYPE_CH_GT = "chGT";
 
     /**
      * 获取用户信息

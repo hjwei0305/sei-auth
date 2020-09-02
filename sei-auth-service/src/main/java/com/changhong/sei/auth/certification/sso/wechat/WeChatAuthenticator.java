@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.certification.sso.wechat;
 
 import com.changhong.sei.auth.certification.AbstractTokenAuthenticator;
+import com.changhong.sei.auth.certification.sso.Oauth2Authenticator;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.common.RandomUtils;
@@ -34,7 +35,7 @@ import java.util.Objects;
  * @version 1.0.00  2020-04-23 17:27
  */
 @Component(SingleSignOnAuthenticator.AUTH_TYPE_WE_CHAT)
-public class WeChatAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator, Constants {
+public class WeChatAuthenticator extends AbstractTokenAuthenticator implements Oauth2Authenticator, SingleSignOnAuthenticator, Constants {
     private static final Logger LOG = LoggerFactory.getLogger(WeChatAuthenticator.class);
     private static final String CACHE_KEY_TOKEN = "WeChat:AccessToken";
     private static final String SOCIAL_CHANNEL = "WeChat";

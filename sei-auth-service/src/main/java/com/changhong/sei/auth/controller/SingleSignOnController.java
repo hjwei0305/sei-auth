@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.controller;
 
 import com.changhong.sei.auth.certification.TokenAuthenticatorBuilder;
+import com.changhong.sei.auth.certification.sso.Oauth2Authenticator;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.dto.LoginRequest;
@@ -49,7 +50,7 @@ public class SingleSignOnController implements Constants {
         if (StringUtils.isBlank(authType)) {
             throw new WebException("单点登录失败：authType不能为空！");
         }
-        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
+        Oauth2Authenticator authenticator = builder.getOauth2Authenticator(authType);
 
         String endpoint = authenticator.getAuthorizeEndpoint(request);
         LOG.info("【微信网页授权】获取code, endpoint={}", endpoint);
@@ -64,7 +65,7 @@ public class SingleSignOnController implements Constants {
         if (StringUtils.isBlank(authType)) {
             throw new WebException("单点登录失败：authType不能为空！");
         }
-        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
+        Oauth2Authenticator authenticator = builder.getOauth2Authenticator(authType);
 
         ResultData<Map<String, String>> result = authenticator.getAuthorizeData(request);
         LOG.info("【微信网页授权】获取code, result = {}", JsonUtils.toJson(result));
@@ -87,7 +88,7 @@ public class SingleSignOnController implements Constants {
         if (result.getSuccess()) {
             SessionUserResponse userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
-                String url= service.redirectMainPage(userResponse.getSessionId(), request,authenticator);
+                String url = service.redirectMainPage(userResponse.getSessionId(), request, authenticator);
                 return "redirect:" + url;
             } else {
                 if (StringUtils.isNotBlank(userResponse.getOpenId())) {
@@ -108,12 +109,11 @@ public class SingleSignOnController implements Constants {
 //    public String redirectMainPage(@RequestParam("sid") String sid, @RequestParam("authType") String authType) {
 
 
-
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
     @RequestMapping(value = "/sso/binding/socialAccount", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest,HttpServletRequest request) {
-        return builder.getSingleSignOnAuthenticator(loginRequest.getAuthType()).bindingAccount(loginRequest,request);
+    public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request) {
+        return builder.getOauth2Authenticator(loginRequest.getAuthType()).bindingAccount(loginRequest, request);
     }
 
     @ResponseBody
@@ -124,7 +124,7 @@ public class SingleSignOnController implements Constants {
         if (StringUtils.isBlank(authType)) {
             throw new WebException("单点登录失败：authType不能为空！");
         }
-        SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
+        Oauth2Authenticator authenticator = builder.getOauth2Authenticator(authType);
         return authenticator.jsapi_ticket();
     }
 }

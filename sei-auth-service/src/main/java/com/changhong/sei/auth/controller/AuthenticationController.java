@@ -50,9 +50,9 @@ public class AuthenticationController implements AuthenticationApi {
     /**
      * 登录
      * 1.账户认证
-     * ​2.产生会话
+     * 2.产生会话
      * 3.会话写入缓存并设置有效期
-     * 4.返回会话id​​
+     * 4.返回会话id
      */
     @Override
     public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
@@ -82,8 +82,8 @@ public class AuthenticationController implements AuthenticationApi {
     /**
      * 认证会话id
      * 1.通过id获取会话内容(未获取到直接返回false)
-     * ​2.刷新id的有效期
-     * 3.返回true​
+     * 2.刷新id的有效期
+     * 3.返回true
      */
     @Override
     public ResultData<String> check(String sid) {

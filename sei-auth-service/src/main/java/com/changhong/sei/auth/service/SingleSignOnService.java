@@ -1,12 +1,9 @@
 package com.changhong.sei.auth.service;
 
-import com.changhong.sei.auth.certification.TokenAuthenticatorBuilder;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
-import com.changhong.sei.auth.controller.SingleSignOnController;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,11 +62,12 @@ public class SingleSignOnService {
 
     /**
      * 获取登录后的跳转地址
-     * @param sid 会话id
+     *
+     * @param sid     会话id
      * @param request
      * @return
      */
-    public String redirectMainPage(String sid,  HttpServletRequest request,SingleSignOnAuthenticator authenticator) {
+    public String redirectMainPage(String sid, HttpServletRequest request, SingleSignOnAuthenticator authenticator) {
         //浏览器客户端信息
         String ua = request.getHeader("User-Agent");
         //客户端是否是pc
@@ -95,6 +93,6 @@ public class SingleSignOnService {
             }
         }
         //单点错误页面
-        return  url;
+        return url;
     }
 }

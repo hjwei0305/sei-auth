@@ -1,6 +1,5 @@
 package com.changhong.sei.auth.service;
 
-import com.changhong.sei.core.constant.Constants;
 import com.changhong.sei.core.context.ContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class TaskService {
         log.error("error");
         int m = 1;
         int n = 0;
-        System.out.println(m/n);
+//        System.out.println(m/n);
     }
 
     @Async
