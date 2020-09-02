@@ -77,8 +77,14 @@ public class ChGtSingleSignOnAuthenticator extends AbstractTokenAuthenticator im
      * 登录成功url地址
      */
     @Override
-    public String getIndexUrl() {
-        return properties.getIndex();
+    public String getIndexUrl(SessionUserResponse userResponse) {
+        String url = properties.getIndex();
+        // PC登录：跳转到新版(react)的页面
+        if (StringUtils.isBlank(url)) {
+            url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + userResponse.getSessionId();
+            LOG.error("单点登录跳转地址: {}", url);
+        }
+        return url;
     }
 
     /**

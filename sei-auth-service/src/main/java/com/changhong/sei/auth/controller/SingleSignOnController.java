@@ -6,7 +6,6 @@ import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
-import com.changhong.sei.auth.service.SingleSignOnService;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.WebException;
@@ -40,8 +39,6 @@ public class SingleSignOnController implements Constants {
 
     @Autowired
     private TokenAuthenticatorBuilder builder;
-    @Autowired
-    private SingleSignOnService service;
 
     @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
     @RequestMapping(AUTHORIZE_ENDPOINT)
@@ -81,33 +78,28 @@ public class SingleSignOnController implements Constants {
         }
         SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
 
+        //浏览器客户端信息
+        String ua = request.getHeader("User-Agent");
+        //客户端是否是pc
+        if (authenticator.checkAgentIsMobile(ua)) {
+            request.setAttribute("LoginType", "APP");
+        } else {
+            request.setAttribute("LoginType", "SSO");
+        }
+
         // 单点登录地址
-        String loginUrl = authenticator.getLogoutUrl();
+        String index = authenticator.getLogoutUrl();
         ResultData<SessionUserResponse> result = authenticator.auth(request);
         LOG.error("单点登录验证结果：{}", result);
         if (result.getSuccess()) {
             SessionUserResponse userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
-                String url = service.redirectMainPage(userResponse.getSessionId(), request, authenticator);
-                return "redirect:" + url;
-            } else {
-                if (StringUtils.isNotBlank(userResponse.getOpenId())) {
-                    // 账号绑定页面
-                    loginUrl = authenticator.getWebBaseUrl() + "/#/sso/socialAccount?authType=" + authType
-                            + "&tenant=" + (StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "")
-                            + "&openId=" + (StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
-                    LOG.error("单点登录失败：需要绑定平台账号！");
-                }
+                index = authenticator.getIndexUrl(userResponse);
             }
         }
         LOG.error("单点登录失败：未获取到当前登录用户！");
-        return "redirect:" + loginUrl;
+        return "redirect:" + index;
     }
-
-    //    @ApiOperation(value = "跳转地址", notes = "单点登录跳转地址")
-//    @RequestMapping(value = "/sso/redirectMainPage")
-//    public String redirectMainPage(@RequestParam("sid") String sid, @RequestParam("authType") String authType) {
-
 
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")

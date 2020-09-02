@@ -20,25 +20,24 @@ public interface Oauth2Authenticator extends SingleSignOnAuthenticator {
      * 前端web根url地址.必须
      * 如:http://tsei.changhong.com:8090/sei-portal-web
      */
+    @Override
     String getWebBaseUrl();
     /**
      * APP根url地址.必须
      * 如:http://tsei.changhong.com:8090/sei-app
      */
+    @Override
     String getAppBaseUrl();
     /**
      * 服务网关根url地址
      * 如:http://tsei.changhong.com:8090/sei-app
      */
     String getApiBaseUrl();
-    /**
-     * 登录成功url地址
-     */
-    String getIndexUrl();
 
     /**
      * 登录失败url地址
      */
+    @Override
     String getLogoutUrl();
 
     /**
@@ -56,6 +55,7 @@ public interface Oauth2Authenticator extends SingleSignOnAuthenticator {
     /**
      * 获取用户信息
      */
+    @Override
     ResultData<SessionUserResponse> auth(HttpServletRequest request);
 
     ResultData<Map<String, String>> jsapi_ticket();

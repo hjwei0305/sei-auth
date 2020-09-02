@@ -10,7 +10,6 @@ import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
-import com.changhong.sei.auth.service.SingleSignOnService;
 import com.changhong.sei.auth.service.SocialAccountService;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.dto.ResultData;
@@ -47,14 +46,13 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
     private final SocialAccountService socialAccountService;
     private final CacheBuilder cacheBuilder;
     private final AuthProperties properties;
-    private final SingleSignOnService singleSignOnService;
 
-    public WeChatAuthenticator(AuthProperties properties, SocialAccountService socialAccountService, CacheBuilder cacheBuilder,SingleSignOnService singleSignOnService) {
+    public WeChatAuthenticator(AuthProperties properties, SocialAccountService socialAccountService, CacheBuilder cacheBuilder) {
         this.socialAccountService = socialAccountService;
         this.cacheBuilder = cacheBuilder;
         this.properties = properties;
-        this.singleSignOnService=singleSignOnService;
     }
+
 
     /**
      * 前端web根url地址
@@ -87,8 +85,22 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
      * 登录成功url地址
      */
     @Override
-    public String getIndexUrl() {
-        return null;
+    public String getIndexUrl(SessionUserResponse userResponse) {
+        String url = null;
+        if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
+            url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + userResponse.getSessionId();
+            LOG.error("单点登录跳转地址: {}", url);
+        } else {
+            if (StringUtils.isNotBlank(userResponse.getOpenId())) {
+                // 账号绑定页面
+                url = getWebBaseUrl() + "/#/sso/socialAccount?authType=" + SingleSignOnAuthenticator.AUTH_TYPE_WE_CHAT
+                        + "&tenant=" + (StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "")
+                        + "&openId=" + (StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
+                LOG.error("单点登录失败：需要绑定平台账号！");
+            }
+        }
+        //单点错误页面
+        return url;
     }
 
     /**
@@ -149,7 +161,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
      * 绑定账号
      */
     @Override
-    public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest,HttpServletRequest request) {
+    public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest, HttpServletRequest request) {
         // 社交平台开放ID
         String openId = loginRequest.getReqId();
         ResultData<SessionUserResponse> resultData = login(loginRequest);
@@ -158,7 +170,10 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
             ResultData<String> rd = socialAccountService.bindingAccount(response.getTenantCode(), response.getAccount(), openId, SOCIAL_CHANNEL);
             if (rd.successful()) {
                 //设置跳转地址
-                response.setRedirectUrl(singleSignOnService.redirectMainPage(response.getSessionId(),request,this));
+                String url = getAppBaseUrl() + "/#/main?sid=" + response.getSessionId();
+                LOG.error("单点登录跳转地址: {}", url);
+
+                response.setRedirectUrl(url);
                 return ResultData.success(response);
             } else {
                 return ResultData.fail(rd.getMessage());
