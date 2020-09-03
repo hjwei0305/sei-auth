@@ -8,7 +8,7 @@ import java.io.Serializable;
  * @author Vision.Mac
  * @version 1.0.1 2019/3/27 20:56
  */
-@ConfigurationProperties(prefix = "sei.sso")
+@ConfigurationProperties(prefix = "sei.auth.sso")
 public class SsoProperties implements Serializable {
     private static final long serialVersionUID = -1051872047414569570L;
     private boolean enable = false;
@@ -20,10 +20,6 @@ public class SsoProperties implements Serializable {
      * 租户代码
      */
     private String tenant;
-    /**
-     * 应用基地址
-     */
-    private String webBaseUrl;
     /**
      * 退出系统地址
      */
@@ -57,14 +53,6 @@ public class SsoProperties implements Serializable {
 
     public void setTenant(String tenant) {
         this.tenant = tenant;
-    }
-
-    public String getWebBaseUrl() {
-        return webBaseUrl;
-    }
-
-    public void setWebBaseUrl(String webBaseUrl) {
-        this.webBaseUrl = webBaseUrl;
     }
 
     public String getLogout() {

@@ -71,7 +71,7 @@ public class SingleSignOnController implements Constants {
 
     @ApiOperation(value = "单点登录", notes = "PC应用单点登录")
     @RequestMapping(value = {SSO_LOGIN_ENDPOINT})
-    public Object ssoLogin(HttpServletRequest request) {
+    public String ssoLogin(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
             throw new WebException("单点登录失败：authType不能为空！");

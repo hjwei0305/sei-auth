@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.changhong.sei.auth.certification.AbstractTokenAuthenticator;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.certification.sso.ch.vo.TodoTaskRequest;
+import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.config.properties.SsoProperties;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
@@ -41,10 +42,12 @@ public class ChGtSingleSignOnAuthenticator extends AbstractTokenAuthenticator im
     private static final String PAYLOAD = "payload";
 
     private static String SECURITY;
+    private final AuthProperties authProperties;
     private final SsoProperties properties;
     private final AccountService accountService;
 
-    public ChGtSingleSignOnAuthenticator(SsoProperties properties, AccountService accountService) {
+    public ChGtSingleSignOnAuthenticator(AuthProperties authProperties, SsoProperties properties, AccountService accountService) {
+        this.authProperties = authProperties;
         this.properties = properties;
         this.accountService = accountService;
 
@@ -61,7 +64,7 @@ public class ChGtSingleSignOnAuthenticator extends AbstractTokenAuthenticator im
      */
     @Override
     public String getWebBaseUrl() {
-        return properties.getWebBaseUrl();
+        return authProperties.getWebBaseUrl();
     }
 
     /**
@@ -70,7 +73,7 @@ public class ChGtSingleSignOnAuthenticator extends AbstractTokenAuthenticator im
      */
     @Override
     public String getAppBaseUrl() {
-        return null;
+        return authProperties.getAppBaseUrl();
     }
 
     /**
