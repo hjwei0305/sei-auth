@@ -42,7 +42,7 @@ public interface VerifyCodeApi {
      * @param channel 通道
      * @return 返回验证码
      */
-    @GetMapping(path = "verifyCode")
+    @GetMapping(path = "sendVerifyCode")
     @ApiOperation(value = "发送验证码", notes = "验证码5分钟有效期")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "reqId", value = "请求id", required = true, paramType = "query"),
