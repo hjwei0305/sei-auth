@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -67,7 +66,17 @@ public interface AccountDao extends BaseEntityDao<Account> {
      * 根据账号,租户代码查询账户
      *
      * @param account 账号
+     * @param channel 账号渠道
+     * @return 存在返回账号, 不存在返回null
+     */
+    List<Account> findByOpenIdAndChannel(String account, ChannelEnum channel);
+
+    /**
+     * 根据账号,租户代码查询账户
+     *
+     * @param account 账号
      * @param tenant  租户代码
+     * @param channel 账号渠道
      * @return 存在返回账号, 不存在返回null
      */
     Account findByOpenIdAndTenantCodeAndChannel(String account, String tenant, ChannelEnum channel);

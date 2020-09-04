@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.common.Constants;
+import com.changhong.sei.auth.common.RandomUtils;
 import com.changhong.sei.auth.common.validatecode.IVerifyCodeGen;
 import com.changhong.sei.auth.common.validatecode.VerifyCode;
 import com.changhong.sei.auth.dto.ChannelEnum;
@@ -87,19 +88,11 @@ public class ValidateCodeService {
     }
 
     public ResultData<String> sendVerifyCode(String reqId, String target, ChannelEnum channel, String operation) {
-        String code;
-        try {
-            //设置长宽
-            VerifyCode verifyCode = iVerifyCodeGen.generate(80, 28);
-            code = verifyCode.getCode();
-            LogUtil.info("验证码: {}", code);
+        String code = RandomUtils.randomNumberString(6);
+        LogUtil.info("验证码: {}", code);
 
-            // 验证码5分钟有效期
-            cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, (long) 5 * 60 * 1000);
-        } catch (IOException e) {
-            LogUtil.error("验证码错误", e);
-            return ResultData.fail("验证码错误");
-        }
+        // 验证码5分钟有效期
+        cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, (long) 5 * 60 * 1000);
 
         String subject = operation + "-验证码";
         StringBuilder content = new StringBuilder(128);

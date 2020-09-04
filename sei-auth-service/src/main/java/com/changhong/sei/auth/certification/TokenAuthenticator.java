@@ -27,6 +27,14 @@ public interface TokenAuthenticator {
      */
     String AUTH_TYPE_WE_CHAT = "weChat";
     /**
+     * 手机认证
+     */
+    String AUTH_TYPE_MOBILE = "mobile";
+    /**
+     * 邮箱认证
+     */
+    String AUTH_TYPE_EMAIL = "email";
+    /**
      * 长虹GT单点认证
      */
     String AUTH_TYPE_CH_GT = "chGT";

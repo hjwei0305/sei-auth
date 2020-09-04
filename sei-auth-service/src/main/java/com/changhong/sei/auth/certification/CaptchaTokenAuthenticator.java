@@ -35,7 +35,7 @@ public class CaptchaTokenAuthenticator extends AbstractTokenAuthenticator implem
         if (checkLoginData.failed()) {
             ResultData<String> checkResult = validateCodeService.check(loginRequest.getReqId(), loginRequest.getVerifyCode());
             if (checkResult.failed()) {
-                LogUtil.warn("需输入验证码租户[{}]账号[{}]: {}", tenant, account, checkLoginData.getMessage());
+                LogUtil.warn("需输入验证码租户[{}]账号[{}]: {}", tenant, account, checkResult.getMessage());
 
                 ResultData<SessionUserResponse> result = ResultData.success(checkResult.getMessage(), SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.captchaError));
                 // 发布登录验证码错误事件

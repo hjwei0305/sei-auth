@@ -277,10 +277,22 @@ public class AccountService extends BaseEntityService<Account> {
      *
      * @param account 账号
      * @param tenant  租户代码
+     * @param channel 账号渠道
      * @return 存在返回账号, 不存在返回null
      */
     public Account getByAccountAndTenantCode(String account, String tenant) {
         return dao.findByOpenIdAndTenantCodeAndChannel(account, tenant, ChannelEnum.SEI);
+    }
+
+    /**
+     * 根据账号,租户代码查询账户
+     *
+     * @param account 账号
+     * @param channel 账号渠道
+     * @return 存在返回账号, 不存在返回null
+     */
+    public List<Account> findByOpenIdAndChannel(String account, ChannelEnum channel) {
+        return dao.findByOpenIdAndChannel(account, channel);
     }
 
     /**

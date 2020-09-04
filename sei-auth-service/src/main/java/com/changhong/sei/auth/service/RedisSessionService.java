@@ -3,7 +3,10 @@ package com.changhong.sei.auth.service;
 import com.changhong.sei.core.cache.CacheBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 实现功能：
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Component;
  * @version 1.0.00  2020-01-20 12:01
  */
 @Component
+@RefreshScope
 public class RedisSessionService implements SessionService {
 
     @Value("${server.servlet.session.timeout:36000}")
@@ -28,8 +32,10 @@ public class RedisSessionService implements SessionService {
      * @param value 会话信息,通常为token
      */
     @Override
-    public void addSession(String sid, String value) {
-        cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, getExpireTime());
+    public void addSession(final String sid, final String value) {
+        CompletableFuture.runAsync(() -> {
+            cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, getExpireTime());
+        });
     }
 
     /**
@@ -39,9 +45,7 @@ public class RedisSessionService implements SessionService {
      */
     @Override
     public void touchSession(String sid) {
-        String value = cacheBuilder.get(REDIS_KEY_PREFIX + sid);
-        // 续期
-        cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, getExpireTime());
+        getAndTouchSession(sid);
     }
 
     /**
@@ -54,7 +58,7 @@ public class RedisSessionService implements SessionService {
     public String getAndTouchSession(String sid) {
         String value = cacheBuilder.get(REDIS_KEY_PREFIX + sid);
         // 续期
-        cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, getExpireTime());
+        addSession(sid, value);
 
         return value;
     }
@@ -64,15 +68,17 @@ public class RedisSessionService implements SessionService {
      * @param timeOut 会话延迟过期时间(秒).为保证后续业务的处理,通常需要延迟会话一定的过期时间
      */
     @Override
-    public void removeSession(String sid, long timeOut) {
-        if (timeOut > 0) {
-            String value = cacheBuilder.get(REDIS_KEY_PREFIX + sid);
-            // 续期
-            cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, timeOut);
-        } else {
-            // 立即删除
-            cacheBuilder.remove(REDIS_KEY_PREFIX + sid);
-        }
+    public void removeSession(final String sid, final long timeOut) {
+        CompletableFuture.runAsync(() -> {
+            if (timeOut > 0) {
+                String value = cacheBuilder.get(REDIS_KEY_PREFIX + sid);
+                // 续期
+                cacheBuilder.set(REDIS_KEY_PREFIX + sid, value, timeOut);
+            } else {
+                // 立即删除
+                cacheBuilder.remove(REDIS_KEY_PREFIX + sid);
+            }
+        });
     }
 
     private long getExpireTime() {

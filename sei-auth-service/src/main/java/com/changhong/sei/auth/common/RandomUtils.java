@@ -17,12 +17,12 @@ public class RandomUtils extends org.apache.commons.lang3.RandomUtils {
 
     private static final char[] NUMBER_ARRAY = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-    private static Random random = new Random();
+    private static final Random RANDOM = new Random();
 
     public static String randomString(int length) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            sb.append(CODE_SEQ[random.nextInt(CODE_SEQ.length)]);
+            sb.append(CODE_SEQ[RANDOM.nextInt(CODE_SEQ.length)]);
         }
         return sb.toString();
     }
@@ -30,7 +30,7 @@ public class RandomUtils extends org.apache.commons.lang3.RandomUtils {
     public static String randomNumberString(int length) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length; i++) {
-            sb.append(NUMBER_ARRAY[random.nextInt(NUMBER_ARRAY.length)]);
+            sb.append(NUMBER_ARRAY[RANDOM.nextInt(NUMBER_ARRAY.length)]);
         }
         return sb.toString();
     }
@@ -49,6 +49,6 @@ public class RandomUtils extends org.apache.commons.lang3.RandomUtils {
     }
 
     public static int nextInt(int bound) {
-        return random.nextInt(bound);
+        return RANDOM.nextInt(bound);
     }
 }
