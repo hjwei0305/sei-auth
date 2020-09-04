@@ -38,6 +38,11 @@ public class AccountResponse extends BaseEntityDto {
     @NotBlank
     private String account;
     /**
+     * openId
+     */
+    @ApiModelProperty(notes = "openId", required = true)
+    private String openId;;
+    /**
      * 名称
      */
     @ApiModelProperty(notes = "名称", required = true)
@@ -100,6 +105,14 @@ public class AccountResponse extends BaseEntityDto {
 
     public void setAccount(String account) {
         this.account = account;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
     public String getName() {

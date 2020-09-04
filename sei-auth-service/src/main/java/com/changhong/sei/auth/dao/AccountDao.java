@@ -1,5 +1,6 @@
 package com.changhong.sei.auth.dao;
 
+import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import org.springframework.data.jpa.repository.Modifying;
@@ -60,7 +61,7 @@ public interface AccountDao extends BaseEntityDao<Account> {
      * @param account 账号
      * @return 存在返回账号, 不存在返回null
      */
-    List<Account> findByAccount(String account);
+    List<Account> findByOpenId(String account);
 
     /**
      * 根据账号,租户代码查询账户
@@ -69,5 +70,5 @@ public interface AccountDao extends BaseEntityDao<Account> {
      * @param tenant  租户代码
      * @return 存在返回账号, 不存在返回null
      */
-    Account findByAccountAndTenantCode(String account, String tenant);
+    Account findByOpenIdAndTenantCodeAndChannel(String account, String tenant, ChannelEnum channel);
 }

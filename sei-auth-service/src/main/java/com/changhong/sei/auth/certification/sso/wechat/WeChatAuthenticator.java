@@ -7,8 +7,8 @@ import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.common.RandomUtils;
 import com.changhong.sei.auth.common.weixin.WeChatUtil;
 import com.changhong.sei.auth.config.properties.AuthProperties;
+import com.changhong.sei.auth.dto.BindingAccountRequest;
 import com.changhong.sei.auth.dto.ChannelEnum;
-import com.changhong.sei.auth.dto.CreateAccountRequest;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
@@ -166,13 +166,16 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
         if (resultData.successful()) {
             SessionUserResponse response = resultData.getData();
 
-            CreateAccountRequest accountRequest = new CreateAccountRequest();
+            BindingAccountRequest accountRequest = new BindingAccountRequest();
             accountRequest.setTenantCode(response.getTenantCode());
             accountRequest.setAccount(response.getAccount());
             accountRequest.setUserId(response.getUserId());
             accountRequest.setName(response.getUserName());
+            accountRequest.setAccountType(response.getUserType().name());
+            accountRequest.setOpenId(openId);
+            accountRequest.setChannel(ChannelEnum.WeChat);
 
-            ResultData<String> rd = accountService.bindingAccount(accountRequest, openId, ChannelEnum.WeChat, response.getUserType().name());
+            ResultData<String> rd = accountService.bindingAccount(accountRequest);
             if (rd.successful()) {
                 //设置跳转地址
                 String url = getAppBaseUrl() + "/#/main?sid=" + response.getSessionId();
@@ -234,8 +237,8 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
             ResultData<SessionUserResponse> result = login(loginRequest, account);
             LOG.info("微信关联账号登录验证: {}", result);
             userResponse.setTenantCode(account.getTenantCode());
-            userResponse.setAccount(account.getMainAccount());
-            userResponse.setLoginAccount(account.getAccount());
+            userResponse.setAccount(account.getAccount());
+            userResponse.setLoginAccount(account.getOpenId());
             SessionUserResponse sessionUserResponse = result.getData();
             if (Objects.nonNull(sessionUserResponse)) {
                 userResponse.setSessionId(sessionUserResponse.getSessionId());

@@ -20,6 +20,10 @@ dependencies {
     implementation(
             "org.springframework.boot:spring-boot-configuration-processor",
 
+
+            // 直接引用消息通知包
+            "com.changhong.sei:sei-notify-sdk:$sei_version",
+
             "mysql:mysql-connector-java:$mysqlVersion",
             "com.changhong.sei:sei-cloud-starter:$sei_version"
     )

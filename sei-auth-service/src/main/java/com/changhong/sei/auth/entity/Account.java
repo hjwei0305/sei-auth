@@ -25,6 +25,7 @@ public class Account extends BaseEntity implements ITenant {
     public static final String FIELD_ACCOUNT = "account";
     public static final String FIELD_USER_ID = "userId";
     public static final String FIELD_OPEN_ID = "openId";
+    public static final String FIELD_CHANNEL = "channel";
     /**
      * 租户代码
      */
@@ -39,6 +40,8 @@ public class Account extends BaseEntity implements ITenant {
 
     /**
      * 账号
+     * 主账号
+     * 若account = openId,则为主账户,反之不是
      */
     @Column(name = "account", length = 100, nullable = false)
     private String account;
@@ -49,12 +52,6 @@ public class Account extends BaseEntity implements ITenant {
     @Column(name = "name", length = 100, nullable = false)
     private String name;
 
-    /**
-     * 主账号
-     * 若account = mainAccount,则为主账户,反之不是
-     */
-    @Column(name = "main_account", length = 100)
-    private String mainAccount;
     /**
      * 社交平台开放ID
      */
@@ -146,14 +143,6 @@ public class Account extends BaseEntity implements ITenant {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getMainAccount() {
-        return mainAccount;
-    }
-
-    public void setMainAccount(String mainAccount) {
-        this.mainAccount = mainAccount;
     }
 
     public String getOpenId() {

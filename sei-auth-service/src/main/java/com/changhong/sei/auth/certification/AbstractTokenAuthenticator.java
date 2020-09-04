@@ -86,8 +86,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
             if (passwordExpire.isBefore(LocalDate.now())) {
                 SessionUserResponse userResponse = SessionUserResponse.build();
                 userResponse.setTenantCode(entity.getTenantCode());
-                userResponse.setAccount(entity.getMainAccount());
-                userResponse.setLoginAccount(entity.getAccount());
+                userResponse.setAccount(entity.getAccount());
+                userResponse.setLoginAccount(entity.getOpenId());
                 userResponse.setLoginStatus(SessionUserResponse.LoginStatus.passwordExpire);
                 result = ResultData.success("密码已过期,认证失败!", userResponse);
                 // 发布登录账号已过期事件

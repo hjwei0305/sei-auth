@@ -1,15 +1,19 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.dao.AccountDao;
+import com.changhong.sei.auth.dto.BindingAccountRequest;
 import com.changhong.sei.auth.dto.ChannelEnum;
-import com.changhong.sei.auth.dto.CreateAccountRequest;
 import com.changhong.sei.auth.dto.UpdatePasswordRequest;
 import com.changhong.sei.auth.entity.Account;
+import com.changhong.sei.auth.entity.BindingRecord;
 import com.changhong.sei.auth.service.client.UserClient;
 import com.changhong.sei.auth.service.client.UserInformation;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.service.BaseEntityService;
 import org.apache.commons.collections.CollectionUtils;
@@ -44,6 +48,10 @@ public class AccountService extends BaseEntityService<Account> {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserClient userClient;
+    @Autowired
+    private ValidateCodeService validateCodeService;
+    @Autowired
+    private BindingRecordService bindingRecordService;
 
     /**
      * 默认密码
@@ -74,9 +82,9 @@ public class AccountService extends BaseEntityService<Account> {
         sessionUser.setTenantCode(account.getTenantCode());
         sessionUser.setUserId(account.getUserId());
         // 归集到主账号上
-        sessionUser.setAccount(account.getMainAccount());
+        sessionUser.setAccount(account.getAccount());
         // 当前登录账号
-        sessionUser.setLoginAccount(account.getAccount());
+        sessionUser.setLoginAccount(account.getOpenId());
         sessionUser.setUserName(account.getName());
         sessionUser.setIp(ipAddr);
 
@@ -107,7 +115,7 @@ public class AccountService extends BaseEntityService<Account> {
         }
 
         // 检查账户是否已存在
-        Account oldAccount = dao.findByAccountAndTenantCode(account.getAccount(), account.getTenantCode());
+        Account oldAccount = dao.findByOpenIdAndTenantCodeAndChannel(account.getAccount(), account.getTenantCode(), ChannelEnum.SEI);
         if (Objects.nonNull(oldAccount)) {
             if (!isUpdateUserId) {
                 return ResultData.fail(String.format("账户[%s]已在租户[%s]下存在！", account.getAccount(), account.getTenantCode()));
@@ -115,13 +123,13 @@ public class AccountService extends BaseEntityService<Account> {
                 account.setId(oldAccount.getId());
             }
         }
-        if (StringUtils.isBlank(account.getMainAccount())) {
+        if (StringUtils.isBlank(account.getOpenId())) {
             // 默认将注册时的账号作为主账号
-            account.setMainAccount(account.getAccount());
+            account.setOpenId(account.getAccount());
         }
 
         // 检查主账号
-        ResultData<String> resultData = checkMainAccount(account.getUserId(), account.getMainAccount());
+        ResultData<String> resultData = checkMainAccount(account.getUserId(), account.getAccount());
         if (resultData.failed()) {
             return resultData;
         }
@@ -261,7 +269,7 @@ public class AccountService extends BaseEntityService<Account> {
      * @return 存在返回账号, 不存在返回null
      */
     public List<Account> getByAccount(String account) {
-        return dao.findByAccount(account);
+        return dao.findByOpenId(account);
     }
 
     /**
@@ -272,7 +280,7 @@ public class AccountService extends BaseEntityService<Account> {
      * @return 存在返回账号, 不存在返回null
      */
     public Account getByAccountAndTenantCode(String account, String tenant) {
-        return dao.findByAccountAndTenantCode(account, tenant);
+        return dao.findByOpenIdAndTenantCodeAndChannel(account, tenant, ChannelEnum.SEI);
     }
 
     /**
@@ -356,59 +364,132 @@ public class AccountService extends BaseEntityService<Account> {
      * 绑定账号
      */
     @Transactional
-    public ResultData<String> bindingAccount(final CreateAccountRequest accountRequest,
-                                             final String openId, final ChannelEnum channel, final String accountType) {
-        if (Objects.isNull(accountRequest)) {
-            return ResultData.fail("AccountRequest is null.");
+    public ResultData<String> bindingAccount(final BindingAccountRequest request) {
+        if (StringUtils.isBlank(request.getTenantCode())) {
+            return ResultData.fail("租户代码不能为空.");
         }
-        if (StringUtils.isBlank(openId)) {
+        if (StringUtils.isBlank(request.getUserId())) {
+            return ResultData.fail("用户id不能为空.");
+        }
+        if (StringUtils.isBlank(request.getAccount())) {
+            return ResultData.fail("账号不能为空.");
+        }
+        if (StringUtils.isBlank(request.getName())) {
+            return ResultData.fail("账户名称不能为空.");
+        }
+        if (StringUtils.isBlank(request.getOpenId())) {
             return ResultData.fail("OpenId is null.");
+        }
+        if (Objects.isNull(request.getChannel())) {
+            return ResultData.fail("账号渠道不能为空.");
+        }
+        if (StringUtils.isBlank(request.getAccountType())) {
+            return ResultData.fail("用户类型不能为空.");
+        }
+        // 邮箱或手机号必须由验证码验证
+        if (ChannelEnum.EMAIL.equals(request.getChannel()) || ChannelEnum.Mobile.equals(request.getChannel())) {
+            if (StringUtils.isBlank(request.getReqId())) {
+                return ResultData.fail("reqId不能为空.");
+            }
+            if (StringUtils.isBlank(request.getVerifyCode())) {
+                return ResultData.fail("验证码不能为空.");
+            }
+            ResultData<String> resultData = validateCodeService.check(request.getReqId(), request.getVerifyCode());
+            if (resultData.failed()) {
+                return resultData;
+            }
         }
 
         // 检查是否有绑定
-        ResultData<Account> resultData = checkAccount(channel, openId);
+        ResultData<Account> resultData = checkAccount(request.getChannel(), request.getOpenId());
         if (resultData.failed()) {
-            Account account = new Account();
-            account.setTenantCode(accountRequest.getTenantCode());
-            account.setUserId(accountRequest.getUserId());
-            // 使用绑定的openid作为子账号
-            account.setAccount(openId);
+            Account accountObj = new Account();
+            accountObj.setTenantCode(request.getTenantCode());
+            accountObj.setUserId(request.getUserId());
             // 用户主账号
-            account.setMainAccount(accountRequest.getAccount());
-            account.setName(accountRequest.getName());
-            account.setAccountType(accountType);
-
-            account.setOpenId(openId);
-            account.setChannel(channel);
+            accountObj.setAccount(request.getAccount());
+            // 使用绑定的openid作为子账号
+            accountObj.setOpenId(request.getOpenId());
+            accountObj.setName(request.getName());
+            accountObj.setAccountType(request.getAccountType());
+            accountObj.setChannel(request.getChannel());
 
             // 无有效期设置默认有效期
-            account.setAccountExpired(LocalDate.of(2099, 12, 31));
+            accountObj.setAccountExpired(LocalDate.of(2099, 12, 31));
             // 注册时间
-            account.setSinceDate(LocalDateTime.now());
+            accountObj.setSinceDate(LocalDateTime.now());
 
-            this.save(account);
+            // 检查主账号
+            ResultData<String> checkResult = checkMainAccount(request.getUserId(), request.getAccount());
+            if (checkResult.failed()) {
+                return checkResult;
+            }
+
+            this.save(accountObj);
+
+            BindingRecord record = new BindingRecord();
+            record.setTenantCode(request.getTenantCode());
+            record.setUserId(request.getUserId());
+            record.setAccount(request.getAccount());
+            record.setOpenId(request.getOpenId());
+            record.setBindingDate(LocalDateTime.now());
+            record.setChannel(request.getChannel());
+
+            bindingRecordService.save(record);
 
             return ResultData.success("ok");
         }
         return ResultData.fail(resultData.getMessage());
     }
 
+    @Transactional
+    public ResultData<String> unbinding(String openId, ChannelEnum channel) {
+        SessionUser user = ContextUtil.getSessionUser();
+
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter(Account.FIELD_USER_ID, user.getUserId()));
+        search.addFilter(new SearchFilter(Account.FIELD_OPEN_ID, openId));
+        search.addFilter(new SearchFilter(Account.FIELD_CHANNEL, channel));
+        Account account = this.findOneByFilters(search);
+        if (Objects.isNull(account)) {
+            return ResultData.fail("未找到绑定的账号.");
+        }
+
+        // 删除绑定账号
+        this.delete(account.getId());
+
+        // 更新绑定记录
+        BindingRecord record = bindingRecordService.findOneByFilters(search);
+        if (Objects.isNull(record)) {
+            record = new BindingRecord();
+            record.setTenantCode(user.getTenantCode());
+            record.setUserId(user.getUserId());
+            record.setAccount(user.getAccount());
+            record.setOpenId(openId);
+            record.setBindingDate(account.getSinceDate());
+            record.setChannel(channel);
+        }
+        record.setUnbindingDate(LocalDateTime.now());
+        bindingRecordService.save(record);
+        return ResultData.success();
+    }
+
     /**
      * 检查主账号是否存在多个或不一致
      *
-     * @param userId      用户id
-     * @param mainAccount 主账号
+     * @param userId  用户id
+     * @param account 主账号
      * @return 返回检查结果
      */
-    private ResultData<String> checkMainAccount(String userId, String mainAccount) {
+    private ResultData<String> checkMainAccount(String userId, String account) {
         List<Account> accounts = dao.findListByProperty(Account.FIELD_USER_ID, userId);
         if (CollectionUtils.isNotEmpty(accounts)) {
             int count = accounts.stream().collect(Collectors.groupingBy(Account::getUserId)).size();
             if (count > 1) {
                 return ResultData.fail("存在多个主账号.");
             } else {
-                // 比较主账号是否一致
-                if (!StringUtils.equals(mainAccount, accounts.get(0).getMainAccount())) {
+                // 比较主账号是否一致a
+                if (!StringUtils.equals(account, accounts.get(0).getAccount())) {
                     return ResultData.fail("主账号不一致.");
                 }
             }

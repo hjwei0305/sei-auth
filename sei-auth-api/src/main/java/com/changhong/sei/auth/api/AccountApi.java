@@ -119,10 +119,18 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
     ResultData<List<AccountResponse>> getByUserId(@RequestParam("userId") @NotBlank String userId);
 
     /**
-     * 修改用户头像
+     * 绑定账号
      */
-    @PostMapping(path = "updateAvatar")
-    @ApiOperation("修改用户头像")
-    ResultData<String> updateAvatar(@RequestBody @Valid UpdateAvatarRequest request);
+    @PostMapping(path = "binding")
+    @ApiOperation("绑定账号")
+    ResultData<String> binding(@RequestBody @Valid BindingAccountRequest request);
+
+    /**
+     * 解绑账号
+     */
+    @PostMapping(path = "unbinding")
+    @ApiOperation("解绑账号")
+    ResultData<String> unbinding(@RequestBody @Valid BindingAccountRequest request);
+
 
 }

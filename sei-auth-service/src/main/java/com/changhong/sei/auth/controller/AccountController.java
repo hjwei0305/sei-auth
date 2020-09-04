@@ -3,7 +3,9 @@ package com.changhong.sei.auth.controller;
 import com.changhong.sei.auth.api.AccountApi;
 import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
+import com.changhong.sei.auth.entity.BindingRecord;
 import com.changhong.sei.auth.service.AccountService;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
@@ -11,7 +13,6 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.core.service.bo.OperateResultWithData;
-import com.changhong.sei.util.DateUtils;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -266,10 +268,29 @@ public class AccountController extends BaseEntityController<Account, AccountResp
     }
 
     /**
-     * 修改用户头像
+     * 绑定账号
+     *
+     * @param request
      */
     @Override
-    public ResultData<String> updateAvatar(@Valid UpdateAvatarRequest request) {
-        return ResultData.fail("规划中");
+    public ResultData<String> binding(@Valid BindingAccountRequest request) {
+        SessionUser user = ContextUtil.getSessionUser();
+        request.setTenantCode(user.getTenantCode());
+        request.setUserId(user.getUserId());
+        request.setAccount(user.getAccount());
+        request.setName(user.getUserName());
+        request.setAccountType(user.getUserType().name());
+
+        return accountService.bindingAccount(request);
+    }
+
+    /**
+     * 解绑账号
+     *
+     * @param request
+     */
+    @Override
+    public ResultData<String> unbinding(@Valid BindingAccountRequest request) {
+        return accountService.unbinding(request.getOpenId(), request.getChannel());
     }
 }
