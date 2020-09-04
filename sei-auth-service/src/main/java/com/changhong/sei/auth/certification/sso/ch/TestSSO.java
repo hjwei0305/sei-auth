@@ -1,7 +1,7 @@
 package com.changhong.sei.auth.certification.sso.ch;
 
 import com.auth0.jwt.JWTVerifier;
-import com.changhong.sei.auth.certification.sso.ch.vo.TodoTaskRequest;
+import com.changhong.sei.auth.dto.TodoTaskRequest;
 import com.changhong.sei.core.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

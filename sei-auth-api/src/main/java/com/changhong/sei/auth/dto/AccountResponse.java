@@ -44,11 +44,11 @@ public class AccountResponse extends BaseEntityDto {
     @NotBlank
     private String name;
     /**
-     * 来源系统
+     * 来源系统(sei,wechat,dingtalk等)
      */
     @ApiModelProperty(notes = "来源系统", required = true)
     @NotBlank
-    private String systemCode;
+    private ChannelEnum channel;
     /**
      * 账户类型
      */
@@ -110,12 +110,12 @@ public class AccountResponse extends BaseEntityDto {
         this.name = name;
     }
 
-    public String getSystemCode() {
-        return systemCode;
+    public ChannelEnum getChannel() {
+        return channel;
     }
 
-    public void setSystemCode(String systemCode) {
-        this.systemCode = systemCode;
+    public void setChannel(ChannelEnum channel) {
+        this.channel = channel;
     }
 
     public String getAccountType() {

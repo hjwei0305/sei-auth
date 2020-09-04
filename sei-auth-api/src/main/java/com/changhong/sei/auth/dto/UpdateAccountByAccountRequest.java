@@ -1,5 +1,6 @@
 package com.changhong.sei.auth.dto;
 
+import com.changhong.sei.util.DateUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -50,7 +51,7 @@ public class UpdateAccountByAccountRequest implements Serializable {
      * 截止有效期
      */
     @ApiModelProperty(notes = "截止有效期", example = "2020-01-21")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(timezone = DateUtils.DEFAULT_TIMEZONE, pattern = DateUtils.DEFAULT_DATE_FORMAT)
     private LocalDate accountExpired;
 
     public String getTenant() {

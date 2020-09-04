@@ -1,4 +1,4 @@
-package com.changhong.sei.auth.certification.sso.ch.vo;
+package com.changhong.sei.auth.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;

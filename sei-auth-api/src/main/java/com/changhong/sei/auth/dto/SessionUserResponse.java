@@ -32,10 +32,15 @@ public class SessionUserResponse implements Serializable {
     @ApiModelProperty(notes = "用户id")
     private String userId;
     /**
-     * 用户账号
+     * 用户主账号
      */
-    @ApiModelProperty(notes = "用户账号")
+    @ApiModelProperty(notes = "用户主账号")
     private String account;
+    /**
+     * 当前登录账号
+     */
+    @ApiModelProperty(notes = "当前登录账号")
+    private String loginAccount;
     /**
      * 用户名
      */
@@ -103,6 +108,14 @@ public class SessionUserResponse implements Serializable {
 
     public void setAccount(String account) {
         this.account = account;
+    }
+
+    public String getLoginAccount() {
+        return loginAccount;
+    }
+
+    public void setLoginAccount(String loginAccount) {
+        this.loginAccount = loginAccount;
     }
 
     public String getUserName() {

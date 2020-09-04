@@ -1,9 +1,8 @@
 package com.changhong.sei.auth.entity;
 
+import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.core.entity.BaseEntity;
 import com.changhong.sei.core.entity.ITenant;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -21,11 +20,11 @@ import java.time.LocalDateTime;
 @Table(name = "auth_account")
 @DynamicInsert
 @DynamicUpdate
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Account extends BaseEntity implements ITenant {
     private static final long serialVersionUID = 1L;
     public static final String FIELD_ACCOUNT = "account";
     public static final String FIELD_USER_ID = "userId";
+    public static final String FIELD_OPEN_ID = "openId";
     /**
      * 租户代码
      */
@@ -51,11 +50,16 @@ public class Account extends BaseEntity implements ITenant {
     private String name;
 
     /**
-     * 头像
+     * 主账号
+     * 若account = mainAccount,则为主账户,反之不是
      */
-    @Column(name = "avatar")
-    private String avatar;
-
+    @Column(name = "main_account", length = 100)
+    private String mainAccount;
+    /**
+     * 社交平台开放ID
+     */
+    @Column(name = "open_id", length = 100)
+    private String openId;
     /**
      * 冻结
      * 针对禁用或删除用户时使用
@@ -87,7 +91,7 @@ public class Account extends BaseEntity implements ITenant {
     /**
      * 密码
      */
-    @Column(name = "password_hash", length = 100, nullable = false)
+    @Column(name = "password_hash", length = 100)
     private String password;
 
     /**
@@ -98,13 +102,14 @@ public class Account extends BaseEntity implements ITenant {
     private LocalDate passwordExpireTime;
 
     /**
-     * 来源系统
+     * 来源系统(sei,wechat,dingtalk等)
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "system_code", length = 50)
-    private String systemCode;
+    private ChannelEnum channel;
 
     /**
-     * 账户类型
+     * 账户类型(员工,客户等)
      */
     @Column(name = "account_type", length = 50)
     private String accountType;
@@ -143,12 +148,20 @@ public class Account extends BaseEntity implements ITenant {
         this.name = name;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getMainAccount() {
+        return mainAccount;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setMainAccount(String mainAccount) {
+        this.mainAccount = mainAccount;
+    }
+
+    public String getOpenId() {
+        return openId;
+    }
+
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
     public Boolean getFrozen() {
@@ -199,12 +212,12 @@ public class Account extends BaseEntity implements ITenant {
         this.passwordExpireTime = passwordExpireTime;
     }
 
-    public String getSystemCode() {
-        return systemCode;
+    public ChannelEnum getChannel() {
+        return channel;
     }
 
-    public void setSystemCode(String systemCode) {
-        this.systemCode = systemCode;
+    public void setChannel(ChannelEnum channel) {
+        this.channel = channel;
     }
 
     public String getAccountType() {

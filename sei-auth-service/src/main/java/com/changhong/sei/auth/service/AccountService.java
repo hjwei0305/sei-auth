@@ -1,6 +1,8 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.dao.AccountDao;
+import com.changhong.sei.auth.dto.ChannelEnum;
+import com.changhong.sei.auth.dto.CreateAccountRequest;
 import com.changhong.sei.auth.dto.UpdatePasswordRequest;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.service.client.UserClient;
@@ -10,6 +12,7 @@ import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.service.BaseEntityService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 实现功能：平台账户业务逻辑实现
@@ -69,7 +73,10 @@ public class AccountService extends BaseEntityService<Account> {
         SessionUser sessionUser = new SessionUser();
         sessionUser.setTenantCode(account.getTenantCode());
         sessionUser.setUserId(account.getUserId());
-        sessionUser.setAccount(account.getAccount());
+        // 归集到主账号上
+        sessionUser.setAccount(account.getMainAccount());
+        // 当前登录账号
+        sessionUser.setLoginAccount(account.getAccount());
         sessionUser.setUserName(account.getName());
         sessionUser.setIp(ipAddr);
 
@@ -107,6 +114,16 @@ public class AccountService extends BaseEntityService<Account> {
             } else {
                 account.setId(oldAccount.getId());
             }
+        }
+        if (StringUtils.isBlank(account.getMainAccount())) {
+            // 默认将注册时的账号作为主账号
+            account.setMainAccount(account.getAccount());
+        }
+
+        // 检查主账号
+        ResultData<String> resultData = checkMainAccount(account.getUserId(), account.getMainAccount());
+        if (resultData.failed()) {
+            return resultData;
         }
 
         // 检查是否有密码
@@ -309,5 +326,93 @@ public class AccountService extends BaseEntityService<Account> {
      */
     public ResultData<Map<String, Set<String>>> getAuthorizedFeatures(String userId) {
         return userClient.getUserAuthorizedFeatureMaps(userId);
+    }
+
+    /**
+     * 验证openId合法性:
+     * 判断SocialAccount中是否存在该openid的数据。
+     * 若存在，直接进行登录。
+     * 若不存在，将数据，存储到SocialAccount中，引导用户绑定SEI平台账号。
+     * 若本站已存在账号，直接关联账号即可。
+     * 若本站不存在账号，引导用户注册，成功后与当前openid关联即可
+     */
+    public ResultData<Account> checkAccount(final ChannelEnum channel, final String openId) {
+        if (StringUtils.isBlank(openId)) {
+            return ResultData.fail("OpenId is null.");
+        }
+
+        List<Account> accounts = dao.findListByProperty(Account.FIELD_OPEN_ID, openId);
+        if (CollectionUtils.isNotEmpty(accounts)) {
+            // 检查系统来还原是否一致
+            Account account = accounts.stream().filter(a -> Objects.equals(channel, a.getChannel())).findAny().orElse(null);
+            if (Objects.nonNull(account)) {
+                return ResultData.success(account);
+            }
+        }
+        return ResultData.fail("openId未绑定SEI平台账号: " + openId);
+    }
+
+    /**
+     * 绑定账号
+     */
+    @Transactional
+    public ResultData<String> bindingAccount(final CreateAccountRequest accountRequest,
+                                             final String openId, final ChannelEnum channel, final String accountType) {
+        if (Objects.isNull(accountRequest)) {
+            return ResultData.fail("AccountRequest is null.");
+        }
+        if (StringUtils.isBlank(openId)) {
+            return ResultData.fail("OpenId is null.");
+        }
+
+        // 检查是否有绑定
+        ResultData<Account> resultData = checkAccount(channel, openId);
+        if (resultData.failed()) {
+            Account account = new Account();
+            account.setTenantCode(accountRequest.getTenantCode());
+            account.setUserId(accountRequest.getUserId());
+            // 使用绑定的openid作为子账号
+            account.setAccount(openId);
+            // 用户主账号
+            account.setMainAccount(accountRequest.getAccount());
+            account.setName(accountRequest.getName());
+            account.setAccountType(accountType);
+
+            account.setOpenId(openId);
+            account.setChannel(channel);
+
+            // 无有效期设置默认有效期
+            account.setAccountExpired(LocalDate.of(2099, 12, 31));
+            // 注册时间
+            account.setSinceDate(LocalDateTime.now());
+
+            this.save(account);
+
+            return ResultData.success("ok");
+        }
+        return ResultData.fail(resultData.getMessage());
+    }
+
+    /**
+     * 检查主账号是否存在多个或不一致
+     *
+     * @param userId      用户id
+     * @param mainAccount 主账号
+     * @return 返回检查结果
+     */
+    private ResultData<String> checkMainAccount(String userId, String mainAccount) {
+        List<Account> accounts = dao.findListByProperty(Account.FIELD_USER_ID, userId);
+        if (CollectionUtils.isNotEmpty(accounts)) {
+            int count = accounts.stream().collect(Collectors.groupingBy(Account::getUserId)).size();
+            if (count > 1) {
+                return ResultData.fail("存在多个主账号.");
+            } else {
+                // 比较主账号是否一致
+                if (!StringUtils.equals(mainAccount, accounts.get(0).getMainAccount())) {
+                    return ResultData.fail("主账号不一致.");
+                }
+            }
+        }
+        return ResultData.success();
     }
 }

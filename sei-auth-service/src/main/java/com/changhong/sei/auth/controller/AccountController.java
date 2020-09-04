@@ -64,6 +64,7 @@ public class AccountController extends BaseEntityController<Account, AccountResp
             dto.setTenantCode(sessionUser.getTenantCode());
             dto.setUserId(sessionUser.getUserId());
             dto.setAccount(sessionUser.getAccount());
+            dto.setLoginAccount(sessionUser.getLoginAccount());
             dto.setUserName(sessionUser.getUserName());
             dto.setUserType(sessionUser.getUserType());
             dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
@@ -136,7 +137,7 @@ public class AccountController extends BaseEntityController<Account, AccountResp
         }
         // 允许修改的账户信息
         account.setName(request.getName());
-        account.setSystemCode(request.getSystemCode());
+        account.setChannel(request.getChannel());
         account.setAccountType(request.getAccountType());
         if (Objects.nonNull(request.getFrozen())) {
             account.setFrozen(request.getFrozen());

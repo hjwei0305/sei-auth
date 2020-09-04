@@ -4,7 +4,7 @@ import com.auth0.jwt.JWTSigner;
 import com.auth0.jwt.JWTVerifier;
 import com.changhong.sei.auth.certification.AbstractTokenAuthenticator;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
-import com.changhong.sei.auth.certification.sso.ch.vo.TodoTaskRequest;
+import com.changhong.sei.auth.dto.TodoTaskRequest;
 import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.config.properties.SsoProperties;
 import com.changhong.sei.auth.dto.LoginRequest;

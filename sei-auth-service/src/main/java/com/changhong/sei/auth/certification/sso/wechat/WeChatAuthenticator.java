@@ -7,10 +7,11 @@ import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.common.RandomUtils;
 import com.changhong.sei.auth.common.weixin.WeChatUtil;
 import com.changhong.sei.auth.config.properties.AuthProperties;
+import com.changhong.sei.auth.dto.ChannelEnum;
+import com.changhong.sei.auth.dto.CreateAccountRequest;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
-import com.changhong.sei.auth.service.SocialAccountService;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.JsonUtils;
@@ -37,18 +38,15 @@ import java.util.Objects;
 public class WeChatAuthenticator extends AbstractTokenAuthenticator implements Oauth2Authenticator, SingleSignOnAuthenticator, Constants {
     private static final Logger LOG = LoggerFactory.getLogger(WeChatAuthenticator.class);
     private static final String CACHE_KEY_TOKEN = "WeChat:AccessToken";
-    private static final String SOCIAL_CHANNEL = "WeChat";
 
 //    private String cropId = "wwdc99e9511ccac381";
 //    private String agentId = "1000003";
 //    private String cropSecret = "xIKMGprmIKWrK1VJ5oALdgeUAFng3DzxIpmPgT56XAA";
 
-    private final SocialAccountService socialAccountService;
     private final CacheBuilder cacheBuilder;
     private final AuthProperties properties;
 
-    public WeChatAuthenticator(AuthProperties properties, SocialAccountService socialAccountService, CacheBuilder cacheBuilder) {
-        this.socialAccountService = socialAccountService;
+    public WeChatAuthenticator(AuthProperties properties, CacheBuilder cacheBuilder) {
         this.cacheBuilder = cacheBuilder;
         this.properties = properties;
     }
@@ -167,7 +165,14 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
         ResultData<SessionUserResponse> resultData = login(loginRequest);
         if (resultData.successful()) {
             SessionUserResponse response = resultData.getData();
-            ResultData<String> rd = socialAccountService.bindingAccount(response.getTenantCode(), response.getAccount(), openId, SOCIAL_CHANNEL);
+
+            CreateAccountRequest accountRequest = new CreateAccountRequest();
+            accountRequest.setTenantCode(response.getTenantCode());
+            accountRequest.setAccount(response.getAccount());
+            accountRequest.setUserId(response.getUserId());
+            accountRequest.setName(response.getUserName());
+
+            ResultData<String> rd = accountService.bindingAccount(accountRequest, openId, ChannelEnum.WeChat, response.getUserType().name());
             if (rd.successful()) {
                 //设置跳转地址
                 String url = getAppBaseUrl() + "/#/main?sid=" + response.getSessionId();
@@ -217,7 +222,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
         LOG.info("OpenId: {}", openId);
 
         // 检查是否有账号绑定
-        ResultData<Account> resultData = socialAccountService.checkAccount(SOCIAL_CHANNEL, openId);
+        ResultData<Account> resultData = accountService.checkAccount(ChannelEnum.WeChat, openId);
         LOG.info("检查是否有账号绑定: {}", resultData);
         if (resultData.successful()) {
             Account account = resultData.getData();
@@ -229,7 +234,8 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
             ResultData<SessionUserResponse> result = login(loginRequest, account);
             LOG.info("微信关联账号登录验证: {}", result);
             userResponse.setTenantCode(account.getTenantCode());
-            userResponse.setAccount(account.getAccount());
+            userResponse.setAccount(account.getMainAccount());
+            userResponse.setLoginAccount(account.getAccount());
             SessionUserResponse sessionUserResponse = result.getData();
             if (Objects.nonNull(sessionUserResponse)) {
                 userResponse.setSessionId(sessionUserResponse.getSessionId());
