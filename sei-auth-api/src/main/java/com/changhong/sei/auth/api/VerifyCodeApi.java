@@ -62,7 +62,7 @@ public interface VerifyCodeApi {
      * @param code  校验值
      * @return 返回验证码
      */
-    @PostMapping(path = "verifyCode")
+    @PostMapping(path = "check")
     @ApiOperation(value = "校验验证码", notes = "校验验证码")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "reqId", value = "请求id", required = true, paramType = "query"),
