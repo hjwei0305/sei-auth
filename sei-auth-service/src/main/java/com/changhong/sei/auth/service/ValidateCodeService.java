@@ -80,7 +80,7 @@ public class ValidateCodeService {
         String key = Constants.VERIFY_CODE_KEY + reqId;
         String cacheValue = cacheBuilder.get(key);
         if (StringUtils.isBlank(cacheValue)) {
-            return ResultData.fail("请输入验证码");
+            return ResultData.fail("验证码已过期");
         }
         if (!StringUtils.equalsIgnoreCase(value, cacheValue)) {
             return ResultData.fail("验证码不正确");

@@ -580,6 +580,6 @@ public class AccountService extends BaseEntityService<Account> {
         }
         this.updatePassword(account.getId(), request.getNewPassword(), defaultPasswordExpire);
 
-        return null;
+        return ResultData.success();
     }
 }
