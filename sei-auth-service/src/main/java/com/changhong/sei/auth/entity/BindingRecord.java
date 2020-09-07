@@ -2,6 +2,7 @@ package com.changhong.sei.auth.entity;
 
 import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.core.entity.BaseAuditableEntity;
+import com.changhong.sei.core.entity.BaseEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -20,7 +21,7 @@ import java.util.Date;
 @Table(name = "binding_record")
 @DynamicInsert
 @DynamicUpdate
-public class BindingRecord extends BaseAuditableEntity implements Serializable {
+public class BindingRecord extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -11858425001246419L;
     public static final String FIELD_USER_ID = "userId";
     public static final String FIELD_OPEN_ID = "openId";
