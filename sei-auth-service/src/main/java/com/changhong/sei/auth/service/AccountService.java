@@ -277,7 +277,6 @@ public class AccountService extends BaseEntityService<Account> {
      *
      * @param account 账号
      * @param tenant  租户代码
-     * @param channel 账号渠道
      * @return 存在返回账号, 不存在返回null
      */
     public Account getByAccountAndTenantCode(String account, String tenant) {
@@ -400,13 +399,10 @@ public class AccountService extends BaseEntityService<Account> {
         }
         // 邮箱或手机号必须由验证码验证
         if (ChannelEnum.EMAIL.equals(request.getChannel()) || ChannelEnum.Mobile.equals(request.getChannel())) {
-            if (StringUtils.isBlank(request.getReqId())) {
-                return ResultData.fail("reqId不能为空.");
-            }
             if (StringUtils.isBlank(request.getVerifyCode())) {
                 return ResultData.fail("验证码不能为空.");
             }
-            ResultData<String> resultData = validateCodeService.check(request.getReqId(), request.getVerifyCode());
+            ResultData<String> resultData = validateCodeService.check(request.getOpenId(), request.getVerifyCode());
             if (resultData.failed()) {
                 return resultData;
             }

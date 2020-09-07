@@ -16,12 +16,7 @@ import java.io.Serializable;
 @ApiModel(description = "账户绑定")
 public class BindingAccountRequest implements Serializable {
     private static final long serialVersionUID = -2149001770273260656L;
-    /**
-     * 请求id
-     * 社交账号绑定时是openId
-     */
-    @ApiModelProperty(notes = "请求id.社交账号绑定时是openId的值", required = true)
-    private String reqId;
+
     /**
      * 验证码
      */
@@ -31,14 +26,14 @@ public class BindingAccountRequest implements Serializable {
      * 绑定账号
      */
     @NotBlank
-    @ApiModelProperty(notes = "绑定账号 openId")
+    @ApiModelProperty(notes = "绑定账号 openId", required = true)
     private String openId;
 
     /**
      * 账号渠道
      */
     @NotNull
-    @ApiModelProperty(value = "账号渠道")
+    @ApiModelProperty(value = "账号渠道", required = true)
     private ChannelEnum channel;
 
     /**
@@ -61,14 +56,6 @@ public class BindingAccountRequest implements Serializable {
      * 账户类型
      */
     private String accountType;
-
-    public String getReqId() {
-        return reqId;
-    }
-
-    public void setReqId(String reqId) {
-        this.reqId = reqId;
-    }
 
     public String getVerifyCode() {
         return verifyCode;
