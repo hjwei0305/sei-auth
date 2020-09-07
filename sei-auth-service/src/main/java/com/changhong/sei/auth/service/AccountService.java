@@ -5,7 +5,6 @@ import com.changhong.sei.auth.dto.BindingAccountRequest;
 import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.auth.dto.UpdatePasswordRequest;
 import com.changhong.sei.auth.entity.Account;
-import com.changhong.sei.auth.entity.BindingRecord;
 import com.changhong.sei.auth.service.client.UserClient;
 import com.changhong.sei.auth.service.client.UserInformation;
 import com.changhong.sei.core.context.ContextUtil;
@@ -435,15 +434,8 @@ public class AccountService extends BaseEntityService<Account> {
 
             this.save(accountObj);
 
-            BindingRecord record = new BindingRecord();
-            record.setTenantCode(request.getTenantCode());
-            record.setUserId(request.getUserId());
-            record.setAccount(request.getAccount());
-            record.setOpenId(request.getOpenId());
-            record.setBindingDate(LocalDateTime.now());
-            record.setChannel(request.getChannel());
-
-            bindingRecordService.save(record);
+            // 添加绑定记录
+            bindingRecordService.recordBind(accountObj, request.getChannel(), Boolean.TRUE);
 
             return ResultData.success("ok");
         }
@@ -466,19 +458,8 @@ public class AccountService extends BaseEntityService<Account> {
         // 删除绑定账号
         this.delete(account.getId());
 
-        // 更新绑定记录
-        BindingRecord record = bindingRecordService.findOneByFilters(search);
-        if (Objects.isNull(record)) {
-            record = new BindingRecord();
-            record.setTenantCode(user.getTenantCode());
-            record.setUserId(user.getUserId());
-            record.setAccount(user.getAccount());
-            record.setOpenId(openId);
-            record.setBindingDate(account.getSinceDate());
-            record.setChannel(channel);
-        }
-        record.setUnbindingDate(LocalDateTime.now());
-        bindingRecordService.save(record);
+        // 添加绑定记录
+        bindingRecordService.recordBind(account, channel, Boolean.TRUE);
         return ResultData.success();
     }
 

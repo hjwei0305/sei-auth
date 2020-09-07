@@ -293,4 +293,12 @@ public class AccountController extends BaseEntityController<Account, AccountResp
     public ResultData<String> unbinding(@Valid BindingAccountRequest request) {
         return accountService.unbinding(request.getOpenId(), request.getChannel());
     }
+
+    /**
+     * 找回密码
+     */
+    @Override
+    public ResultData<String> findPassword() {
+        return null;
+    }
 }

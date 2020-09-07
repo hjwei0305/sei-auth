@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 /**
  * 实现功能：验证码
@@ -37,6 +38,8 @@ public class ValidateCodeService {
     private CacheBuilder cacheBuilder;
     @Autowired
     private NotifyManager notifyManager;
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^\\s*\\w+(?:\\.{0,1}[\\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\\.[a-zA-Z]+\\s*$");
 
     /**
      * 生成验证码
@@ -91,34 +94,43 @@ public class ValidateCodeService {
         String code = RandomUtils.randomNumberString(6);
         LogUtil.info("验证码: {}", code);
 
-        // 验证码5分钟有效期
-        cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, (long) 5 * 60 * 1000);
-
         String subject = operation + "-验证码";
         StringBuilder content = new StringBuilder(128);
         switch (channel) {
             case EMAIL:
-                EmailMessage message = new EmailMessage();
-                message.setSubject(subject);
-                content.append("尊敬的").append(ContextUtil.getUserName()).append("：<br/><br/>")
-                        .append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;您好！您申请了")
-                        .append(operation).append("，验证码为：")
-                        .append(code)
-                        .append(", 5分钟内有效。如果您没有执行该操作，请忽略此邮件。");
-                message.setContent(content.toString());
-                message.setReceivers(Lists.newArrayList(new EmailAccount(ContextUtil.getUserName(), reqId)));
-                notifyManager.sendEmail(message);
+                if (EMAIL_PATTERN.matcher(reqId).matches()) {
+                    EmailMessage message = new EmailMessage();
+                    message.setSubject(subject);
+                    content.append("尊敬的").append(ContextUtil.getUserName()).append("：<br/><br/>")
+                            .append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;您好！您申请了")
+                            .append(operation).append("，验证码为：")
+                            .append(code)
+                            .append(", 5分钟内有效。如果您没有执行该操作，请忽略此邮件。");
+                    message.setContent(content.toString());
+                    message.setReceivers(Lists.newArrayList(new EmailAccount(ContextUtil.getUserName(), reqId)));
+                    notifyManager.sendEmail(message);
+                } else {
+                    return ResultData.fail("邮箱格式不正确[" + reqId + "]");
+                }
                 break;
             case Mobile:
-                content.append("您好！您申请了").append(operation).append(",验证码为:").append(code).append(", 5分钟内有效");
-                SmsMessage smsMessage = new SmsMessage();
-                smsMessage.setContent(content.toString());
-                smsMessage.addPhoneNum(reqId);
-                notifyManager.sendSms(smsMessage);
+                if (reqId.matches("[0-9]+") && reqId.length() > 8 && reqId.length() < 14) {
+                    content.append("您好！您申请了").append(operation).append(",验证码为:").append(code).append(", 5分钟内有效");
+                    SmsMessage smsMessage = new SmsMessage();
+                    smsMessage.setContent(content.toString());
+                    smsMessage.addPhoneNum(reqId);
+                    notifyManager.sendSms(smsMessage);
+                } else {
+                    return ResultData.fail("手机号不正确[" + reqId + "]");
+                }
                 break;
             default:
                 return ResultData.fail("不支持的发送类型[" + channel + "]");
         }
+
+        // 验证码5分钟有效期
+        cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, (long) 5 * 60 * 1000);
+
         return ResultData.success();
     }
 }

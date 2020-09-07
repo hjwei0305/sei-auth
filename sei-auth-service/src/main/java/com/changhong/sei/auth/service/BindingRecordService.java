@@ -1,11 +1,17 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.dao.BindingRecordDao;
+import com.changhong.sei.auth.dto.ChannelEnum;
+import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.entity.BindingRecord;
 import com.changhong.sei.core.dao.BaseEntityDao;
+import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.service.BaseEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 
 /**
@@ -24,4 +30,18 @@ public class BindingRecordService extends BaseEntityService<BindingRecord> {
         return dao;
     }
 
+    @Transactional
+    public ResultData<String> recordBind(Account account, ChannelEnum channel, boolean isBind) {
+        BindingRecord record = new BindingRecord();
+        record.setTenantCode(account.getTenantCode());
+        record.setUserId(account.getUserId());
+        record.setAccount(account.getAccount());
+        record.setOpenId(account.getOpenId());
+        record.setOperationDate(LocalDateTime.now());
+        record.setBind(isBind);
+        record.setChannel(channel);
+
+        this.save(record);
+        return ResultData.success();
+    }
 }

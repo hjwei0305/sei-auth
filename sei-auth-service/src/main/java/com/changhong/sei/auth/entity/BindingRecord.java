@@ -23,9 +23,6 @@ import java.util.Date;
 @DynamicUpdate
 public class BindingRecord extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -11858425001246419L;
-    public static final String FIELD_USER_ID = "userId";
-    public static final String FIELD_OPEN_ID = "openId";
-    public static final String FIELD_CHANNEL = "channel";
     /**
      * 租户代码
      */
@@ -53,16 +50,15 @@ public class BindingRecord extends BaseEntity implements Serializable {
     @Column(name = "open_id")
     private String openId;
     /**
-     * 注册时间
+     * 绑定
      */
-    @Column(name = "binding_date")
-    private LocalDateTime bindingDate;
+    @Column(name = "is_bind")
+    private Boolean bind;
     /**
-     * 注册时间
+     * 操作时间
      */
-    @Column(name = "unbinding_date")
-    private LocalDateTime unbindingDate;
-
+    @Column(name = "operation_date")
+    private LocalDateTime operationDate;
 
     public String getTenantCode() {
         return tenantCode;
@@ -104,20 +100,19 @@ public class BindingRecord extends BaseEntity implements Serializable {
         this.openId = openId;
     }
 
-    public LocalDateTime getBindingDate() {
-        return bindingDate;
+    public Boolean getBind() {
+        return bind;
     }
 
-    public void setBindingDate(LocalDateTime bindingDate) {
-        this.bindingDate = bindingDate;
+    public void setBind(Boolean bind) {
+        this.bind = bind;
     }
 
-    public LocalDateTime getUnbindingDate() {
-        return unbindingDate;
+    public LocalDateTime getOperationDate() {
+        return operationDate;
     }
 
-    public void setUnbindingDate(LocalDateTime unbindingDate) {
-        this.unbindingDate = unbindingDate;
+    public void setOperationDate(LocalDateTime operationDate) {
+        this.operationDate = operationDate;
     }
-
 }
