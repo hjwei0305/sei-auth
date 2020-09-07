@@ -3,7 +3,6 @@ package com.changhong.sei.auth.controller;
 import com.changhong.sei.auth.api.AccountApi;
 import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
-import com.changhong.sei.auth.entity.BindingRecord;
 import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -295,10 +294,30 @@ public class AccountController extends BaseEntityController<Account, AccountResp
     }
 
     /**
+     * 找回密码验证码
+     *
+     * @param accountId 账号id
+     * @param channel   通道
+     * @return 返回验证码
+     */
+    @Override
+    public ResultData<String> sendVerifyCode(@NotBlank String accountId, @NotBlank String channel) {
+        return accountService.sendVerifyCode(accountId, channel);
+    }
+
+    /**
+     * 检查账号是否存在
+     */
+    @Override
+    public ResultData<CheckAccountResponse> checkExisted(CheckAccountRequest request) {
+        return accountService.findPassword4Check(request);
+    }
+
+    /**
      * 找回密码
      */
     @Override
-    public ResultData<String> findPassword() {
-        return null;
+    public ResultData<String> findPassword(FindPasswordRequest request) {
+        return accountService.doFindPassword(request);
     }
 }

@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,35 +48,35 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
     /**
      * 注册新账户
      */
-    @PostMapping(path = "register")
+    @PostMapping(path = "register", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("创建新账户.有初始密码")
     ResultData<String> register(@RequestBody @Valid RegisterAccountRequest request) throws IllegalAccessException;
 
     /**
      * 创建新账户
      */
-    @PostMapping(path = "create")
+    @PostMapping(path = "create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("创建新账户.无初始密码,使用平台提供的默认密码策略")
     ResultData<String> create(@RequestBody @Valid CreateAccountRequest request) throws IllegalAccessException;
 
     /**
      * 更新账户
      */
-    @PostMapping(path = "update")
+    @PostMapping(path = "update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("更新账户")
     ResultData<String> update(@RequestBody @Valid UpdateAccountRequest request) throws IllegalAccessException;
 
     /**
      * 更新账户
      */
-    @PostMapping(path = "updateByTenantAccount")
+    @PostMapping(path = "updateByTenantAccount", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("按租户账号修改账户")
     ResultData<String> updateByTenantAccount(@RequestBody @Valid UpdateAccountByAccountRequest request) throws IllegalAccessException;
 
     /**
      * 更新密码
      */
-    @PostMapping(path = "updatePassword")
+    @PostMapping(path = "updatePassword", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("更新密码")
     ResultData<String> updatePassword(@RequestBody @Valid UpdatePasswordRequest request);
 
@@ -121,22 +122,45 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
     /**
      * 绑定账号
      */
-    @PostMapping(path = "binding")
+    @PostMapping(path = "binding", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("绑定账号")
     ResultData<String> binding(@RequestBody @Valid BindingAccountRequest request);
 
     /**
      * 解绑账号
      */
-    @PostMapping(path = "unbinding")
+    @PostMapping(path = "unbinding", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("解绑账号")
     ResultData<String> unbinding(@RequestBody @Valid BindingAccountRequest request);
 
     /**
+     * 找回密码验证码
+     *
+     * @param accountId 账号id
+     * @param channel   通道
+     * @return 返回验证码
+     */
+    @GetMapping(path = "sendVerifyCode")
+    @ApiOperation(value = "找回密码验证码", notes = "验证码5分钟有效期")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id", value = "账号id", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "channel", value = "通道", required = true, paramType = "query", allowableValues = "Mobile, EMAIL")
+    })
+    ResultData<String> sendVerifyCode(@RequestParam("id") @NotBlank String accountId,
+                                      @RequestParam("channel") @NotBlank String channel);
+
+    /**
+     * 检查账号是否存在
+     */
+    @PostMapping(path = "checkExisted", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("检查账号是否存在")
+    ResultData<CheckAccountResponse> checkExisted(@RequestBody @Valid CheckAccountRequest request);
+
+    /**
      * 找回密码
      */
-    @PostMapping(path = "findpwd")
+    @PostMapping(path = "findpwd", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("找回密码")
-    ResultData<String> findPassword();
+    ResultData<String> findPassword(@RequestBody @Valid FindPasswordRequest request);
 
 }

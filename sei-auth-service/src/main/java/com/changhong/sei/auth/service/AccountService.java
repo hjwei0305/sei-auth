@@ -1,9 +1,7 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.dao.AccountDao;
-import com.changhong.sei.auth.dto.BindingAccountRequest;
-import com.changhong.sei.auth.dto.ChannelEnum;
-import com.changhong.sei.auth.dto.UpdatePasswordRequest;
+import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.service.client.UserClient;
 import com.changhong.sei.auth.service.client.UserInformation;
@@ -15,6 +13,7 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.util.EnumUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -439,7 +438,7 @@ public class AccountService extends BaseEntityService<Account> {
 
             return ResultData.success("ok");
         }
-        return ResultData.fail(resultData.getMessage());
+        return ResultData.fail(request.getOpenId() + " 已被绑定其他账号.");
     }
 
     @Transactional
@@ -484,5 +483,103 @@ public class AccountService extends BaseEntityService<Account> {
             }
         }
         return ResultData.success();
+    }
+
+    /**
+     * 找回密码验证码
+     *
+     * @param accountId 账号id
+     * @param channel   通道
+     * @return 返回验证码
+     */
+    public ResultData<String> sendVerifyCode(String accountId, String channel) {
+        ChannelEnum channelEnum = EnumUtils.getEnum(ChannelEnum.class, channel);
+        if (Objects.nonNull(channelEnum)) {
+            Account account = this.findOne(accountId);
+            if (Objects.isNull(account)) {
+                return ResultData.fail("账户不存在.");
+            }
+            ResultData<UserInformation> userInfoResult = userClient.getUserInformation(account.getUserId());
+            if (userInfoResult.failed()) {
+                return ResultData.fail(userInfoResult.getMessage());
+            }
+            UserInformation userInformation = userInfoResult.getData();
+            String target;
+            switch (channelEnum) {
+                case EMAIL:
+                    target = userInformation.getEmail();
+                    break;
+                case Mobile:
+                    target = userInformation.getMobile();
+                    break;
+                default:
+                    return ResultData.fail("不支持的发送类型[" + channel + "]");
+            }
+
+            return validateCodeService.sendVerifyCode(target, channelEnum, "找回密码");
+        } else {
+            return ResultData.fail("不支持的发送通道类型[" + channel + "]");
+        }
+    }
+
+    /**
+     * 检查账号是否存在
+     */
+    public ResultData<CheckAccountResponse> findPassword4Check(CheckAccountRequest request) {
+        // 检查验证码是否匹配
+        ResultData<String> resultData = validateCodeService.check(request.getReqId(), request.getVerifyCode());
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+
+        String openId = request.getOpenId();
+        List<Account> accounts = this.getByAccount(openId);
+        if (CollectionUtils.isEmpty(accounts)) {
+            return ResultData.fail("账号[" + openId + "]不存在.");
+        }
+
+        if (accounts.size() == 1) {
+            Account account = accounts.get(0);
+
+            ResultData<UserInformation> userInfoResult = userClient.getUserInformation(account.getUserId());
+            if (userInfoResult.failed()) {
+                return ResultData.fail(userInfoResult.getMessage());
+            }
+            UserInformation userInformation = userInfoResult.getData();
+
+            CheckAccountResponse response = new CheckAccountResponse();
+            response.setOpenId(openId);
+            response.setId(account.getId());
+            response.setEmail(userInformation.getEmail());
+            response.setMobile(userInformation.getMobile());
+            response.setResult("success");
+            return ResultData.success(response);
+        } else {
+            // 存在多个租户
+            CheckAccountResponse response = new CheckAccountResponse();
+            response.setOpenId(openId);
+            response.setResult("multiTenant");
+            return ResultData.success(response);
+        }
+    }
+
+    /**
+     * 找回密码
+     */
+    @Transactional
+    public ResultData<String> doFindPassword(FindPasswordRequest request) {
+        // 检查验证码是否匹配
+        ResultData<String> resultData = validateCodeService.check(request.getId(), request.getVerifyCode());
+        if (resultData.failed()) {
+            return ResultData.fail(resultData.getMessage());
+        }
+
+        Account account = this.findOne(request.getId());
+        if (Objects.isNull(account)) {
+            return ResultData.fail("账户不存在.");
+        }
+        this.updatePassword(account.getId(), request.getNewPassword(), defaultPasswordExpire);
+
+        return null;
     }
 }

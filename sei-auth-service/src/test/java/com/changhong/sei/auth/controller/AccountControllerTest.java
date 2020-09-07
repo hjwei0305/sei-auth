@@ -118,4 +118,13 @@ public class AccountControllerTest extends BaseUnitTest {
         ResultData<String> resultData = service.locked(ID, true);
         System.out.println(JsonUtils.toJson(resultData));
     }
+
+    @Test
+    public void unbinding() {
+        BindingAccountRequest request = new BindingAccountRequest();
+        request.setOpenId("pan1.zhang@changhong.com");
+        request.setChannel(ChannelEnum.EMAIL);
+        ResultData<String> resultData = service.unbinding(request);
+        System.out.println(resultData);
+    }
 }
