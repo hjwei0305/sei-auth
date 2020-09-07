@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -36,7 +37,7 @@ public class BindingAccountRequest implements Serializable {
     /**
      * 账号渠道
      */
-    @NotBlank
+    @NotNull
     @ApiModelProperty(value = "账号渠道")
     private ChannelEnum channel;
 

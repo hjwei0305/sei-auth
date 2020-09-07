@@ -132,5 +132,11 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
     @ApiOperation("解绑账号")
     ResultData<String> unbinding(@RequestBody @Valid BindingAccountRequest request);
 
+//    /**
+//     * 找回密码
+//     */
+//    @PostMapping(path = "findpwd")
+//    @ApiOperation("找回密码")
+//    ResultData<String> findPassword();
 
 }
