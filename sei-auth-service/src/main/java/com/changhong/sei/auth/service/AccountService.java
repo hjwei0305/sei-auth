@@ -538,29 +538,38 @@ public class AccountService extends BaseEntityService<Account> {
             return ResultData.fail("账号[" + openId + "]不存在.");
         }
 
+        Account account;
         if (accounts.size() == 1) {
-            Account account = accounts.get(0);
-
-            ResultData<UserInformation> userInfoResult = userClient.getUserInformation(account.getUserId());
-            if (userInfoResult.failed()) {
-                return ResultData.fail(userInfoResult.getMessage());
-            }
-            UserInformation userInformation = userInfoResult.getData();
-
-            CheckAccountResponse response = new CheckAccountResponse();
-            response.setOpenId(openId);
-            response.setId(account.getId());
-            response.setEmail(userInformation.getEmail());
-            response.setMobile(userInformation.getMobile());
-            response.setResult("success");
-            return ResultData.success(response);
+            account = accounts.get(0);
         } else {
-            // 存在多个租户
-            CheckAccountResponse response = new CheckAccountResponse();
-            response.setOpenId(openId);
-            response.setResult("multiTenant");
-            return ResultData.success(response);
+            final String tenant = request.getTenant();
+            if (StringUtils.isBlank(tenant)) {
+                // 存在多个租户
+                CheckAccountResponse response = new CheckAccountResponse();
+                response.setOpenId(openId);
+                response.setResult("multiTenant");
+                return ResultData.success(response);
+            } else {
+                account = accounts.stream().filter(a -> tenant.equals(a.getTenantCode())).findAny().orElse(null);
+                if (Objects.isNull(account)) {
+                    return ResultData.fail("租户代码[" + tenant + "]错误.");
+                }
+            }
         }
+
+        ResultData<UserInformation> userInfoResult = userClient.getUserInformation(account.getUserId());
+        if (userInfoResult.failed()) {
+            return ResultData.fail(userInfoResult.getMessage());
+        }
+        UserInformation userInformation = userInfoResult.getData();
+
+        CheckAccountResponse response = new CheckAccountResponse();
+        response.setOpenId(openId);
+        response.setId(account.getId());
+        response.setEmail(userInformation.getEmail());
+        response.setMobile(userInformation.getMobile());
+        response.setResult("success");
+        return ResultData.success(response);
     }
 
     /**
