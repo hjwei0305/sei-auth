@@ -10,7 +10,7 @@ public interface Constants {
     /**
      * 认证码缓存key
      */
-    String VERIFY_CODE_KEY = "sei:auth:login:verify_code:";
+    String VERIFY_CODE_KEY = "sei:auth:verify_code:";
     /**
      * 半小时内登陆错误次数
      */

@@ -72,13 +72,13 @@ public interface AuthenticationApi {
     @GetMapping(path = "getSessionUser")
     @ApiOperation("获取指定会话用户信息")
     ResultData<SessionUserResponse> getSessionUser(@RequestParam("sid") @NotBlank String sid);
-
-    /**
-     * 返回验证码
-     * @param reqId
-     * @return
-     */
-    @GetMapping(path = "verifyCode")
-    @ApiOperation(value = "验证码", notes = "验证码")
-    ResultData<String> verifyCode(@RequestParam("reqId") @NotBlank String reqId);
+//
+//    /**
+//     * 返回验证码
+//     * @param reqId
+//     * @return
+//     */
+//    @GetMapping(path = "verifyCode")
+//    @ApiOperation(value = "验证码", notes = "验证码")
+//    ResultData<String> verifyCode(@RequestParam("reqId") @NotBlank String reqId);
 }

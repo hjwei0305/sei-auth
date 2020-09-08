@@ -6,7 +6,6 @@ import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.auth.service.SessionService;
-import com.changhong.sei.auth.service.ValidateCodeService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
@@ -42,8 +41,8 @@ public class AuthenticationController implements AuthenticationApi {
     private AccountService accountService;
     @Autowired
     private SessionService sessionService;
-    @Autowired
-    private ValidateCodeService validateCodeService;
+    //    @Autowired
+//    private ValidateCodeService validateCodeService;
     @Autowired
     private TokenAuthenticatorBuilder authenticatorBuilder;
 
@@ -126,13 +125,13 @@ public class AuthenticationController implements AuthenticationApi {
         return accountService.getAuthorizedFeatures(userId);
     }
 
-    /**
-     * 验证码
-     */
-    @Override
-    public ResultData<String> verifyCode(String reqId) {
-        return validateCodeService.generate(reqId);
-    }
+//    /**
+//     * 验证码
+//     */
+//    @Override
+//    public ResultData<String> verifyCode(String reqId) {
+//        return validateCodeService.generate(reqId);
+//    }
 
     /**
      * 获取指定会话用户信息

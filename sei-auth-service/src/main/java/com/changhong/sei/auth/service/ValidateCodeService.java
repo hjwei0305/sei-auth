@@ -13,6 +13,7 @@ import com.changhong.sei.notify.dto.EmailAccount;
 import com.changhong.sei.notify.dto.EmailMessage;
 import com.changhong.sei.notify.dto.SmsMessage;
 import com.changhong.sei.notify.sdk.manager.NotifyManager;
+import com.changhong.sei.util.Signature;
 import com.google.common.collect.Lists;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
@@ -53,8 +54,8 @@ public class ValidateCodeService {
             String code = verifyCode.getCode();
             LogUtil.info("验证码: {}", code);
 
-            // 验证码5分钟有效期
-            cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, (long) 5 * 60 * 1000);
+            // 保存验证码
+            saveVerifyCode(reqId, code);
 
             // 返回Base64编码过的字节数组字符串
             String str = Base64.encodeBase64String(verifyCode.getImgBytes());
@@ -77,16 +78,13 @@ public class ValidateCodeService {
             return ResultData.fail("请输入验证码");
         }
 
-        String key = Constants.VERIFY_CODE_KEY + reqId;
-        String cacheValue = cacheBuilder.get(key);
+        String cacheValue = getVerifyCode(reqId);
         if (StringUtils.isBlank(cacheValue)) {
             return ResultData.fail("验证码已过期");
         }
         if (!StringUtils.equalsIgnoreCase(value, cacheValue)) {
             return ResultData.fail("验证码不正确");
         }
-        // 移除已使用的验证码
-        cacheBuilder.remove(key);
         return ResultData.success("ok");
     }
 
@@ -128,9 +126,28 @@ public class ValidateCodeService {
                 return ResultData.fail("不支持的发送类型[" + channel + "]");
         }
 
-        // 验证码5分钟有效期
-        cacheBuilder.set(Constants.VERIFY_CODE_KEY + reqId, code, (long) 5 * 60 * 1000);
+        // 保存验证码
+        saveVerifyCode(reqId, code);
 
         return ResultData.success();
+    }
+
+    /**
+     * 将验证码写入缓存
+     */
+    private void saveVerifyCode(String key, String value) {
+        // 验证码5分钟有效期
+        cacheBuilder.set(Constants.VERIFY_CODE_KEY + Signature.sign(key), value, (long) 5 * 60 * 1000);
+    }
+
+    /**
+     * 获取缓存的验证码
+     */
+    private String getVerifyCode(String key) {
+        String cacheKey = Constants.VERIFY_CODE_KEY + Signature.sign(key);
+        String value = cacheBuilder.get(cacheKey);
+        // 移除已使用的验证码
+        cacheBuilder.remove(cacheKey);
+        return value;
     }
 }

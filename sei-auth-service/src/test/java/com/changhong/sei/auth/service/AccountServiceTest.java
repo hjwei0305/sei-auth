@@ -21,7 +21,7 @@ public class AccountServiceTest extends BaseUnitTest {
 
     @Test
     public void doFindPassword() {
-        String json = "{\"id\":\"8f9f3a92-3f82-11e7-ac6f-005056930c6b\",\"newPassword\":\"18574234d459f052f3404ea8c7b73ea3\",\"verifyCode\":\"820486\"}";
+        String json = "{\"id\":\"62D5F24D-43F8-11EA-B9FC-CEA14F741438\",\"newPassword\":\"9be67e24a85ff2e1b2c3bfd78c6235b6\",\"verifyCode\":\"855393\"}";
         FindPasswordRequest request = JsonUtils.fromJson(json, FindPasswordRequest.class);
         ResultData<String> resultData = service.doFindPassword(request);
         System.out.println(resultData);
