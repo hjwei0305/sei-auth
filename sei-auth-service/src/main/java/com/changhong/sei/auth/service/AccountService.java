@@ -516,7 +516,7 @@ public class AccountService extends BaseEntityService<Account> {
                     return ResultData.fail("不支持的发送类型[" + channel + "]");
             }
 
-            return validateCodeService.sendVerifyCode(accountId, channelEnum, "找回密码");
+            return validateCodeService.sendVerifyCode(accountId, target, channelEnum, "找回密码");
         } else {
             return ResultData.fail("不支持的发送通道类型[" + channel + "]");
         }

@@ -41,8 +41,8 @@ public class SingleSignOnController implements Constants {
     private TokenAuthenticatorBuilder builder;
 
     @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
-    @RequestMapping(AUTHORIZE_ENDPOINT)
-    public String authorize(HttpServletRequest request) throws Exception {
+    @RequestMapping(path = AUTHORIZE_ENDPOINT, method = {RequestMethod.GET, RequestMethod.POST})
+    public String authorize(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
             throw new WebException("单点登录失败：authType不能为空！");
@@ -56,8 +56,8 @@ public class SingleSignOnController implements Constants {
 
     @ResponseBody
     @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
-    @RequestMapping("/sso/authorizeData")
-    public ResultData<Map<String, String>> authorizeData(HttpServletRequest request) throws Exception {
+    @RequestMapping(path = "/sso/authorizeData", method = {RequestMethod.GET, RequestMethod.POST})
+    public ResultData<Map<String, String>> authorizeData(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
             throw new WebException("单点登录失败：authType不能为空！");
@@ -70,7 +70,7 @@ public class SingleSignOnController implements Constants {
     }
 
     @ApiOperation(value = "单点登录", notes = "PC应用单点登录")
-    @RequestMapping(value = {SSO_LOGIN_ENDPOINT})
+    @RequestMapping(path = {SSO_LOGIN_ENDPOINT}, method = {RequestMethod.GET, RequestMethod.POST})
     public String ssoLogin(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
@@ -103,14 +103,14 @@ public class SingleSignOnController implements Constants {
 
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
-    @RequestMapping(value = "/sso/binding/socialAccount", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(path = "/sso/binding/socialAccount", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request) {
         return builder.getOauth2Authenticator(loginRequest.getAuthType()).bindingAccount(loginRequest, request);
     }
 
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
-    @RequestMapping(value = "/sso/js/sdk", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(path = "/sso/js/sdk", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultData<Map<String, String>> jsSdk(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {

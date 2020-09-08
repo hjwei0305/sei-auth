@@ -50,7 +50,7 @@ public class VerifyCodeController implements VerifyCodeApi {
     public ResultData<String> sendVerifyCode(String reqId, String channel, String operation) {
         ChannelEnum channelEnum = EnumUtils.getEnum(ChannelEnum.class, channel);
         if (Objects.nonNull(channelEnum)) {
-            return validateCodeService.sendVerifyCode(reqId, channelEnum, operation);
+            return validateCodeService.sendVerifyCode(reqId, reqId, channelEnum, operation);
         } else {
             return ResultData.fail("不支持的发送通道类型[" + channel + "]");
         }

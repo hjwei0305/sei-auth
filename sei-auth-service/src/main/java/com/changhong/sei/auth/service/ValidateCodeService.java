@@ -88,7 +88,7 @@ public class ValidateCodeService {
         return ResultData.success("ok");
     }
 
-    public ResultData<String> sendVerifyCode(String reqId, ChannelEnum channel, String operation) {
+    public ResultData<String> sendVerifyCode(String reqId, String target, ChannelEnum channel, String operation) {
         String code = RandomUtils.randomNumberString(6);
         LogUtil.info("验证码: {}", code);
 
@@ -96,7 +96,7 @@ public class ValidateCodeService {
         StringBuilder content = new StringBuilder(128);
         switch (channel) {
             case EMAIL:
-                if (EMAIL_PATTERN.matcher(reqId).matches()) {
+                if (EMAIL_PATTERN.matcher(target).matches()) {
                     EmailMessage message = new EmailMessage();
                     message.setSubject(subject);
                     content.append("尊敬的").append(ContextUtil.getUserName()).append("：<br/><br/>")
@@ -105,21 +105,21 @@ public class ValidateCodeService {
                             .append(code)
                             .append(", 5分钟内有效。如果您没有执行该操作，请忽略此邮件。");
                     message.setContent(content.toString());
-                    message.setReceivers(Lists.newArrayList(new EmailAccount(ContextUtil.getUserName(), reqId)));
+                    message.setReceivers(Lists.newArrayList(new EmailAccount(ContextUtil.getUserName(), target)));
                     notifyManager.sendEmail(message);
                 } else {
-                    return ResultData.fail("邮箱格式不正确[" + reqId + "]");
+                    return ResultData.fail("邮箱格式不正确[" + target + "]");
                 }
                 break;
             case Mobile:
-                if (reqId.matches("[0-9]+") && reqId.length() > 8 && reqId.length() < 14) {
+                if (target.matches("[0-9]+") && target.length() > 8 && target.length() < 14) {
                     content.append("您好！您申请了").append(operation).append(",验证码为:").append(code).append(", 5分钟内有效");
                     SmsMessage smsMessage = new SmsMessage();
                     smsMessage.setContent(content.toString());
-                    smsMessage.addPhoneNum(reqId);
+                    smsMessage.addPhoneNum(target);
                     notifyManager.sendSms(smsMessage);
                 } else {
-                    return ResultData.fail("手机号不正确[" + reqId + "]");
+                    return ResultData.fail("手机号不正确[" + target + "]");
                 }
                 break;
             default:
