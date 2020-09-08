@@ -35,7 +35,7 @@ public class VerifyCodeController implements VerifyCodeApi {
      * @return 返回验证码
      */
     @Override
-    public ResultData<String> getVerifyCode(@NotBlank String reqId) {
+    public ResultData<String> generate(@NotBlank String reqId) {
         return validateCodeService.generate(reqId);
     }
 

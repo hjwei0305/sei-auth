@@ -30,9 +30,9 @@ public interface VerifyCodeApi {
      * @param reqId 请求id
      * @return 返回验证码
      */
-    @GetMapping(path = "verifyCode")
+    @GetMapping(path = "generate")
     @ApiOperation(value = "验证码", notes = "验证码5分钟有效期")
-    ResultData<String> getVerifyCode(@RequestParam("reqId") @NotBlank String reqId);
+    ResultData<String> generate(@RequestParam("reqId") @NotBlank String reqId);
 
     /**
      * 验证码
