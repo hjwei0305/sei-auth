@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -52,7 +53,7 @@ public class AccountResponse extends BaseEntityDto {
      * 来源系统(sei,wechat,dingtalk等)
      */
     @ApiModelProperty(notes = "来源系统", required = true)
-    @NotBlank
+    @NotNull
     private ChannelEnum channel;
     /**
      * 账户类型
