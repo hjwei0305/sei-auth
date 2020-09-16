@@ -95,6 +95,8 @@ public class SingleSignOnController implements Constants {
             SessionUserResponse userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
                 index = authenticator.getIndexUrl(userResponse);
+            } else {
+                index = authenticator.getIndexUrl(userResponse);
             }
         }
         LOG.error("单点登录失败：未获取到当前登录用户！");
@@ -103,7 +105,7 @@ public class SingleSignOnController implements Constants {
 
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
-    @RequestMapping(path = "/sso/binding/socialAccount", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(path = "/sso/binding/socialAccount", method = {RequestMethod.GET, RequestMethod.POST}, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request) {
         return builder.getOauth2Authenticator(loginRequest.getAuthType()).bindingAccount(loginRequest, request);
     }
