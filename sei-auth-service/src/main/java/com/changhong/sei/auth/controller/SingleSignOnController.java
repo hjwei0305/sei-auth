@@ -80,26 +80,29 @@ public class SingleSignOnController implements Constants {
 
         //浏览器客户端信息
         String ua = request.getHeader("User-Agent");
-        //客户端是否是pc
-        if (authenticator.checkAgentIsMobile(ua)) {
+        //客户端是否是移动端
+        boolean agentIsMobile = authenticator.checkAgentIsMobile(ua);
+        if (agentIsMobile) {
             request.setAttribute("LoginType", "APP");
         } else {
             request.setAttribute("LoginType", "SSO");
         }
 
+        SessionUserResponse userResponse = null;
         // 单点登录地址
-        String index = authenticator.getLogoutUrl();
+        String index = authenticator.getLogoutUrl(userResponse, agentIsMobile);
         ResultData<SessionUserResponse> result = authenticator.auth(request);
-        LOG.error("单点登录验证结果：{}", result);
+        LOG.info("单点登录验证结果：{}", result);
         if (result.getSuccess()) {
-            SessionUserResponse userResponse = result.getData();
+            userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
-                index = authenticator.getIndexUrl(userResponse);
+                index = authenticator.getIndexUrl(userResponse, agentIsMobile);
             } else {
-                index = authenticator.getIndexUrl(userResponse);
+                index = authenticator.getLogoutUrl(userResponse, agentIsMobile);
             }
+        } else {
+            LOG.error("单点登录失败：未获取到当前登录用户！");
         }
-        LOG.error("单点登录失败：未获取到当前登录用户！");
         return "redirect:" + index;
     }
 

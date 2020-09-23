@@ -83,30 +83,38 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
      * 登录成功url地址
      */
     @Override
-    public String getIndexUrl(SessionUserResponse userResponse) {
-        String url = null;
-        if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
-            url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + userResponse.getSessionId();
-            LOG.error("单点登录跳转地址: {}", url);
+    public String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
+        String url;
+        if (agentIsMobile) {
+            // 移动
+            url = getAppBaseUrl() + "/#/main?sid=" + userResponse.getSessionId();
         } else {
-            if (StringUtils.isNotBlank(userResponse.getOpenId())) {
-                // 账号绑定页面
-                url = getWebBaseUrl() + "/#/sso/socialAccount?authType=" + SingleSignOnAuthenticator.AUTH_TYPE_WE_CHAT
-                        + "&tenant=" + (StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "")
-                        + "&openId=" + (StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
-                LOG.error("单点登录失败：需要绑定平台账号！");
-            }
+            // PC
+            url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + userResponse.getSessionId();
         }
+        LOG.info("单点登录跳转地址: {}", url);
+
         //单点错误页面
         return url;
     }
 
     /**
      * openId绑定失败,需要跳转到绑定页面
+     *
+     * @param userResponse 用户登录失败返回信息.可能为空,注意检查
      */
     @Override
-    public String getLogoutUrl() {
-        return null;
+    public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
+        String url = null;
+        if (Objects.nonNull(userResponse)
+                && StringUtils.isNotBlank(userResponse.getOpenId())) {
+            // 账号绑定页面
+            url = getWebBaseUrl() + "/#/sso/socialAccount?authType=" + SingleSignOnAuthenticator.AUTH_TYPE_WE_CHAT
+                    + "&tenant=" + (StringUtils.isNotBlank(userResponse.getTenantCode()) ? userResponse.getTenantCode() : "")
+                    + "&openId=" + (StringUtils.isNotBlank(userResponse.getOpenId()) ? userResponse.getOpenId() : "");
+        }
+        LOG.info("单点登录失败：需要绑定平台账号！跳转至: {}", url);
+        return url;
     }
 
     /**
@@ -119,6 +127,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
         String redirectUrl = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=snsapi_base&state=%s#wechat_redirect";
 
         redirectUrl = String.format(redirectUrl, properties.getSso().getAppId(), data.get("redirect_uri"), data.get("state"));
+        LOG.info("openId绑定失败,需要跳转到绑定页面: {}", redirectUrl);
         return redirectUrl;
     }
 
@@ -181,7 +190,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
                 String ua = request.getHeader("User-Agent");
                 //设置跳转地址
                 String url;
-                if (checkAgentIsMobile(request.getHeader(ua)) ) {
+                if (checkAgentIsMobile(request.getHeader(ua))) {
                     // 移动
                     url = getAppBaseUrl() + "/#/main?sid=" + response.getSessionId();
                 } else {

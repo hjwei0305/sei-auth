@@ -1,6 +1,8 @@
 package com.changhong.sei.auth.service;
 
+import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.auth.dto.FindPasswordRequest;
+import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.core.util.JsonUtils;
@@ -18,6 +20,18 @@ import static org.junit.Assert.*;
 public class AccountServiceTest extends BaseUnitTest {
     @Autowired
     private AccountService service;
+
+    @Test
+    public void unbinding() {
+        ResultData<String> resultData = service.unbinding("HX00001", ChannelEnum.WeChat);
+        System.out.println(resultData);
+    }
+
+    @Test
+    public void checkAccount() {
+        ResultData<Account> resultData = service.checkAccount(ChannelEnum.WeChat, "HX00001");
+        System.out.println(resultData);
+    }
 
     @Test
     public void doFindPassword() {

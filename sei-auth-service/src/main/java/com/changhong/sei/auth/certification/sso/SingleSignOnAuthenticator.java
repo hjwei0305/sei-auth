@@ -31,17 +31,19 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
     /**
      * 登录成功url地址
      */
-    default String getIndexUrl(SessionUserResponse userResponse) {
+    default String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
         // PC登录：跳转到新版(react)的页面
         String url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + userResponse.getSessionId();
-        LogUtil.error("单点登录跳转地址: {}", url);
+        LogUtil.info("单点登录跳转地址: {}", url);
         return url;
     }
 
     /**
      * 登录失败url地址
+     *
+     * @param userResponse 用户登录失败返回信息.可能为空,注意检查
      */
-    String getLogoutUrl();
+    String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile);
 
     /**
      * 获取用户信息

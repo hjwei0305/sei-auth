@@ -358,10 +358,10 @@ public class AccountService extends BaseEntityService<Account> {
             return ResultData.fail("OpenId is null.");
         }
 
-        List<Account> accounts = dao.findListByProperty(Account.FIELD_OPEN_ID, openId);
+        List<Account> accounts = dao.findByOpenIdAndChannel(openId, channel);
         if (CollectionUtils.isNotEmpty(accounts)) {
-            // 检查系统来还原是否一致
-            Account account = accounts.stream().filter(a -> Objects.equals(channel, a.getChannel())).findAny().orElse(null);
+            // 检查系统来还原是否一致, 正常情况下不应该出现多个
+            Account account = accounts.get(0);
             if (Objects.nonNull(account)) {
                 return ResultData.success(account);
             }
@@ -449,16 +449,18 @@ public class AccountService extends BaseEntityService<Account> {
         search.addFilter(new SearchFilter(Account.FIELD_USER_ID, user.getUserId()));
         search.addFilter(new SearchFilter(Account.FIELD_OPEN_ID, openId));
         search.addFilter(new SearchFilter(Account.FIELD_CHANNEL, channel));
-        Account account = this.findOneByFilters(search);
-        if (Objects.isNull(account)) {
+        List<Account> accounts = this.findByFilters(search);
+        if (Objects.isNull(accounts)) {
             return ResultData.fail("未找到绑定的账号.");
         }
 
-        // 删除绑定账号
-        this.delete(account.getId());
+        for (Account account : accounts) {
+            // 删除绑定账号
+            this.delete(account.getId());
 
-        // 添加绑定记录
-        bindingRecordService.recordBind(account, channel, Boolean.TRUE);
+            // 添加绑定记录
+            bindingRecordService.recordBind(account, channel, Boolean.FALSE);
+        }
         return ResultData.success();
     }
 

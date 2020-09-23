@@ -22,12 +22,14 @@ public interface Oauth2Authenticator extends SingleSignOnAuthenticator {
      */
     @Override
     String getWebBaseUrl();
+
     /**
      * APP根url地址.必须
      * 如:http://tsei.changhong.com:8090/sei-app
      */
     @Override
     String getAppBaseUrl();
+
     /**
      * 服务网关根url地址
      * 如:http://tsei.changhong.com:8090/sei-app
@@ -36,9 +38,11 @@ public interface Oauth2Authenticator extends SingleSignOnAuthenticator {
 
     /**
      * 登录失败url地址
+     *
+     * @param userResponse 用户登录失败返回信息.可能为空,注意检查
      */
     @Override
-    String getLogoutUrl();
+    String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile);
 
     /**
      * oauth2授权路由端点
@@ -50,7 +54,7 @@ public interface Oauth2Authenticator extends SingleSignOnAuthenticator {
     /**
      * 绑定账号
      */
-    ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest,HttpServletRequest request );
+    ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest, HttpServletRequest request);
 
     /**
      * 获取用户信息
