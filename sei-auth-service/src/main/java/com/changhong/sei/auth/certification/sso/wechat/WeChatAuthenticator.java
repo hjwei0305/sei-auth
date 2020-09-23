@@ -168,7 +168,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
      * 绑定账号
      */
     @Override
-    public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest, HttpServletRequest request) {
+    public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest, boolean agentIsMobile) {
         // 社交平台开放ID
         String openId = loginRequest.getReqId();
         ResultData<SessionUserResponse> resultData = login(loginRequest);
@@ -186,18 +186,16 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
 
             ResultData<String> rd = accountService.bindingAccount(accountRequest);
             if (rd.successful()) {
-                //浏览器客户端信息
-                String ua = request.getHeader("User-Agent");
                 //设置跳转地址
                 String url;
-                if (checkAgentIsMobile(request.getHeader(ua))) {
+                if (agentIsMobile) {
                     // 移动
                     url = getAppBaseUrl() + "/#/main?sid=" + response.getSessionId();
                 } else {
                     // PC
                     url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + response.getSessionId();
                 }
-                LOG.error("单点登录跳转地址: {}", url);
+                LOG.info("单点登录跳转地址: {}", url);
 
                 response.setRedirectUrl(url);
                 return ResultData.success(response);

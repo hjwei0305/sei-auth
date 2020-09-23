@@ -61,7 +61,7 @@ public interface TokenAuthenticator {
      * 判断User-Agent 是不是来自于手机
      */
     default boolean checkAgentIsMobile(String ua) {
-        LogUtil.error("User-Agent的类型为:" + ua);
+        LogUtil.info("User-Agent的类型为:" + ua);
         if (ua != null) {
             ua = ua.toLowerCase();
             // 排除 苹果桌面系统

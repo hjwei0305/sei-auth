@@ -54,7 +54,7 @@ public interface Oauth2Authenticator extends SingleSignOnAuthenticator {
     /**
      * 绑定账号
      */
-    ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest, HttpServletRequest request);
+    ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest, boolean agentIsMobile);
 
     /**
      * 获取用户信息
