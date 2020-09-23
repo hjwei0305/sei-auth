@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+import java.util.StringJoiner;
 
 /**
  * 实现功能：
@@ -221,5 +222,20 @@ public class SessionUserResponse implements Serializable {
 
     public void setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
+    }
+
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", SessionUserResponse.class.getSimpleName() + "[", "]")
+                .add("sessionId='" + sessionId + "'")
+                .add("openId='" + openId + "'")
+                .add("userId='" + userId + "'")
+                .add("account='" + account + "'")
+                .add("loginAccount='" + loginAccount + "'")
+                .add("userName='" + userName + "'")
+                .add("tenantCode='" + tenantCode + "'")
+                .add("loginStatus=" + loginStatus)
+                .add("redirectUrl='" + redirectUrl + "'")
+                .toString();
     }
 }

@@ -17,7 +17,7 @@ dependencyManagement {
 dependencies {
     implementation project(':sei-auth-api')
 
-    implementation(
+    compile(
             "org.springframework.boot:spring-boot-configuration-processor",
 
 
@@ -28,12 +28,17 @@ dependencies {
             "com.changhong.sei:sei-cloud-starter:$sei_version"
     )
 
+//    // 蓝凌OA
+//    compile(
+//            "com.landray.sso.client:EKP-SSO-client-java:1.0"
+//    )
+
     // 获取用户浏览器、操作系统等信息
-    implementation 'eu.bitwalker:UserAgentUtils:1.21'
+    compile 'eu.bitwalker:UserAgentUtils:1.21'
 
 
     //长虹单点登录组件包
-    implementation group: 'com.auth0', name: 'java-jwt', version: '2.3.0'
+    compile group: 'com.auth0', name: 'java-jwt', version: '2.3.0'
 
     testImplementation(
             "com.changhong.sei:sei-test-starter:$sei_version"
@@ -47,10 +52,12 @@ processResources {
 }
 
 //打ar包
-bootJar  {
+bootJar  { enabled = false }
+jar {
     enabled = true
-    archiveFileName = "${rootProject.name}.${archiveExtension.get()}"
-    mainClassName = MainClass
+    exclude('bootstrap.yaml')
+    exclude('application.yaml')
+    exclude('com/changhong/sei/auth/AuthApplication.*')
     manifest {
         attributes("Manifest-Version": "6.0")
         attributes("Created-By": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString())
@@ -61,14 +68,64 @@ bootJar  {
     }
 }
 
-//上传到nexus
-uploadArchives {
-    enabled = false
+/////////////////////////////////////上传Maven仓库////////////////////////////////////////
+// 打包源代码
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
-install {
-    enabled = false
+artifacts {
+    archives sourcesJar
 }
+
+// 如果希望gradle install，安装到.m2本地仓库，参考下面的内容
+install {
+    repositories.mavenInstaller {
+        pom.version = "$project.version"
+        pom.artifactId = "$project.name"
+        pom.groupId = "$project.group"
+    }
+}
+
+//上传到nexus
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: MAVEN_REPO_URL) {
+                authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+            }
+            pom.version = "$project.version"
+            pom.artifactId = "$project.name"
+            pom.groupId = "$project.group"
+        }
+    }
+    return 'Success'
+}
+
+////打ar包
+//bootJar  {
+//    enabled = true
+//    archiveFileName = "${rootProject.name}.${archiveExtension.get()}"
+//    mainClassName = MainClass
+//    manifest {
+//        attributes("Manifest-Version": "6.0")
+//        attributes("Created-By": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString())
+//        attributes("Implementation-Title": "$project.name")
+//        attributes("Implementation-Version": "$project.version")
+//        attributes("Implementation-Vendor": "rcsit.cn")
+//        attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
+//    }
+//}
+//
+////上传到nexus
+//uploadArchives {
+//    enabled = false
+//}
+//
+//install {
+//    enabled = false
+//}
 
 jib {
     // 拉取的镜像的配置

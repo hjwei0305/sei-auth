@@ -1,5 +1,6 @@
 package com.changhong.sei.auth.controller;
 
+import com.changhong.sei.apitemplate.ApiTemplate;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.auth.dto.*;
@@ -8,10 +9,12 @@ import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.util.JsonUtils;
+import com.changhong.sei.exception.ServiceException;
 import org.junit.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class AccountControllerTest extends BaseUnitTest {
@@ -126,5 +129,20 @@ public class AccountControllerTest extends BaseUnitTest {
         request.setChannel(ChannelEnum.EMAIL);
         ResultData<String> resultData = service.unbinding(request);
         System.out.println(resultData);
+    }
+
+
+    @Autowired
+    private ApiTemplate apiTemplate;
+
+    @Test
+    public void srm() {
+        HashMap result;
+        try {
+            result = apiTemplate.postByUrl( "https://ecmp.changhong.com/srm-sm-web/supplier/listSupplierVos?pageNo=1&pageSize=5", HashMap.class);
+        } catch (Exception e) {
+            throw new ServiceException("调用srm获取供应商信息接口【/supplier/listSupplierVos】报错,请联系管理员!", e);
+        }
+        System.out.println(result);
     }
 }

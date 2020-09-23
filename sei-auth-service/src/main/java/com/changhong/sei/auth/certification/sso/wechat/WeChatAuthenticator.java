@@ -177,8 +177,17 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
 
             ResultData<String> rd = accountService.bindingAccount(accountRequest);
             if (rd.successful()) {
+                //浏览器客户端信息
+                String ua = request.getHeader("User-Agent");
                 //设置跳转地址
-                String url = getAppBaseUrl() + "/#/main?sid=" + response.getSessionId();
+                String url;
+                if (checkAgentIsMobile(request.getHeader(ua)) ) {
+                    // 移动
+                    url = getAppBaseUrl() + "/#/main?sid=" + response.getSessionId();
+                } else {
+                    // PC
+                    url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + response.getSessionId();
+                }
                 LOG.error("单点登录跳转地址: {}", url);
 
                 response.setRedirectUrl(url);
