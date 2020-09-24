@@ -2,6 +2,7 @@ package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.test.BaseUnitTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ public class ValidateCodeServiceTest extends BaseUnitTest {
 
     @Test
     public void check() {
+        LogUtil.debug("debug");
+        LogUtil.info("info");
+        LogUtil.warn("warn");
+        LogUtil.error("error");
+        LogUtil.bizLog("bizLog");
         ResultData<String> resultData = service.check("1111", "123456");
         System.out.println(resultData);
     }

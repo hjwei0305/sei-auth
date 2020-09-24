@@ -138,7 +138,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
             // 生产token
             ContextUtil.generateToken(sessionUser);
 
-            SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
+            SessionUserResponse dto = SessionUserResponse.build();
+            dto.setLoginStatus(SessionUserResponse.LoginStatus.success);
             dto.setSessionId(sessionUser.getSessionId());
             dto.setTenantCode(sessionUser.getTenantCode());
             dto.setUserId(sessionUser.getUserId());

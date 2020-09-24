@@ -79,12 +79,19 @@ public class AccountService extends BaseEntityService<Account> {
         SessionUser sessionUser = new SessionUser();
         sessionUser.setTenantCode(account.getTenantCode());
         sessionUser.setUserId(account.getUserId());
-        // 归集到主账号上
-        sessionUser.setAccount(account.getAccount());
         // 当前登录账号
         sessionUser.setLoginAccount(account.getOpenId());
-        sessionUser.setUserName(account.getName());
         sessionUser.setIp(ipAddr);
+
+        Account mainAccount = getMainAccount(account.getUserId());
+        // 归集到主账号上
+        if (Objects.isNull(mainAccount)) {
+            sessionUser.setAccount(account.getAccount());
+            sessionUser.setUserName(account.getName());
+        } else {
+            sessionUser.setAccount(mainAccount.getAccount());
+            sessionUser.setUserName(mainAccount.getName());
+        }
 
         ResultData<UserInformation> resultData = userClient.getUserInformation(account.getUserId());
         if (resultData.failed()) {
@@ -592,5 +599,19 @@ public class AccountService extends BaseEntityService<Account> {
         this.updatePassword(account.getId(), request.getNewPassword(), defaultPasswordExpire);
 
         return ResultData.success();
+    }
+
+    /**
+     * 根据用户id获取主账号
+     *
+     * @param userId 用户id
+     * @return 返回主账号
+     */
+    public Account getMainAccount(String userId) {
+        List<Account> accounts = dao.findByUserId(userId);
+        if (CollectionUtils.isNotEmpty(accounts)) {
+            return accounts.stream().filter(a -> ChannelEnum.SEI == a.getChannel()).findFirst().orElse(null);
+        }
+        return null;
     }
 }

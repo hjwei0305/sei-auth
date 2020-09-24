@@ -72,6 +72,14 @@ public interface AccountDao extends BaseEntityDao<Account> {
     List<Account> findByOpenIdAndChannel(String account, ChannelEnum channel);
 
     /**
+     * 根据用户id查询账户
+     *
+     * @param userId 用户id
+     * @return 存在返回账号, 不存在返回null
+     */
+    List<Account> findByUserId(String userId);
+
+    /**
      * 根据账号,租户代码查询账户
      *
      * @param account 账号

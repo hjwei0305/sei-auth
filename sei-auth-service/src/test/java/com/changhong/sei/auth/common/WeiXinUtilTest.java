@@ -1,10 +1,8 @@
 package com.changhong.sei.auth.common;
 
-import com.changhong.sei.auth.common.weixin.WeChatUtil;
+import org.junit.Test;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Map;
 
 /**
  * 实现功能：
@@ -13,7 +11,9 @@ import java.util.Map;
  * @version 1.0.00  2020-04-19 14:12
  */
 public class WeiXinUtilTest {
-    public static void main(String[] args) throws Exception {
+
+    @Test
+    public void token() throws Exception {
         String cropId = "wwdc99e9511ccac381";
         String agentId = "1000003";
         String cropSecret = "xIKMGprmIKWrK1VJ5oALdgeUAFng3DzxIpmPgT56XAA";
