@@ -1,5 +1,6 @@
 package com.changhong.sei.auth.certification;
 
+import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
@@ -46,7 +47,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
 
         Account entity;
         if (StringUtils.isBlank(tenant)) {
-            List<Account> accounts = accountService.getByAccount(account);
+//            List<Account> accounts = accountService.getByAccount(account);
+            List<Account> accounts = accountService.findByOpenIdAndChannel(account, ChannelEnum.SEI);
             if (CollectionUtils.isEmpty(accounts)) {
                 result = ResultData.fail("账号密码错误,认证失败!");
                 // 发布登录账号密码错误事件
@@ -59,8 +61,9 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
                 // 发布登录多租户事件
                 // ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
                 return result;
+            } else {
+                entity = accounts.get(0);
             }
-            entity = accounts.get(0);
         } else {
             entity = accountService.getByAccountAndTenantCode(account, tenant);
         }
