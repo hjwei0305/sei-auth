@@ -14,6 +14,9 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.util.EnumUtils;
+import com.changhong.sei.util.thread.ThreadLocalHolder;
+import com.changhong.sei.util.thread.ThreadLocalUtil;
+import com.changhong.sei.utils.MockUserHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +94,10 @@ public class AccountService extends BaseEntityService<Account> {
         } else {
             sessionUser.setAccount(mainAccount.getAccount());
             sessionUser.setUserName(mainAccount.getName());
+        }
+
+        if (ContextUtil.isAnonymous()) {
+            MockUserHelper.mockUser(account.getTenantCode(), account.getAccount());
         }
 
         ResultData<UserInformation> resultData = userClient.getUserInformation(account.getUserId());
