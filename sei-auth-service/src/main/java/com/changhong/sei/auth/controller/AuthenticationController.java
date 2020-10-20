@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -61,7 +62,13 @@ public class AuthenticationController implements AuthenticationApi {
         // 浏览器信息
         ThreadLocalUtil.setTranVar("UserAgent", req.getHeader("user-agent"));
 
-        return authenticatorBuilder.getAuthenticator(loginRequest.getAuthType()).auth(loginRequest);
+        ResultData<SessionUserResponse> resultData = authenticatorBuilder.getAuthenticator(loginRequest.getAuthType()).auth(loginRequest);
+        SessionUserResponse userResponse = resultData.getData();
+        if (Objects.nonNull(userResponse)) {
+            // 设置当前环境
+            userResponse.setEnv(ContextUtil.getProperty("spring.cloud.config.profile"));
+        }
+        return resultData;
     }
 
     /**

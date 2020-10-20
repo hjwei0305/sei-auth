@@ -72,6 +72,11 @@ public class SessionUserResponse implements Serializable {
      */
     @ApiModelProperty(notes = "登录状态(enum)")
     private LoginStatus loginStatus;
+    /**
+     * 当前环境
+     */
+    @ApiModelProperty(notes = "当前环境")
+    private String env;
 
     /**
      * 跳转地址
@@ -168,6 +173,15 @@ public class SessionUserResponse implements Serializable {
         return this;
     }
 
+    public String getEnv() {
+        return env;
+    }
+
+    public SessionUserResponse setEnv(String env) {
+        this.env = env;
+        return this;
+    }
+
     public enum LoginStatus {
         /**
          * 登录成功
@@ -235,6 +249,7 @@ public class SessionUserResponse implements Serializable {
                 .add("userName='" + userName + "'")
                 .add("tenantCode='" + tenantCode + "'")
                 .add("loginStatus=" + loginStatus)
+                .add("env=" + env)
                 .add("redirectUrl='" + redirectUrl + "'")
                 .toString();
     }
