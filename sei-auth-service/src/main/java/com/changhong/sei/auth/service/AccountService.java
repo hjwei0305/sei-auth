@@ -14,8 +14,6 @@ import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.util.EnumUtils;
-import com.changhong.sei.util.thread.ThreadLocalHolder;
-import com.changhong.sei.util.thread.ThreadLocalUtil;
 import com.changhong.sei.utils.MockUserHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -549,7 +547,7 @@ public class AccountService extends BaseEntityService<Account> {
         }
 
         String openId = request.getOpenId();
-        List<Account> accounts = this.getByAccount(openId);
+        List<Account> accounts = this.findByOpenIdAndChannel(openId, ChannelEnum.SEI);
         if (CollectionUtils.isEmpty(accounts)) {
             return ResultData.fail("账号[" + openId + "]不存在.");
         }
