@@ -174,33 +174,34 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
         ResultData<SessionUserResponse> resultData = login(loginRequest);
         if (resultData.successful()) {
             SessionUserResponse response = resultData.getData();
+            if (Objects.nonNull(response) && SessionUserResponse.LoginStatus.success.equals(response.getLoginStatus())) {
+                BindingAccountRequest accountRequest = new BindingAccountRequest();
+                accountRequest.setTenantCode(response.getTenantCode());
+                accountRequest.setAccount(response.getAccount());
+                accountRequest.setUserId(response.getUserId());
+                accountRequest.setName(response.getUserName());
+                accountRequest.setAccountType(response.getUserType().name());
+                accountRequest.setOpenId(openId);
+                accountRequest.setChannel(ChannelEnum.WeChat);
 
-            BindingAccountRequest accountRequest = new BindingAccountRequest();
-            accountRequest.setTenantCode(response.getTenantCode());
-            accountRequest.setAccount(response.getAccount());
-            accountRequest.setUserId(response.getUserId());
-            accountRequest.setName(response.getUserName());
-            accountRequest.setAccountType(response.getUserType().name());
-            accountRequest.setOpenId(openId);
-            accountRequest.setChannel(ChannelEnum.WeChat);
+                ResultData<String> rd = accountService.bindingAccount(accountRequest);
+                if (rd.successful()) {
+                    //设置跳转地址
+                    String url;
+                    if (agentIsMobile) {
+                        // 移动
+                        url = getAppBaseUrl() + "/#/main?sid=" + response.getSessionId();
+                    } else {
+                        // PC
+                        url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + response.getSessionId();
+                    }
+                    LOG.info("单点登录跳转地址: {}", url);
 
-            ResultData<String> rd = accountService.bindingAccount(accountRequest);
-            if (rd.successful()) {
-                //设置跳转地址
-                String url;
-                if (agentIsMobile) {
-                    // 移动
-                    url = getAppBaseUrl() + "/#/main?sid=" + response.getSessionId();
+                    response.setRedirectUrl(url);
+                    return ResultData.success(response);
                 } else {
-                    // PC
-                    url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + response.getSessionId();
+                    return ResultData.fail(rd.getMessage());
                 }
-                LOG.info("单点登录跳转地址: {}", url);
-
-                response.setRedirectUrl(url);
-                return ResultData.success(response);
-            } else {
-                return ResultData.fail(rd.getMessage());
             }
         }
         return ResultData.fail(resultData.getMessage());
