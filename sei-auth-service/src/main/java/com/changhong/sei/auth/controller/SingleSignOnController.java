@@ -101,7 +101,7 @@ public class SingleSignOnController implements Constants {
                 index = authenticator.getLogoutUrl(userResponse, agentIsMobile);
             }
         } else {
-            LOG.error("单点登录失败：未获取到当前登录用户！");
+            LOG.error(StringUtils.isBlank(result.getMessage()) ? "单点登录失败：未获取到当前登录用户！": result.getMessage());
         }
         return "redirect:" + index;
     }
