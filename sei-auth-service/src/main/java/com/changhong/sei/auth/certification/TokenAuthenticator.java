@@ -38,6 +38,10 @@ public interface TokenAuthenticator {
      * 长虹GT单点认证
      */
     String AUTH_TYPE_CH_GT = "chGT";
+    /**
+     * 泛微OA单点认证
+     */
+    String AUTH_TYPE_WEAVER = "weaver";
 
 
     String[] AGENT = {"iphone", "android", "ipad", "phone", "mobile", "wap", "netfront", "java", "operamobi",
