@@ -3,7 +3,7 @@ sei:
   application:
     code: sei-auth
     name: 统一账户服务
-    version: 6.0.1
+    version: '@project_version@'
     env: DEV
     # 是否是兼容模式
     compatible: false
@@ -31,6 +31,7 @@ spring:
   cloud:
     config:
       uri: http://dsei.changhong.com/config-center
+#      uri: http://fsscdev.eppen.com.cn:18800/config-center
 #      uri: http://base-service.changhong.com/config-center
       profile: ${sei.application.env}
       name: ${spring.application.name}
@@ -40,6 +41,7 @@ spring:
       enabled: true
       # zk 地址
       connect-string: 10.4.208.132:2181
+#      connect-string: fsscdev.eppen.com.cn:18182
     consul:
       # consul注册中心开关
       enabled: false
@@ -51,3 +53,12 @@ spring:
 #        healthCheckInterval: 15s
 #        health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
 #        hostname: ${spring.application.name}.industry
+logging:
+  level:
+    root: debug
+    com:
+      changhong:
+        sei:
+          basic:
+            service:
+              UserService: error
