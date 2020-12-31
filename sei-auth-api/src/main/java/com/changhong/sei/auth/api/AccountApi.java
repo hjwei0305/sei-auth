@@ -76,6 +76,7 @@ public interface AccountApi {
     @PostMapping(path = "update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("更新账户")
     ResultData<String> update(@RequestBody @Valid UpdateAccountRequest request);
+
     /**
      * 更新账户
      */

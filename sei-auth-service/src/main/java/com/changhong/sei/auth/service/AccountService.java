@@ -98,7 +98,7 @@ public class AccountService extends BaseEntityService<Account> {
             MockUserHelper.mockUser(account.getTenantCode(), account.getAccount());
         }
 
-        ResultData<AccountInfo> resultData = getAccountInfo(account.getTenantCode(), account.getAccount());
+        ResultData<AccountInfo> resultData = this.getAccountInfo(account.getTenantCode(), account.getAccount());
         if (resultData.successful()) {
             AccountInfo accountInfo = resultData.getData();
             try {
@@ -111,6 +111,11 @@ public class AccountService extends BaseEntityService<Account> {
             }
             // 设置语言
             sessionUser.setLocale(StringUtils.isBlank(lang) ? accountInfo.getLanguageCode() : lang);
+        } else {
+            AccountInfo info = new AccountInfo();
+            info.setTenantCode(account.getTenantCode());
+            info.setAccount(account.getAccount());
+            this.updateAccountInfo(info);
         }
         return ResultData.success(sessionUser);
     }
@@ -135,7 +140,7 @@ public class AccountService extends BaseEntityService<Account> {
      * @return 更新账户结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<String> saveAccount(Account account, AccountInfoDto infoDto) {
+    public ResultData<String> saveAccount(Account account, AccountInfo infoDto) {
         ResultData<Void> resultData = this.updateAccountInfo(infoDto);
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
@@ -147,41 +152,43 @@ public class AccountService extends BaseEntityService<Account> {
     /**
      * 更新账户
      *
-     * @param infoDto 账户
+     * @param info 账户
      * @return 更新账户结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<Void> updateAccountInfo(AccountInfoDto infoDto) {
+    public ResultData<Void> updateAccountInfo(AccountInfo info) {
         AccountInfo accountInfo;
-        ResultData<AccountInfo> resultData = this.getAccountInfo(infoDto.getTenantCode(), infoDto.getAccount());
+        ResultData<AccountInfo> resultData = this.getAccountInfo(info.getTenantCode(), info.getAccount());
         if (resultData.failed()) {
             accountInfo = new AccountInfo();
+            accountInfo.setTenantCode(info.getTenantCode());
+            accountInfo.setAccount(info.getAccount());
         } else {
             accountInfo = resultData.getData();
         }
-        if (StringUtils.isNotBlank(infoDto.getMobile())) {
-            accountInfo.setMobile(infoDto.getMobile());
+        if (StringUtils.isNotBlank(info.getMobile())) {
+            accountInfo.setMobile(info.getMobile());
         }
-        if (StringUtils.isNotBlank(infoDto.getEmail())) {
-            accountInfo.setEmail(infoDto.getEmail());
+        if (StringUtils.isNotBlank(info.getEmail())) {
+            accountInfo.setEmail(info.getEmail());
         }
-        if (Objects.nonNull(infoDto.getGender())) {
-            accountInfo.setGender(infoDto.getGender());
+        if (Objects.nonNull(info.getGender())) {
+            accountInfo.setGender(info.getGender());
         }
-        if (StringUtils.isNotBlank(infoDto.getIdCard())) {
-            accountInfo.setIdCard(infoDto.getIdCard());
+        if (StringUtils.isNotBlank(info.getIdCard())) {
+            accountInfo.setIdCard(info.getIdCard());
         }
-        if (StringUtils.isNotBlank(infoDto.getPortrait())) {
-            accountInfo.setPortrait(infoDto.getPortrait());
+        if (StringUtils.isNotBlank(info.getPortrait())) {
+            accountInfo.setPortrait(info.getPortrait());
         }
-        if (StringUtils.isNotBlank(infoDto.getLanguageCode())) {
-            accountInfo.setLanguageCode(infoDto.getLanguageCode());
+        if (StringUtils.isNotBlank(info.getLanguageCode())) {
+            accountInfo.setLanguageCode(info.getLanguageCode());
         }
-        if (StringUtils.isNotBlank(infoDto.getAccountType())) {
-            accountInfo.setAccountType(infoDto.getAccountType());
+        if (StringUtils.isNotBlank(info.getAccountType())) {
+            accountInfo.setAccountType(info.getAccountType());
         }
-        if (StringUtils.isNotBlank(infoDto.getAuthorityPolicy())) {
-            accountInfo.setAuthorityPolicy(infoDto.getAuthorityPolicy());
+        if (StringUtils.isNotBlank(info.getAuthorityPolicy())) {
+            accountInfo.setAuthorityPolicy(info.getAuthorityPolicy());
         }
         accountInfoDao.save(accountInfo);
         return ResultData.success();

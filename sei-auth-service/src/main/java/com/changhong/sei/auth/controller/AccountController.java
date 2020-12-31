@@ -20,8 +20,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -93,7 +91,7 @@ public class AccountController implements AccountApi {
      */
     @Override
     public ResultData<Void> updateAccountInfo(AccountInfoDto infoDto) {
-        return accountService.updateAccountInfo(infoDto);
+        return accountService.updateAccountInfo(modelMapper.map(infoDto, AccountInfo.class));
     }
 
     /**
@@ -156,7 +154,9 @@ public class AccountController implements AccountApi {
             account.setAccountExpired(request.getAccountExpired());
         }
 
-        return accountService.saveAccount(account, request);
+        AccountInfo accountInfo = modelMapper.map(request, AccountInfo.class);
+
+        return accountService.saveAccount(account, accountInfo);
     }
 
     /**
@@ -181,8 +181,9 @@ public class AccountController implements AccountApi {
         if (Objects.nonNull(request.getAccountExpired())) {
             account.setAccountExpired(request.getAccountExpired());
         }
+        AccountInfo accountInfo = modelMapper.map(request, AccountInfo.class);
 
-        return accountService.saveAccount(account, request);
+        return accountService.saveAccount(account, accountInfo);
     }
 
     /**
