@@ -2,7 +2,7 @@
 sei:
   application:
     code: sei-auth
-    name: 统一账户服务
+    name: '@project_description@'
     version: '@project_version@'
     env: DEV
     # 是否是兼容模式
@@ -55,7 +55,6 @@ spring:
 #        hostname: ${spring.application.name}.industry
 logging:
   level:
-    root: debug
     com:
       changhong:
         sei:

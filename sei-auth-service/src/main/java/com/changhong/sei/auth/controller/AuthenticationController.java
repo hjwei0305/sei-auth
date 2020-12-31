@@ -4,7 +4,6 @@ import com.changhong.sei.auth.api.AuthenticationApi;
 import com.changhong.sei.auth.certification.TokenAuthenticatorBuilder;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
-import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.auth.service.SessionService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
@@ -21,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * 实现功能：
@@ -39,11 +36,7 @@ public class AuthenticationController implements AuthenticationApi {
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
-    private AccountService accountService;
-    @Autowired
     private SessionService sessionService;
-    //    @Autowired
-//    private ValidateCodeService validateCodeService;
     @Autowired
     private TokenAuthenticatorBuilder authenticatorBuilder;
 
@@ -120,25 +113,6 @@ public class AuthenticationController implements AuthenticationApi {
         ContextUtil.generateToken(sessionUser);
         return ResultData.success(sessionUser.getToken());
     }
-
-    /**
-     * 获取用户前端权限检查的功能项键值
-     *
-     * @param userId 用户Id
-     * @return 功能项键值
-     */
-    @Override
-    public ResultData<Map<String, Set<String>>> getAuthorizedFeatures(String userId) {
-        return accountService.getAuthorizedFeatures(userId);
-    }
-
-//    /**
-//     * 验证码
-//     */
-//    @Override
-//    public ResultData<String> verifyCode(String reqId) {
-//        return validateCodeService.generate(reqId);
-//    }
 
     /**
      * 获取指定会话用户信息

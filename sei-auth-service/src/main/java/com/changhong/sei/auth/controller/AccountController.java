@@ -3,17 +3,17 @@ package com.changhong.sei.auth.controller;
 import com.changhong.sei.auth.api.AccountApi;
 import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
+import com.changhong.sei.auth.entity.AccountInfo;
 import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
-import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import com.changhong.sei.core.service.BaseEntityService;
-import com.changhong.sei.core.service.bo.OperateResultWithData;
 import io.swagger.annotations.Api;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.util.ObjectUtils;
@@ -35,15 +35,12 @@ import java.util.Objects;
 @RestController
 @Api(value = "AccountApi", tags = "账户接口服务")
 @RequestMapping(path = AccountApi.PATH, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-public class AccountController extends BaseEntityController<Account, AccountResponse> implements AccountApi {
+public class AccountController implements AccountApi {
 
     @Autowired
     private AccountService accountService;
-
-    @Override
-    public BaseEntityService<Account> getService() {
-        return accountService;
-    }
+    @Autowired
+    private ModelMapper modelMapper;
 
     /**
      * 通过租户和账号获取已有账户
@@ -87,8 +84,16 @@ public class AccountController extends BaseEntityController<Account, AccountResp
         if (account == null) {
             return ResultData.fail("账户不存在！");
         }
-        AccountResponse dto = convertToDto(account);
+        AccountResponse dto = modelMapper.map(account, AccountResponse.class);
         return ResultData.success(dto);
+    }
+
+    /**
+     * 更新账户
+     */
+    @Override
+    public ResultData<Void> updateAccountInfo(AccountInfoDto infoDto) {
+        return accountService.updateAccountInfo(infoDto);
     }
 
     /**
@@ -98,12 +103,13 @@ public class AccountController extends BaseEntityController<Account, AccountResp
      */
     @Override
     public ResultData<String> register(RegisterAccountRequest request) {
-        Account account = convertToEntity(request);
+        Account account = modelMapper.map(request, Account.class);
         if (Objects.isNull(account)) {
             return ResultData.fail("参数不能为空！");
         }
+        AccountInfo accountInfo = modelMapper.map(request, AccountInfo.class);
 
-        return accountService.createAccount(account, false);
+        return accountService.createAccount(account, accountInfo, false);
     }
 
     /**
@@ -113,13 +119,14 @@ public class AccountController extends BaseEntityController<Account, AccountResp
      */
     @Override
     public ResultData<String> create(CreateAccountRequest request) {
-        Account account = convertToEntity(request);
+        Account account = modelMapper.map(request, Account.class);
         if (Objects.isNull(account)) {
             return ResultData.fail("参数不能为空！");
         }
         account.setPassword(StringUtils.EMPTY);
+        AccountInfo accountInfo = modelMapper.map(request, AccountInfo.class);
 
-        return accountService.createAccount(account, true);
+        return accountService.createAccount(account, accountInfo, true);
     }
 
     /**
@@ -128,7 +135,7 @@ public class AccountController extends BaseEntityController<Account, AccountResp
      * @param request 更新账户
      */
     @Override
-    public ResultData<String> update(UpdateAccountRequest request) throws IllegalAccessException {
+    public ResultData<String> update(UpdateAccountRequest request) {
         if (ObjectUtils.isEmpty(request.getId())) {
             return ResultData.fail("参数id不能为空！");
         }
@@ -139,7 +146,6 @@ public class AccountController extends BaseEntityController<Account, AccountResp
         // 允许修改的账户信息
         account.setName(request.getName());
         account.setChannel(request.getChannel());
-        account.setAccountType(request.getAccountType());
         if (Objects.nonNull(request.getFrozen())) {
             account.setFrozen(request.getFrozen());
         }
@@ -150,11 +156,7 @@ public class AccountController extends BaseEntityController<Account, AccountResp
             account.setAccountExpired(request.getAccountExpired());
         }
 
-        OperateResultWithData<Account> resultWithData = accountService.save(account);
-        if (resultWithData.notSuccessful()) {
-            return ResultData.fail(resultWithData.getMessage());
-        }
-        return ResultData.success(account.getAccount());
+        return accountService.saveAccount(account, request);
     }
 
     /**
@@ -163,10 +165,10 @@ public class AccountController extends BaseEntityController<Account, AccountResp
      * @param request 更新账户
      */
     @Override
-    public ResultData<String> updateByTenantAccount(UpdateAccountByAccountRequest request) throws IllegalAccessException {
-        Account account = accountService.getByAccountAndTenantCode(request.getAccount(), request.getTenant());
-        if (account == null) {
-            return ResultData.fail("账户数据不存在！");
+    public ResultData<String> updateByTenantAccount(UpdateAccountByAccountRequest request) {
+        Account account = accountService.getByAccountAndTenantCode(request.getAccount(), request.getTenantCode());
+        if (Objects.isNull(account)) {
+            return ResultData.fail("租户[" + request.getTenantCode() + "]账户[" + request.getAccount() + "]数据不存在！");
         }
         // 允许修改的账户信息
         account.setName(request.getName());
@@ -180,11 +182,7 @@ public class AccountController extends BaseEntityController<Account, AccountResp
             account.setAccountExpired(request.getAccountExpired());
         }
 
-        OperateResultWithData<Account> resultWithData = accountService.save(account);
-        if (resultWithData.notSuccessful()) {
-            return ResultData.fail(resultWithData.getMessage());
-        }
-        return ResultData.success(account.getAccount());
+        return accountService.saveAccount(account, request);
     }
 
     /**
@@ -222,7 +220,7 @@ public class AccountController extends BaseEntityController<Account, AccountResp
         PageResult<AccountResponse> newPageResult = new PageResult<>();
         List<AccountResponse> newRows = new ArrayList<>();
         PageResult<Account> pageResult = accountService.findByPage(search);
-        pageResult.getRows().forEach(d -> newRows.add(convertToDto(d)));
+        pageResult.getRows().forEach(d -> newRows.add(modelMapper.map(d, AccountResponse.class)));
         newPageResult.setPage(pageResult.getPage());
         newPageResult.setRecords(pageResult.getRecords());
         newPageResult.setTotal(pageResult.getTotal());
@@ -258,8 +256,9 @@ public class AccountController extends BaseEntityController<Account, AccountResp
     @Override
     public ResultData<List<AccountResponse>> getByUserId(String userId) {
         List<Account> accounts = accountService.findListByProperty(Account.FIELD_USER_ID, userId);
-        if (Objects.nonNull(accounts)) {
-            List<AccountResponse> responseList = convertToDtos(accounts);
+        if (CollectionUtils.isNotEmpty(accounts)) {
+            List<AccountResponse> responseList = new ArrayList<>(accounts.size());
+            accounts.forEach(a -> responseList.add(modelMapper.map(a, AccountResponse.class)));
             return ResultData.success(responseList);
         } else {
             return ResultData.fail("用户ID[" + userId + "]未找到对应的账户信息");
@@ -268,28 +267,23 @@ public class AccountController extends BaseEntityController<Account, AccountResp
 
     /**
      * 绑定账号
-     *
-     * @param request
      */
     @Override
-    public ResultData<String> binding(@Valid BindingAccountRequest request) {
+    public ResultData<String> binding(BindingAccountRequest request) {
         SessionUser user = ContextUtil.getSessionUser();
         request.setTenantCode(user.getTenantCode());
         request.setUserId(user.getUserId());
         request.setAccount(user.getAccount());
         request.setName(user.getUserName());
-        request.setAccountType(user.getUserType().name());
 
         return accountService.bindingAccount(request);
     }
 
     /**
      * 解绑账号
-     *
-     * @param request
      */
     @Override
-    public ResultData<String> unbinding(@Valid BindingAccountRequest request) {
+    public ResultData<String> unbinding(BindingAccountRequest request) {
         return accountService.unbinding(request.getOpenId(), request.getChannel());
     }
 
@@ -301,7 +295,7 @@ public class AccountController extends BaseEntityController<Account, AccountResp
      * @return 返回验证码
      */
     @Override
-    public ResultData<String> sendVerifyCode(@NotBlank String accountId, @NotBlank String channel) {
+    public ResultData<String> sendVerifyCode(String accountId, String channel) {
         return accountService.sendVerifyCode(accountId, channel);
     }
 

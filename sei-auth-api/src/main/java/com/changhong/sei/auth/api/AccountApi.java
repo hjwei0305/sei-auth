@@ -1,8 +1,9 @@
 package com.changhong.sei.auth.api;
 
 import com.changhong.sei.auth.dto.*;
-import com.changhong.sei.core.api.FindByPageApi;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -24,7 +25,7 @@ import java.util.List;
  * @version 1.0.00  2020-01-14 14:09
  */
 @FeignClient(name = "sei-auth", path = AccountApi.PATH)
-public interface AccountApi extends FindByPageApi<AccountResponse> {
+public interface AccountApi {
     /**
      * 服务访问目录
      */
@@ -39,6 +40,16 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
                                                        @RequestParam("account") @NotBlank String account);
 
     /**
+     * 分页查询账户
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @PostMapping(path = "findByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation(value = "分页查询账户", notes = "分页查询账户")
+    ResultData<PageResult<AccountResponse>> findByPage(@RequestBody Search search);
+
+    /**
      * 通过账户id获取已有账户
      */
     @GetMapping(path = "getById")
@@ -50,28 +61,34 @@ public interface AccountApi extends FindByPageApi<AccountResponse> {
      */
     @PostMapping(path = "register", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("创建新账户.有初始密码")
-    ResultData<String> register(@RequestBody @Valid RegisterAccountRequest request) throws IllegalAccessException;
+    ResultData<String> register(@RequestBody @Valid RegisterAccountRequest request);
 
     /**
      * 创建新账户
      */
     @PostMapping(path = "create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("创建新账户.无初始密码,使用平台提供的默认密码策略")
-    ResultData<String> create(@RequestBody @Valid CreateAccountRequest request) throws IllegalAccessException;
+    ResultData<String> create(@RequestBody @Valid CreateAccountRequest request);
 
     /**
      * 更新账户
      */
     @PostMapping(path = "update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("更新账户")
-    ResultData<String> update(@RequestBody @Valid UpdateAccountRequest request) throws IllegalAccessException;
+    ResultData<String> update(@RequestBody @Valid UpdateAccountRequest request);
+    /**
+     * 更新账户
+     */
+    @PostMapping(path = "updateAccountInfo", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiOperation("更新账户")
+    ResultData<Void> updateAccountInfo(@RequestBody @Valid AccountInfoDto infoDto);
 
     /**
      * 更新账户
      */
     @PostMapping(path = "updateByTenantAccount", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation("按租户账号修改账户")
-    ResultData<String> updateByTenantAccount(@RequestBody @Valid UpdateAccountByAccountRequest request) throws IllegalAccessException;
+    ResultData<String> updateByTenantAccount(@RequestBody @Valid UpdateAccountByAccountRequest request);
 
     /**
      * 更新密码

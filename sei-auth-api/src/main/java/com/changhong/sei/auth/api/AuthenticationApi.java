@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * 实现功能：账户认证接口
@@ -57,28 +55,9 @@ public interface AuthenticationApi {
     ResultData<String> getAnonymousToken();
 
     /**
-     * 获取用户前端权限检查的功能项键值
-     *
-     * @param userId 用户Id
-     * @return 功能项键值
-     */
-    @GetMapping(path = "getAuthorizedFeatures")
-    @ApiOperation(value = "获取用户前端权限检查的功能项键值", notes = "获取用户前端权限检查的功能项键值(以页面路由分组)")
-    ResultData<Map<String, Set<String>>> getAuthorizedFeatures(@RequestParam("userId") @NotBlank String userId);
-
-    /**
      * 获取指定会话用户信息
      */
     @GetMapping(path = "getSessionUser")
     @ApiOperation("获取指定会话用户信息")
     ResultData<SessionUserResponse> getSessionUser(@RequestParam("sid") @NotBlank String sid);
-//
-//    /**
-//     * 返回验证码
-//     * @param reqId
-//     * @return
-//     */
-//    @GetMapping(path = "verifyCode")
-//    @ApiOperation(value = "验证码", notes = "验证码")
-//    ResultData<String> verifyCode(@RequestParam("reqId") @NotBlank String reqId);
 }

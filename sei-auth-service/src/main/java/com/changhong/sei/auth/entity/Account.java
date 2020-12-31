@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 public class Account extends BaseEntity implements ITenant {
     private static final long serialVersionUID = 1L;
-    public static final String FIELD_ACCOUNT = "account";
     public static final String FIELD_USER_ID = "userId";
     public static final String FIELD_OPEN_ID = "openId";
     public static final String FIELD_CHANNEL = "channel";
@@ -74,7 +73,6 @@ public class Account extends BaseEntity implements ITenant {
     /**
      * 注册时间
      */
-//    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "since_date", updatable = false)
     private LocalDateTime sinceDate;
 
@@ -104,12 +102,6 @@ public class Account extends BaseEntity implements ITenant {
     @Enumerated(EnumType.STRING)
     @Column(name = "system_code", length = 50)
     private ChannelEnum channel;
-
-    /**
-     * 账户类型(员工,客户等)
-     */
-    @Column(name = "account_type", length = 50)
-    private String accountType;
 
     @Override
     public String getTenantCode() {
@@ -207,13 +199,5 @@ public class Account extends BaseEntity implements ITenant {
 
     public void setChannel(ChannelEnum channel) {
         this.channel = channel;
-    }
-
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
     }
 }

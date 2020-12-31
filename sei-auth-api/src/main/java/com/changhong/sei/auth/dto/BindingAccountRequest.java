@@ -52,10 +52,6 @@ public class BindingAccountRequest implements Serializable {
      * 名称
      */
     private String name;
-    /**
-     * 账户类型
-     */
-    private String accountType;
 
     public String getVerifyCode() {
         return verifyCode;
@@ -113,11 +109,4 @@ public class BindingAccountRequest implements Serializable {
         this.name = name;
     }
 
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
-    }
 }

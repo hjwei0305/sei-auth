@@ -1,10 +1,10 @@
 package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.dao.AccountDao;
+import com.changhong.sei.auth.dao.AccountInfoDao;
 import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
-import com.changhong.sei.auth.service.client.UserClient;
-import com.changhong.sei.auth.service.client.UserInformation;
+import com.changhong.sei.auth.entity.AccountInfo;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
@@ -13,6 +13,8 @@ import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.encryption.IEncrypt;
 import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.enums.UserAuthorityPolicy;
+import com.changhong.sei.enums.UserType;
 import com.changhong.sei.util.EnumUtils;
 import com.changhong.sei.utils.MockUserHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,9 +29,7 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -44,9 +44,9 @@ public class AccountService extends BaseEntityService<Account> {
     @Autowired
     private AccountDao dao;
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private AccountInfoDao accountInfoDao;
     @Autowired
-    private UserClient userClient;
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private ValidateCodeService validateCodeService;
     @Autowired
@@ -98,18 +98,93 @@ public class AccountService extends BaseEntityService<Account> {
             MockUserHelper.mockUser(account.getTenantCode(), account.getAccount());
         }
 
-        ResultData<UserInformation> resultData = userClient.getUserInformation(account.getUserId());
+        ResultData<AccountInfo> resultData = getAccountInfo(account.getTenantCode(), account.getAccount());
+        if (resultData.successful()) {
+            AccountInfo accountInfo = resultData.getData();
+            try {
+                sessionUser.setUserType(EnumUtils.getEnum(UserType.class, accountInfo.getAccountType()));
+            } catch (Exception ignored) {
+            }
+            try {
+                sessionUser.setAuthorityPolicy(EnumUtils.getEnum(UserAuthorityPolicy.class, accountInfo.getAuthorityPolicy()));
+            } catch (Exception ignored) {
+            }
+            // 设置语言
+            sessionUser.setLocale(StringUtils.isBlank(lang) ? accountInfo.getLanguageCode() : lang);
+        }
+        return ResultData.success(sessionUser);
+    }
+
+    public ResultData<AccountInfo> getAccountInfo(String tenantCode, String account) {
+        if (StringUtils.isNotBlank(tenantCode) && StringUtils.isNotBlank(account)) {
+            Search search = Search.createSearch();
+            search.addFilter(new SearchFilter(AccountInfo.TENANT_CODE, tenantCode));
+            search.addFilter(new SearchFilter(AccountInfo.FIELD_ACCOUNT, account));
+            AccountInfo accountInfo = accountInfoDao.findFirstByFilters(search);
+            if (Objects.nonNull(accountInfo)) {
+                return ResultData.success(accountInfo);
+            }
+        }
+        return ResultData.fail("租户[" + tenantCode + "]账户[" + account + "]数据不存在！");
+    }
+
+    /**
+     * 更新账户
+     *
+     * @param account 账户
+     * @return 更新账户结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<String> saveAccount(Account account, AccountInfoDto infoDto) {
+        ResultData<Void> resultData = this.updateAccountInfo(infoDto);
         if (resultData.failed()) {
             return ResultData.fail(resultData.getMessage());
         }
-        UserInformation userInformation = resultData.getData();
+        this.save(account);
+        return ResultData.success();
+    }
 
-        sessionUser.setUserType(userInformation.getUserType());
-        sessionUser.setAuthorityPolicy(userInformation.getUserAuthorityPolicy());
-        // 设置语言
-        sessionUser.setLocale(StringUtils.isBlank(lang) ? userInformation.getLanguageCode() : lang);
-
-        return ResultData.success(sessionUser);
+    /**
+     * 更新账户
+     *
+     * @param infoDto 账户
+     * @return 更新账户结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Void> updateAccountInfo(AccountInfoDto infoDto) {
+        AccountInfo accountInfo;
+        ResultData<AccountInfo> resultData = this.getAccountInfo(infoDto.getTenantCode(), infoDto.getAccount());
+        if (resultData.failed()) {
+            accountInfo = new AccountInfo();
+        } else {
+            accountInfo = resultData.getData();
+        }
+        if (StringUtils.isNotBlank(infoDto.getMobile())) {
+            accountInfo.setMobile(infoDto.getMobile());
+        }
+        if (StringUtils.isNotBlank(infoDto.getEmail())) {
+            accountInfo.setEmail(infoDto.getEmail());
+        }
+        if (Objects.nonNull(infoDto.getGender())) {
+            accountInfo.setGender(infoDto.getGender());
+        }
+        if (StringUtils.isNotBlank(infoDto.getIdCard())) {
+            accountInfo.setIdCard(infoDto.getIdCard());
+        }
+        if (StringUtils.isNotBlank(infoDto.getPortrait())) {
+            accountInfo.setPortrait(infoDto.getPortrait());
+        }
+        if (StringUtils.isNotBlank(infoDto.getLanguageCode())) {
+            accountInfo.setLanguageCode(infoDto.getLanguageCode());
+        }
+        if (StringUtils.isNotBlank(infoDto.getAccountType())) {
+            accountInfo.setAccountType(infoDto.getAccountType());
+        }
+        if (StringUtils.isNotBlank(infoDto.getAuthorityPolicy())) {
+            accountInfo.setAuthorityPolicy(infoDto.getAuthorityPolicy());
+        }
+        accountInfoDao.save(accountInfo);
+        return ResultData.success();
     }
 
     /**
@@ -119,9 +194,12 @@ public class AccountService extends BaseEntityService<Account> {
      * @return 创建账户结果
      */
     @Transactional(rollbackFor = Exception.class)
-    public ResultData<String> createAccount(Account account, boolean isUpdateUserId) {
+    public ResultData<String> createAccount(Account account, AccountInfo accountInfo, boolean isUpdateUserId) {
         if (Objects.isNull(account)) {
             return ResultData.fail("参数不能为空！");
+        }
+        if (Objects.isNull(accountInfo)) {
+            accountInfo = new AccountInfo();
         }
 
         // 检查账户是否已存在
@@ -162,6 +240,10 @@ public class AccountService extends BaseEntityService<Account> {
         account.setPasswordExpireTime(LocalDate.now().plusDays(defaultPasswordExpire));
 
         dao.save(account);
+        accountInfo.setTenantCode(account.getTenantCode());
+        accountInfo.setAccount(account.getAccount());
+        accountInfoDao.save(accountInfo);
+
         return ResultData.success(account.getAccount());
     }
 
@@ -273,16 +355,6 @@ public class AccountService extends BaseEntityService<Account> {
     }
 
     /**
-     * 根据账号查询账户
-     *
-     * @param account 账号
-     * @return 存在返回账号, 不存在返回null
-     */
-    public List<Account> getByAccount(String account) {
-        return dao.findByOpenId(account);
-    }
-
-    /**
      * 根据账号,租户代码查询账户
      *
      * @param account 账号
@@ -348,16 +420,6 @@ public class AccountService extends BaseEntityService<Account> {
     }
 
     /**
-     * 获取用户前端权限检查的功能项键值
-     *
-     * @param userId 用户Id
-     * @return 功能项键值
-     */
-    public ResultData<Map<String, Set<String>>> getAuthorizedFeatures(String userId) {
-        return userClient.getUserAuthorizedFeatureMaps(userId);
-    }
-
-    /**
      * 验证openId合法性:
      * 判断SocialAccount中是否存在该openid的数据。
      * 若存在，直接进行登录。
@@ -404,9 +466,6 @@ public class AccountService extends BaseEntityService<Account> {
         if (Objects.isNull(request.getChannel())) {
             return ResultData.fail("账号渠道不能为空.");
         }
-        if (StringUtils.isBlank(request.getAccountType())) {
-            return ResultData.fail("用户类型不能为空.");
-        }
         // 邮箱或手机号必须由验证码验证
         if (ChannelEnum.EMAIL.equals(request.getChannel()) || ChannelEnum.Mobile.equals(request.getChannel())) {
             if (StringUtils.isBlank(request.getVerifyCode())) {
@@ -429,7 +488,6 @@ public class AccountService extends BaseEntityService<Account> {
             // 使用绑定的openid作为子账号
             accountObj.setOpenId(request.getOpenId());
             accountObj.setName(request.getName());
-            accountObj.setAccountType(request.getAccountType());
             accountObj.setChannel(request.getChannel());
 
             // 无有效期设置默认有效期
@@ -513,18 +571,18 @@ public class AccountService extends BaseEntityService<Account> {
             if (Objects.isNull(account)) {
                 return ResultData.fail("账户不存在.");
             }
-            ResultData<UserInformation> userInfoResult = userClient.getUserInformation(account.getUserId());
-            if (userInfoResult.failed()) {
-                return ResultData.fail(userInfoResult.getMessage());
+            ResultData<AccountInfo> resultData = this.getAccountInfo(account.getTenantCode(), account.getAccount());
+            if (resultData.failed()) {
+                return ResultData.fail(resultData.getMessage());
             }
-            UserInformation userInformation = userInfoResult.getData();
+            AccountInfo accountInfo = resultData.getData();
             String target;
             switch (channelEnum) {
                 case EMAIL:
-                    target = userInformation.getEmail();
+                    target = accountInfo.getEmail();
                     break;
                 case Mobile:
-                    target = userInformation.getMobile();
+                    target = accountInfo.getMobile();
                     break;
                 default:
                     return ResultData.fail("不支持的发送类型[" + channel + "]");
@@ -571,17 +629,17 @@ public class AccountService extends BaseEntityService<Account> {
             }
         }
 
-        ResultData<UserInformation> userInfoResult = userClient.getUserInformation(account.getUserId());
-        if (userInfoResult.failed()) {
-            return ResultData.fail(userInfoResult.getMessage());
+        ResultData<AccountInfo> result = this.getAccountInfo(account.getTenantCode(), account.getAccount());
+        if (result.failed()) {
+            return ResultData.fail(result.getMessage());
         }
-        UserInformation userInformation = userInfoResult.getData();
+        AccountInfo accountInfo = result.getData();
 
         CheckAccountResponse response = new CheckAccountResponse();
         response.setOpenId(openId);
         response.setId(account.getId());
-        response.setEmail(userInformation.getEmail());
-        response.setMobile(userInformation.getMobile());
+        response.setEmail(accountInfo.getEmail());
+        response.setMobile(accountInfo.getMobile());
         response.setResult("success");
         return ResultData.success(response);
     }

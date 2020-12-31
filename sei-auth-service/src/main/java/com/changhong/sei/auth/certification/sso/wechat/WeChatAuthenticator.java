@@ -180,7 +180,6 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
                 accountRequest.setAccount(response.getAccount());
                 accountRequest.setUserId(response.getUserId());
                 accountRequest.setName(response.getUserName());
-                accountRequest.setAccountType(response.getUserType().name());
                 accountRequest.setOpenId(openId);
                 accountRequest.setChannel(ChannelEnum.WeChat);
 

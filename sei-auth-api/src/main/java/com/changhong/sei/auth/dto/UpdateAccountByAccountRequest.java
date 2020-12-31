@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * 实现功能：
@@ -17,20 +16,8 @@ import java.util.Date;
  * @version 1.0.00  2020-01-14 21:04
  */
 @ApiModel(description = "按账号修改账户")
-public class UpdateAccountByAccountRequest implements Serializable {
+public class UpdateAccountByAccountRequest extends AccountInfoDto implements Serializable {
     private static final long serialVersionUID = 2974541194405245535L;
-    /**
-     * 名称
-     */
-    @ApiModelProperty(notes = "租户代码", required = true)
-    @NotBlank
-    private String tenant;
-    /**
-     * 名称
-     */
-    @ApiModelProperty(notes = "账号", required = true)
-    @NotBlank
-    private String account;
     /**
      * 名称
      */
@@ -53,22 +40,6 @@ public class UpdateAccountByAccountRequest implements Serializable {
     @ApiModelProperty(notes = "截止有效期", example = "2020-01-21")
     @JsonFormat(timezone = DateUtils.DEFAULT_TIMEZONE, pattern = DateUtils.DEFAULT_DATE_FORMAT)
     private LocalDate accountExpired;
-
-    public String getTenant() {
-        return tenant;
-    }
-
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
 
     public String getName() {
         return name;

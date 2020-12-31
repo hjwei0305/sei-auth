@@ -1,6 +1,5 @@
 package com.changhong.sei.auth.dto;
 
-import com.changhong.sei.core.dto.BaseEntityDto;
 import com.changhong.sei.util.DateUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -16,8 +15,13 @@ import java.time.LocalDate;
  * @version 1.0.00  2020-01-14 21:04
  */
 @ApiModel(description = "修改账户")
-public class UpdateAccountRequest extends BaseEntityDto {
+public class UpdateAccountRequest extends AccountInfoDto {
     private static final long serialVersionUID = 2974541194405245535L;
+    /**
+     * id主键
+     */
+    @ApiModelProperty(notes = "id主键")
+    private String id;
     /**
      * 名称
      */
@@ -30,12 +34,6 @@ public class UpdateAccountRequest extends BaseEntityDto {
     @ApiModelProperty(notes = "来源系统", required = true)
     @NotBlank
     private ChannelEnum channel;
-    /**
-     * 账户类型
-     */
-    @ApiModelProperty(notes = "账户类型", required = true)
-    @NotBlank
-    private String accountType;
     /**
      * 冻结
      */
@@ -53,6 +51,14 @@ public class UpdateAccountRequest extends BaseEntityDto {
     @JsonFormat(timezone = DateUtils.DEFAULT_TIMEZONE, pattern = DateUtils.DEFAULT_DATE_FORMAT)
     private LocalDate accountExpired;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -67,14 +73,6 @@ public class UpdateAccountRequest extends BaseEntityDto {
 
     public void setChannel(ChannelEnum channel) {
         this.channel = channel;
-    }
-
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
     }
 
     public Boolean getFrozen() {

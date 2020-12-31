@@ -1,6 +1,5 @@
 package com.changhong.sei.auth.dto;
 
-import com.changhong.sei.core.dto.BaseEntityDto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,14 +17,13 @@ import java.util.Objects;
  * @version 1.0.00  2020-01-14 21:04
  */
 @ApiModel(description = "账户信息")
-public class AccountResponse extends BaseEntityDto {
+public class AccountResponse extends AccountInfoDto {
     private static final long serialVersionUID = 2974541194405245535L;
     /**
-     * 租户代码
+     * id主键
      */
-    @ApiModelProperty(notes = "租户代码", required = true)
-    @NotBlank
-    private String tenantCode;
+    @ApiModelProperty(notes = "id主键")
+    private String id;
     /**
      * 用户id
      */
@@ -33,16 +31,11 @@ public class AccountResponse extends BaseEntityDto {
     @NotBlank
     private String userId;
     /**
-     * 账号
-     */
-    @ApiModelProperty(notes = "账号", required = true)
-    @NotBlank
-    private String account;
-    /**
      * openId
      */
     @ApiModelProperty(notes = "openId", required = true)
-    private String openId;;
+    private String openId;
+    ;
     /**
      * 名称
      */
@@ -55,12 +48,6 @@ public class AccountResponse extends BaseEntityDto {
     @ApiModelProperty(notes = "来源系统", required = true)
     @NotNull
     private ChannelEnum channel;
-    /**
-     * 账户类型
-     */
-    @ApiModelProperty(notes = "账户类型", required = true)
-    @NotBlank
-    private String accountType;
     /**
      * 冻结
      */
@@ -84,12 +71,12 @@ public class AccountResponse extends BaseEntityDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate accountExpired;
 
-    public String getTenantCode() {
-        return tenantCode;
+    public String getId() {
+        return id;
     }
 
-    public void setTenantCode(String tenantCode) {
-        this.tenantCode = tenantCode;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserId() {
@@ -98,14 +85,6 @@ public class AccountResponse extends BaseEntityDto {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
     }
 
     public String getOpenId() {
@@ -130,14 +109,6 @@ public class AccountResponse extends BaseEntityDto {
 
     public void setChannel(ChannelEnum channel) {
         this.channel = channel;
-    }
-
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
     }
 
     public Boolean getFrozen() {
