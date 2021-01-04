@@ -249,7 +249,7 @@ public class AccountService extends BaseEntityService<Account> {
         dao.save(account);
         accountInfo.setTenantCode(account.getTenantCode());
         accountInfo.setAccount(account.getAccount());
-        accountInfoDao.save(accountInfo);
+        updateAccountInfo(accountInfo);
 
         return ResultData.success(account.getAccount());
     }
