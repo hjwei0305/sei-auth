@@ -210,7 +210,7 @@ public class AccountService extends BaseEntityService<Account> {
         }
 
         // 检查账户是否已存在
-        Account oldAccount = dao.findByOpenIdAndTenantCodeAndChannel(account.getAccount(), account.getTenantCode(), ChannelEnum.SEI);
+        Account oldAccount = dao.findByOpenIdAndTenantCodeAndChannel(account.getAccount(), account.getTenantCode(), account.getChannel());
         if (Objects.nonNull(oldAccount)) {
             if (!isUpdateUserId) {
                 return ResultData.fail(String.format("账户[%s]已在租户[%s]下存在！", account.getAccount(), account.getTenantCode()));
@@ -551,7 +551,7 @@ public class AccountService extends BaseEntityService<Account> {
     private ResultData<String> checkMainAccount(String userId, String account) {
         List<Account> accounts = dao.findListByProperty(Account.FIELD_USER_ID, userId);
         if (CollectionUtils.isNotEmpty(accounts)) {
-            int count = accounts.stream().collect(Collectors.groupingBy(Account::getUserId)).size();
+            int count = accounts.stream().collect(Collectors.groupingBy(Account::getAccount)).size();
             if (count > 1) {
                 return ResultData.fail("存在多个主账号.");
             } else {
