@@ -47,7 +47,7 @@ public class AccountResponse extends AccountInfoDto {
      */
     @ApiModelProperty(notes = "来源系统", required = true)
     @NotNull
-    private ChannelEnum channel;
+    private ChannelEnum channel = ChannelEnum.SEI;
     /**
      * 冻结
      */
