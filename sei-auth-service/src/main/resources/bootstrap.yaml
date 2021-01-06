@@ -2,15 +2,13 @@
 sei:
   application:
     code: sei-auth
-    name: '@project_description@'
+    description: '@project_description@'
     version: '@project_version@'
     env: DEV
     # 是否是兼容模式
     compatible: false
   swagger:
-    title: "${sei.application.name} API"
-    description: "${sei.application.name} 的API文档，运行环境: ${sei.application.env}"
-    version: ${sei.application.version}
+    enable: true
   mock: # 本地调试的当前用户配置
     user:
       account: admin

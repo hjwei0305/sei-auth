@@ -11,7 +11,7 @@ import com.changhong.sei.core.context.Version;
 public final class AuthVersion extends Version {
 
     public AuthVersion() {
-        super(AuthVersion.class.getPackage().getName());
+        super(AuthVersion.class);
     }
 
 }

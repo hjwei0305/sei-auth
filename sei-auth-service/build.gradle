@@ -64,8 +64,8 @@ processResources {
 bootJar { enabled = false }
 jar {
     enabled = true
-    exclude('bootstrap.yaml')
-    exclude('application.yaml')
+    exclude('bootstrap.*')
+    exclude('application.*')
     exclude('com/changhong/sei/auth/AuthApplication.*')
     manifest {
         attributes("Manifest-Version": "6.0")
@@ -73,6 +73,7 @@ jar {
         attributes("Implementation-Title": "$project.rootProject.name")
         attributes("Implementation-Version": "$project.version")
         attributes("Implementation-Vendor": "rcsit.cn")
+        attributes("Description": "$project.description")
         attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
     }
 }
