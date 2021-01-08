@@ -45,7 +45,7 @@ public interface AccountApi {
      * @param search 查询参数
      * @return 分页查询结果
      */
-    @PostMapping(path = "findByPage", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "findByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "分页查询账户", notes = "分页查询账户")
     ResultData<PageResult<AccountResponse>> findByPage(@RequestBody Search search);
 
@@ -59,42 +59,42 @@ public interface AccountApi {
     /**
      * 注册新账户
      */
-    @PostMapping(path = "register", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "register", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("创建新账户.有初始密码")
     ResultData<String> register(@RequestBody @Valid RegisterAccountRequest request);
 
     /**
      * 创建新账户
      */
-    @PostMapping(path = "create", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "create", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("创建新账户.无初始密码,使用平台提供的默认密码策略")
     ResultData<String> create(@RequestBody @Valid CreateAccountRequest request);
 
     /**
      * 更新账户
      */
-    @PostMapping(path = "update", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "update", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("更新账户")
     ResultData<String> update(@RequestBody @Valid UpdateAccountRequest request);
 
     /**
      * 更新账户
      */
-    @PostMapping(path = "updateAccountInfo", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "updateAccountInfo", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("更新账户")
     ResultData<Void> updateAccountInfo(@RequestBody @Valid AccountInfoDto infoDto);
 
     /**
      * 更新账户
      */
-    @PostMapping(path = "updateByTenantAccount", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "updateByTenantAccount", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("按租户账号修改账户")
     ResultData<String> updateByTenantAccount(@RequestBody @Valid UpdateAccountByAccountRequest request);
 
     /**
      * 更新密码
      */
-    @PostMapping(path = "updatePassword", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "updatePassword", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("更新密码")
     ResultData<String> updatePassword(@RequestBody @Valid UpdatePasswordRequest request);
 
@@ -140,14 +140,14 @@ public interface AccountApi {
     /**
      * 绑定账号
      */
-    @PostMapping(path = "binding", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "binding", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("绑定账号")
     ResultData<String> binding(@RequestBody @Valid BindingAccountRequest request);
 
     /**
      * 解绑账号
      */
-    @PostMapping(path = "unbinding", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "unbinding", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("解绑账号")
     ResultData<String> unbinding(@RequestBody @Valid BindingAccountRequest request);
 
@@ -170,14 +170,14 @@ public interface AccountApi {
     /**
      * 检查账号是否存在
      */
-    @PostMapping(path = "checkExisted", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "checkExisted", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("检查账号是否存在")
     ResultData<CheckAccountResponse> checkExisted(@RequestBody @Valid CheckAccountRequest request);
 
     /**
      * 找回密码
      */
-    @PostMapping(path = "findpwd", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(path = "findpwd", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation("找回密码")
     ResultData<String> findPassword(@RequestBody @Valid FindPasswordRequest request);
 

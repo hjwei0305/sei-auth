@@ -32,7 +32,7 @@ import java.util.Objects;
  */
 @RestController
 @Api(value = "AccountApi", tags = "账户接口服务")
-@RequestMapping(path = AccountApi.PATH, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = AccountApi.PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccountController implements AccountApi {
 
     @Autowired

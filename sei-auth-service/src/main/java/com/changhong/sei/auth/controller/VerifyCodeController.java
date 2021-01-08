@@ -22,7 +22,7 @@ import java.util.Objects;
  */
 @RestController
 @Api(value = "VerifyCodeApi", tags = "验证码服务")
-@RequestMapping(path = VerifyCodeApi.PATH, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = VerifyCodeApi.PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class VerifyCodeController implements VerifyCodeApi {
 
     @Autowired

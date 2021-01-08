@@ -42,7 +42,10 @@ public interface TokenAuthenticator {
      * 泛微OA单点认证
      */
     String AUTH_TYPE_WEAVER = "weaver";
-
+    /**
+     * 预制单点认证
+     */
+    String AUTH_TYPE_SEI = "sei";
 
     String[] AGENT = {"iphone", "android", "ipad", "phone", "mobile", "wap", "netfront", "java", "operamobi",
             "operamini", "ucweb", "windowsce", "symbian", "series", "webos", "sony", "blackberry", "dopod",

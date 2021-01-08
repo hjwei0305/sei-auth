@@ -30,7 +30,7 @@ import java.util.Objects;
  */
 @RestController
 @Api(value = "AuthenticationApi", tags = "账户认证服务")
-@RequestMapping(path = AuthenticationApi.PATH, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(path = AuthenticationApi.PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController implements AuthenticationApi {
 
     @Autowired

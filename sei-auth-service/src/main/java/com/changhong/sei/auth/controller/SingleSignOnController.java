@@ -108,7 +108,7 @@ public class SingleSignOnController implements Constants {
 
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
-    @RequestMapping(path = "/sso/binding/socialAccount", method = {RequestMethod.POST}, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(path = "/sso/binding/socialAccount", method = {RequestMethod.POST}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request) {
         Oauth2Authenticator authenticator = builder.getOauth2Authenticator(loginRequest.getAuthType());
         String ua = request.getHeader("User-Agent");
@@ -119,7 +119,7 @@ public class SingleSignOnController implements Constants {
 
     @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
-    @RequestMapping(path = "/sso/js/sdk", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(path = "/sso/js/sdk", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultData<Map<String, String>> jsSdk(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {

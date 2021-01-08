@@ -13,7 +13,7 @@ import javax.validation.Valid;
  * @since 2020-03-30 11:22:30
  */
 @Valid
-//@RequestMapping(path = "accessRecord", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+//@RequestMapping(path = "accessRecord", produces = MediaType.APPLICATION_JSON_VALUE)
 public interface AccessRecordApi {
 
 

@@ -1,4 +1,4 @@
-package com.changhong.sei.auth.certification.sso.weaver;
+package com.changhong.sei.auth.certification.sso.sei;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Base64Utils;
@@ -38,7 +38,6 @@ public class DesUtil {
      * @param key 加密键,必须8位以及以上
      */
     public static String encrypt(String data, String key) throws Exception {
-
         if (StringUtils.isEmpty(data)) {
             throw new Exception("加密字符串为空");
         }
