@@ -61,7 +61,21 @@ processResources {
 }
 
 //打ar包
-bootJar { enabled = false }
+bootJar {
+    enabled = true
+    archiveFileName = "${rootProject.name}.${archiveExtension.get()}" //'sei-auth.jar'
+    mainClassName = MainClass
+    manifest {
+        attributes("Manifest-Version": "6.0")
+        attributes("Created-By": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString())
+        attributes("Implementation-Title": "$project.rootProject.name")
+        attributes("Implementation-Version": "$project.version")
+        attributes("Implementation-Vendor": "rcsit.cn")
+        attributes("Description": "$project.description")
+        attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
+    }
+}
+
 jar {
     enabled = true
     exclude('bootstrap.*')
@@ -112,30 +126,6 @@ uploadArchives {
     }
     return 'Success'
 }
-
-////打ar包
-//bootJar  {
-//    enabled = true
-//    archiveFileName = "${rootProject.name}.${archiveExtension.get()}"
-//    mainClassName = MainClass
-//    manifest {
-//        attributes("Manifest-Version": "6.0")
-//        attributes("Created-By": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString())
-//        attributes("Implementation-Title": "$project.name")
-//        attributes("Implementation-Version": "$project.version")
-//        attributes("Implementation-Vendor": "rcsit.cn")
-//        attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
-//    }
-//}
-//
-////上传到nexus
-//uploadArchives {
-//    enabled = false
-//}
-//
-//install {
-//    enabled = false
-//}
 
 jib {
     // 拉取的镜像的配置
