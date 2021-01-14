@@ -2,7 +2,6 @@ package com.changhong.sei.auth.service.mq;
 
 import com.changhong.sei.auth.dao.AccessRecordDao;
 import com.changhong.sei.auth.entity.AccessRecord;
-import com.changhong.sei.auth.service.AccessRecordService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.util.JsonUtils;
@@ -17,8 +16,6 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -37,56 +34,50 @@ public class AccessRecordConsumer {
     private AccessRecordDao dao;
 
     @KafkaListener(topics = "SeiGatewayAccessLog")
-    public void processMessage(List<ConsumerRecord<String, String>> records) {
-        if (Objects.isNull(records)) {
+    public void processMessage(ConsumerRecord<String, String> record) {
+        if (Objects.isNull(record)) {
             return;
         }
 
         AccessLogVo logVo;
         AccessRecord accessRecord;
         SessionUser sessionUser;
-        List<AccessRecord> recordList = new ArrayList<>();
-        for (ConsumerRecord<String, String> record : records) {
-            String value = record.value();
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("received key='{}' message = '{}'", record.key(), value);
-            }
-            Optional<String> optional = Optional.ofNullable(value);
-            if (optional.isPresent()) {
-                // 执行业务处理逻辑
-                try {
-                    logVo = JsonUtils.fromJson(value, AccessLogVo.class);
-                    if (Objects.nonNull(logVo)) {
-                        sessionUser = ContextUtil.getSessionUser(logVo.token);
-                        //解析agent字符串
-                        UserAgent userAgent = UserAgent.parseUserAgentString(logVo.getUserAgent());
-
-                        accessRecord = new AccessRecord();
-
-                        accessRecord.setTenantCode(sessionUser.getTenantCode());
-                        accessRecord.setUserId(sessionUser.getUserId());
-                        accessRecord.setUserAccount(sessionUser.getLoginAccount());
-                        accessRecord.setUserName(sessionUser.getUserName());
-                        accessRecord.setAppModule(logVo.getAppModule());
-                        accessRecord.setTraceId(logVo.getTraceId());
-                        accessRecord.setPath(logVo.getPath());
-                        accessRecord.setUrl(logVo.getUrl());
-                        accessRecord.setMethod(logVo.getMethod());
-                        accessRecord.setDuration(logVo.getDuration());
-                        accessRecord.setIp(logVo.getIp());
-                        accessRecord.setBrowser(userAgent.getBrowser().getName());
-                        accessRecord.setOsName(userAgent.getOperatingSystem().getName());
-                        accessRecord.setAccessTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(logVo.getAccessTime()), ZoneId.systemDefault()));
-
-                        recordList.add(accessRecord);
-                    }
-                } catch (Exception e) {
-                    LOG.error("访问日志消费异常!", e);
-                }
-            }
+        String value = record.value();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("received key='{}' message = '{}'", record.key(), value);
         }
-        if (recordList.size() > 0) {
-            dao.save(recordList);
+        Optional<String> optional = Optional.ofNullable(value);
+        if (optional.isPresent()) {
+            // 执行业务处理逻辑
+            try {
+                logVo = JsonUtils.fromJson(value, AccessLogVo.class);
+                if (Objects.nonNull(logVo)) {
+                    sessionUser = ContextUtil.getSessionUser(logVo.token);
+                    //解析agent字符串
+                    UserAgent userAgent = UserAgent.parseUserAgentString(logVo.getUserAgent());
+
+                    accessRecord = new AccessRecord();
+
+                    accessRecord.setTenantCode(sessionUser.getTenantCode());
+                    accessRecord.setUserId(sessionUser.getUserId());
+                    accessRecord.setUserAccount(sessionUser.getLoginAccount());
+                    accessRecord.setUserName(sessionUser.getUserName());
+                    accessRecord.setAppModule(logVo.getAppModule());
+                    accessRecord.setTraceId(logVo.getTraceId());
+                    accessRecord.setPath(logVo.getPath());
+                    accessRecord.setUrl(logVo.getUrl());
+                    accessRecord.setMethod(logVo.getMethod());
+                    accessRecord.setDuration(logVo.getDuration());
+                    accessRecord.setIp(logVo.getIp());
+                    accessRecord.setBrowser(userAgent.getBrowser().getName());
+                    accessRecord.setOsName(userAgent.getOperatingSystem().getName());
+                    accessRecord.setAccessTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(logVo.getAccessTime()), ZoneId.systemDefault()));
+
+                    dao.save(accessRecord);
+                }
+            } catch (Exception e) {
+                LOG.error("访问日志消费异常!", e);
+            }
         }
     }
 }
