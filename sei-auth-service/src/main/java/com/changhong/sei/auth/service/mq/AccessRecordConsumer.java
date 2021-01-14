@@ -6,6 +6,7 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.util.JsonUtils;
 import eu.bitwalker.useragentutils.UserAgent;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,10 @@ public class AccessRecordConsumer {
             try {
                 logVo = JsonUtils.fromJson(value, AccessLogVo.class);
                 if (Objects.nonNull(logVo)) {
+                    // 跳过消息监听
+                    if (StringUtils.endsWith(logVo.getPath(), "/message/unreadCount")) {
+                        return;
+                    }
                     sessionUser = ContextUtil.getSessionUser(logVo.token);
                     //解析agent字符串
                     UserAgent userAgent = UserAgent.parseUserAgentString(logVo.getUserAgent());
