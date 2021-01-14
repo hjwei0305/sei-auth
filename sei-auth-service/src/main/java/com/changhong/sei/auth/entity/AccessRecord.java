@@ -8,97 +8,222 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
- * 访问记录(AccessRecord)实体类
+ * 实现功能：
  *
- * @author sei
- * @since 2020-03-30 11:09:00
+ * @author 马超(Vision.Mac)
+ * @version 1.0.00  2021-01-13 10:02
  */
 @Entity
 @Table(name = "access_record")
 @DynamicInsert
 @DynamicUpdate
 public class AccessRecord extends BaseEntity implements Serializable {
-    private static final long serialVersionUID = 624986937490137178L;
-
+    private static final long serialVersionUID = -7958165221208610549L;
     /**
-     * 账号
+     * 租户代码
      */
-    @Column(name = "account")
-    private String account;
+    @Column(name = "tenant_code", length = 20, nullable = false)
+    private String tenantCode = "none";
     /**
-     * 会话id
+     * 操作人
      */
-    @Column(name = "session_id")
-    private String sessionId;
+    @Column(name = "user_id", length = 36, updatable = false)
+    protected String userId;
+    @Column(name = "user_account", length = 50, updatable = false)
+    protected String userAccount;
+    @Column(name = "user_name", length = 50, updatable = false)
+    protected String userName;
     /**
-     * 访问时间
+     * 应用模块
      */
-    @Column(name = "access_time")
-    private String accessTime;
+    @Column(name = "app_module")
+    protected String appModule;
     /**
-     * 方法
+     * 跟踪id
      */
-    @Column(name = "method")
-    private String method;
+    @Column(name = "trace_id")
+    protected String traceId;
     /**
-     * 访问地址
+     * 操作
+     */
+    @Column(name = "feature")
+    private String feature;
+    /**
+     * 路径
+     */
+    @Column(name = "path")
+    private String path;
+    /**
+     * 地址
      */
     @Column(name = "url")
     private String url;
     /**
-     * 参数
+     * 方法名
      */
-    @Column(name = "params")
-    private String params;
+    @Column(name = "method")
+    private String method;
+    /**
+     * 耗时(ms)
+     */
+    @Column(name = "duration")
+    private Long duration;
+    /**
+     * ip地址
+     */
+    @Column(name = "ip")
+    private String ip;
+    /**
+     * 浏览器
+     */
+    @Column(name = "browser")
+    private String browser;
+    /**
+     * 操作系统名
+     */
+    @Column(name = "os_name")
+    private String osName;
+    /**
+     * 访问时间
+     */
+    @Column(name = "access_time")
+    private LocalDateTime accessTime;
 
-    public String getAccount() {
-        return account;
+    public String getTenantCode() {
+        return tenantCode;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public AccessRecord setTenantCode(String tenantCode) {
+        this.tenantCode = tenantCode;
+        return this;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
+    public AccessRecord setUserId(String userId) {
+        this.userId = userId;
+        return this;
     }
 
-    public String getAccessTime() {
-        return accessTime;
+    public String getUserAccount() {
+        return userAccount;
     }
 
-    public void setAccessTime(String accessTime) {
-        this.accessTime = accessTime;
+    public AccessRecord setUserAccount(String userAccount) {
+        this.userAccount = userAccount;
+        return this;
     }
 
-    public String getMethod() {
-        return method;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
+    public AccessRecord setUserName(String userName) {
+        this.userName = userName;
+        return this;
+    }
+
+    public String getAppModule() {
+        return appModule;
+    }
+
+    public AccessRecord setAppModule(String appModule) {
+        this.appModule = appModule;
+        return this;
+    }
+
+    public String getTraceId() {
+        return traceId;
+    }
+
+    public AccessRecord setTraceId(String traceId) {
+        this.traceId = traceId;
+        return this;
+    }
+
+    public String getFeature() {
+        return feature;
+    }
+
+    public AccessRecord setFeature(String feature) {
+        this.feature = feature;
+        return this;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public AccessRecord setPath(String path) {
+        this.path = path;
+        return this;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public AccessRecord setUrl(String url) {
         this.url = url;
+        return this;
     }
 
-    public String getParams() {
-        return params;
+    public String getMethod() {
+        return method;
     }
 
-    public void setParams(String params) {
-        this.params = params;
+    public AccessRecord setMethod(String method) {
+        this.method = method;
+        return this;
     }
 
+    public Long getDuration() {
+        return duration;
+    }
+
+    public AccessRecord setDuration(Long duration) {
+        this.duration = duration;
+        return this;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public AccessRecord setIp(String ip) {
+        this.ip = ip;
+        return this;
+    }
+
+    public String getBrowser() {
+        return browser;
+    }
+
+    public AccessRecord setBrowser(String browser) {
+        this.browser = browser;
+        return this;
+    }
+
+    public String getOsName() {
+        return osName;
+    }
+
+    public AccessRecord setOsName(String osName) {
+        this.osName = osName;
+        return this;
+    }
+
+    public LocalDateTime getAccessTime() {
+        return accessTime;
+    }
+
+    public AccessRecord setAccessTime(LocalDateTime accessTime) {
+        this.accessTime = accessTime;
+        return this;
+    }
 }
