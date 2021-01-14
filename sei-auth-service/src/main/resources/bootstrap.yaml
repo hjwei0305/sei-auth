@@ -1,10 +1,10 @@
 # 应用全局配置
 sei:
   application:
+    env: DEV
     code: sei-auth
     description: '@project_description@'
     version: '@project_version@'
-    env: DEV
     # 是否是兼容模式
     compatible: false
   swagger:

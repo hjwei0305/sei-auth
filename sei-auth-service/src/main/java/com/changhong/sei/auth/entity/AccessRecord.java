@@ -52,6 +52,11 @@ public class AccessRecord extends BaseEntity implements Serializable {
     @Column(name = "feature")
     private String feature;
     /**
+     * 类型
+     */
+    @Column(name = "type")
+    private String type;
+    /**
      * 路径
      */
     @Column(name = "path")
@@ -152,6 +157,15 @@ public class AccessRecord extends BaseEntity implements Serializable {
 
     public AccessRecord setFeature(String feature) {
         this.feature = feature;
+        return this;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public AccessRecord setType(String type) {
+        this.type = type;
         return this;
     }
 

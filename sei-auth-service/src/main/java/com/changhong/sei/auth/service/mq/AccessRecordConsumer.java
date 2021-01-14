@@ -62,6 +62,7 @@ public class AccessRecordConsumer {
                     UserAgent userAgent = UserAgent.parseUserAgentString(logVo.getUserAgent());
 
                     accessRecord = new AccessRecord();
+                    accessRecord.setType("API");
 
                     accessRecord.setTenantCode(sessionUser.getTenantCode());
                     accessRecord.setUserId(sessionUser.getUserId());
