@@ -1,6 +1,7 @@
 package com.changhong.sei.auth;
 
-import com.changhong.sei.core.context.Version;
+
+import com.changhong.sei.core.BaseVersion;
 
 /**
  * 应用版本
@@ -8,7 +9,7 @@ import com.changhong.sei.core.context.Version;
  * @author 马超(Vision.Mac)
  * @version 1.0.1 2018/6/21 16:29
  */
-public final class AuthVersion extends Version {
+public final class AuthVersion extends BaseVersion {
 
     public AuthVersion() {
         super(AuthVersion.class);
