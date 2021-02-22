@@ -3,8 +3,8 @@ sei:
   application:
     env: DEV
     code: sei-auth
-    description: '@project_description@'
     version: '@project_version@'
+    description: '@project_description@'
     # 是否是兼容模式
     compatible: false
   swagger:
