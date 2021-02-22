@@ -82,6 +82,20 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
         }
+
+        // 检查是否使用系统默认密码
+        if (StringUtils.equals(accountService.getDefaultPassword(), password)) {
+            SessionUserResponse userResponse = SessionUserResponse.build();
+            userResponse.setTenantCode(entity.getTenantCode());
+            userResponse.setAccount(entity.getAccount());
+            userResponse.setLoginAccount(entity.getOpenId());
+            userResponse.setLoginStatus(SessionUserResponse.LoginStatus.passwordExpire);
+            result = ResultData.success("不能使用系统默认密码登录,请修改密码!", userResponse);
+            // 发布登录账号已过期事件
+            ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
+            return result;
+        }
+
         // 密码过期时间
         LocalDate passwordExpire = entity.getPasswordExpireTime();
         if (Objects.nonNull(passwordExpire)) {
