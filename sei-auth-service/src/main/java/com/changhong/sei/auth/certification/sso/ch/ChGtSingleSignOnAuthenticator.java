@@ -80,7 +80,7 @@ public class ChGtSingleSignOnAuthenticator extends AbstractTokenAuthenticator im
      * 登录成功url地址
      */
     @Override
-    public String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
+    public String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
         String url = properties.getIndex();
         // PC登录：跳转到新版(react)的页面
         if (StringUtils.isBlank(url)) {
@@ -96,7 +96,7 @@ public class ChGtSingleSignOnAuthenticator extends AbstractTokenAuthenticator im
      * @param userResponse 用户登录失败返回信息.可能为空,注意检查
      */
     @Override
-    public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
+    public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
         return properties.getLogout();
     }
 

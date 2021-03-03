@@ -90,15 +90,15 @@ public class SingleSignOnController implements Constants {
 
         SessionUserResponse userResponse = null;
         // 单点登录地址
-        String index = authenticator.getLogoutUrl(userResponse, agentIsMobile);
+        String index = authenticator.getLogoutUrl(userResponse, agentIsMobile, request);
         ResultData<SessionUserResponse> result = authenticator.auth(request);
         LOG.info("单点登录验证结果：{}", result);
         if (result.getSuccess()) {
             userResponse = result.getData();
             if (SessionUserResponse.LoginStatus.success == userResponse.getLoginStatus()) {
-                index = authenticator.getIndexUrl(userResponse, agentIsMobile);
+                index = authenticator.getIndexUrl(userResponse, agentIsMobile, request);
             } else {
-                index = authenticator.getLogoutUrl(userResponse, agentIsMobile);
+                index = authenticator.getLogoutUrl(userResponse, agentIsMobile, request);
             }
         } else {
             LOG.error(StringUtils.isBlank(result.getMessage()) ? "单点登录失败：未获取到当前登录用户！": result.getMessage());

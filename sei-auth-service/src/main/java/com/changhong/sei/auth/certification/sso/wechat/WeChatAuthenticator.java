@@ -83,7 +83,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
      * 登录成功url地址
      */
     @Override
-    public String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
+    public String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
         String url;
         if (agentIsMobile) {
             // 移动
@@ -104,7 +104,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
      * @param userResponse 用户登录失败返回信息.可能为空,注意检查
      */
     @Override
-    public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
+    public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
         String url = null;
         if (Objects.nonNull(userResponse)
                 && StringUtils.isNotBlank(userResponse.getOpenId())) {

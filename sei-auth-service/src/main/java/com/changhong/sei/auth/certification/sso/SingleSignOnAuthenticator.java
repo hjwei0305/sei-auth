@@ -31,7 +31,7 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
     /**
      * 登录成功url地址
      */
-    default String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
+    default String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
         // PC登录：跳转到新版(react)的页面
         String url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + userResponse.getSessionId();
         LogUtil.info("单点登录跳转地址: {}", url);
@@ -43,7 +43,7 @@ public interface SingleSignOnAuthenticator extends TokenAuthenticator {
      *
      * @param userResponse 用户登录失败返回信息.可能为空,注意检查
      */
-    String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile);
+    String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request);
 
     /**
      * 获取用户信息

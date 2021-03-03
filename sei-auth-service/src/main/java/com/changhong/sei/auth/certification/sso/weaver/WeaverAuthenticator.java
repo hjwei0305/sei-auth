@@ -1,5 +1,6 @@
 package com.changhong.sei.auth.certification.sso.weaver;
 
+import com.changhong.sei.apitemplate.ApiTemplate;
 import com.changhong.sei.auth.certification.AbstractTokenAuthenticator;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.config.properties.AuthProperties;
@@ -9,10 +10,13 @@ import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.flow.FlowTask;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +37,8 @@ public class WeaverAuthenticator extends AbstractTokenAuthenticator implements S
     private final AuthProperties authProperties;
     private final SsoProperties properties;
     private final AccountService accountService;
+    @Autowired
+    private ApiTemplate apiTemplate;
 
     public WeaverAuthenticator(AuthProperties authProperties, SsoProperties properties, AccountService accountService) {
         this.authProperties = authProperties;
@@ -68,14 +74,44 @@ public class WeaverAuthenticator extends AbstractTokenAuthenticator implements S
      * 登录成功url地址
      */
     @Override
-    public String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
-        String url = properties.getIndex();
-        // PC登录：跳转到新版(react)的页面
-        if (StringUtils.isBlank(url)) {
-            url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + userResponse.getSessionId();
+    public String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
+        StringBuilder url = new StringBuilder();
+
+        //待办任务id
+        String taskId = request.getParameter("taskId");
+        String businessId = request.getParameter("businessId");
+        String instanceId = request.getParameter("instanceId");
+
+        if (agentIsMobile) {
+            //待办url
+            url.append(getWebBaseUrl()).append("/sei-app/index.html#/MobileApproveForLJ")
+                    .append("?sid=").append(userResponse.getSessionId())
+                    .append("&id=").append(businessId)
+                    .append("&taskId=").append(taskId)
+                    .append("&instanceId=").append(instanceId);
+
+            //跳转页面
+            LogUtil.bizLog("AUTH-API:待办页面的跳转地址----" + url);
+        } else {
+            // PC登录：跳转到新版(react)的页面
+            if (StringUtils.isBlank(taskId)) {
+                url.append(getWebBaseUrl()).append("/#/sso/ssoWrapperPage?sid=").append(userResponse.getSessionId());
+            } else {
+                FlowTask flowTask = apiTemplate.getByAppModuleCode("flow-service", "/flowTask/findTaskById?taskId=" + taskId, FlowTask.class);
+                if (Objects.isNull(flowTask)) {
+                    url.append(getWebBaseUrl()).append("/#/sso/ssoWrapperPage?sid=").append(userResponse.getSessionId());
+                } else {
+                    url.append(getWebBaseUrl()).append(flowTask.getTaskFormUrl())
+                            .append("?sessionId=").append(userResponse.getSessionId())
+                            .append("&id=").append(businessId)
+                            .append("&taskId=").append(taskId)
+                            .append("&instanceId=").append(instanceId);
+                }
+            }
         }
+
         LOG.info("单点登录跳转地址: {}", url);
-        return url;
+        return url.toString();
     }
 
     /**
@@ -84,7 +120,7 @@ public class WeaverAuthenticator extends AbstractTokenAuthenticator implements S
      * @param userResponse 用户登录失败返回信息.可能为空,注意检查
      */
     @Override
-    public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile) {
+    public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
         return properties.getLogout();
     }
 
@@ -131,7 +167,6 @@ public class WeaverAuthenticator extends AbstractTokenAuthenticator implements S
 
         Account accountObj = accountService.getByAccountAndTenantCode(account, properties.getTenant());
         if (Objects.nonNull(accountObj)) {
-
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setTenant(accountObj.getTenantCode());
             loginRequest.setAccount(accountObj.getAccount());

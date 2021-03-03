@@ -42,7 +42,7 @@ public interface Oauth2Authenticator extends SingleSignOnAuthenticator {
      * @param userResponse 用户登录失败返回信息.可能为空,注意检查
      */
     @Override
-    String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile);
+    String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request);
 
     /**
      * oauth2授权路由端点
