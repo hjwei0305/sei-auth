@@ -12,11 +12,12 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.encryption.IEncrypt;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.enums.UserAuthorityPolicy;
 import com.changhong.sei.enums.UserType;
+import com.changhong.sei.exception.SeiException;
 import com.changhong.sei.util.EnumUtils;
-import com.changhong.sei.utils.MockUserHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,7 +96,9 @@ public class AccountService extends BaseEntityService<Account> {
         }
 
         if (ContextUtil.isAnonymous()) {
-            MockUserHelper.mockUser(account.getTenantCode(), account.getAccount());
+            // MockUserHelper.mockUser(account.getTenantCode(), account.getAccount());
+            LogUtil.error("当前上下文会话是未匿名用户.");
+            throw new SeiException("当前上下文会话是未匿名用户.");
         }
 
         ResultData<AccountInfo> resultData = this.getAccountInfo(account.getTenantCode(), account.getAccount());
