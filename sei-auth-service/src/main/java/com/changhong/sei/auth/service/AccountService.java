@@ -95,12 +95,6 @@ public class AccountService extends BaseEntityService<Account> {
             sessionUser.setUserName(mainAccount.getName());
         }
 
-        if (ContextUtil.isAnonymous()) {
-            // MockUserHelper.mockUser(account.getTenantCode(), account.getAccount());
-            LogUtil.error("当前上下文会话是未匿名用户.");
-            throw new SeiException("当前上下文会话是未匿名用户.");
-        }
-
         ResultData<AccountInfo> resultData = this.getAccountInfo(account.getTenantCode(), account.getAccount());
         if (resultData.successful()) {
             AccountInfo accountInfo = resultData.getData();
