@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLEncoder;
+import java.util.Enumeration;
 import java.util.Objects;
 
 /**
@@ -81,14 +83,21 @@ public class WeaverAuthenticator extends AbstractTokenAuthenticator implements S
         String taskId = request.getParameter("taskId");
         String businessId = request.getParameter("businessId");
         String instanceId = request.getParameter("instanceId");
+        String flowtypeId = request.getParameter("flowtypeId");
 
         if (agentIsMobile) {
             //待办url
-            url.append(getWebBaseUrl()).append("/sei-app/index.html#/MobileApproveForLJ")
-                    .append("?sid=").append(userResponse.getSessionId())
-                    .append("&id=").append(businessId)
-                    .append("&taskId=").append(taskId)
-                    .append("&instanceId=").append(instanceId);
+            try {
+                url.append(getAppBaseUrl()).append("/index.html#/MobileApproveForLJ")
+//                        .append("?secret=").append(URLEncoder.encode(DesUtil.encrypt(userResponse.getSessionId(), DesUtil.DEFAULT_KEY),"utf-8"))
+                        .append("?sid=").append(userResponse.getSessionId())
+                        .append("&id=").append(businessId)
+                        .append("&taskId=").append(taskId)
+                        .append("&flowTypeId=").append(flowtypeId)
+                        .append("&instanceId=").append(instanceId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             //跳转页面
             LogUtil.bizLog("AUTH-API:待办页面的跳转地址----" + url);
@@ -132,6 +141,11 @@ public class WeaverAuthenticator extends AbstractTokenAuthenticator implements S
         //会话token
         String token = request.getParameter(PARAM_TOKEN);
         if (LOG.isDebugEnabled()) {
+            Enumeration<String> enumeration = request.getParameterNames();
+            while (enumeration.hasMoreElements()) {
+                String param = enumeration.nextElement();
+                LOG.debug("Request Param: " + param + " = " + request.getParameter(param));
+            }
             LOG.debug("token ：{}", token);
         }
 
