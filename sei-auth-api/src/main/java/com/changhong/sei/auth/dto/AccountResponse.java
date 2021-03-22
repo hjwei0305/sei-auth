@@ -46,7 +46,6 @@ public class AccountResponse extends AccountInfoDto {
      * 来源系统(sei,wechat,dingtalk等)
      */
     @ApiModelProperty(notes = "来源系统", required = true)
-    @NotNull
     private ChannelEnum channel = ChannelEnum.SEI;
     /**
      * 冻结
