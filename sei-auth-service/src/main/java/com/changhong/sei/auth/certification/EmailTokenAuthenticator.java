@@ -47,7 +47,7 @@ public class EmailTokenAuthenticator extends AbstractTokenAuthenticator implemen
 
         List<Account> accountList = accountService.findByOpenIdAndChannel(account, ChannelEnum.EMAIL);
         if (Objects.isNull(accountList)) {
-            LogUtil.warn("账号密码错误或账号不存在");
+            LogUtil.warn("账号或密码错误");
 
             ResultData<SessionUserResponse> result = ResultData.success(checkResult.getMessage(), SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.failure));
             // 发布登录验证码错误事件

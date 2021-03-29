@@ -190,7 +190,7 @@ public class SessionUserResponse implements Serializable {
 
         /**
          * 登录失败
-         * 账号密码错误或账号不存在
+         * 账号或密码错误
          */
         failure,
 

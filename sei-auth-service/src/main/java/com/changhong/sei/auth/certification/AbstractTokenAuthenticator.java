@@ -50,8 +50,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
 //            List<Account> accounts = accountService.getByAccount(account);
             List<Account> accounts = accountService.findByOpenIdAndChannel(account, ChannelEnum.SEI);
             if (CollectionUtils.isEmpty(accounts)) {
-                result = ResultData.fail("账号密码错误,认证失败!");
-                // 发布登录账号密码错误事件
+                result = ResultData.fail("账号或密码错误,认证失败!");
+                // 发布登录账号或密码错误事件
                 ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
                 return result;
             }
@@ -69,16 +69,16 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
         }
 
         if (Objects.isNull(entity)) {
-            result = ResultData.fail("账号密码错误,认证失败!");
-            // 发布登录账号密码错误事件
+            result = ResultData.fail("账号或密码错误,认证失败!");
+            // 发布登录账号或密码错误事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
         }
 
         // 验证密码
         if (!accountService.verifyPassword(password, entity.getPassword())) {
-            result = ResultData.fail("账号密码错误,认证失败!");
-            // 发布登录账号密码错误事件
+            result = ResultData.fail("账号或密码错误,认证失败!");
+            // 发布登录账号或密码错误事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
         }
