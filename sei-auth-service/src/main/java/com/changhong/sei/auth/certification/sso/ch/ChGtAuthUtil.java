@@ -14,23 +14,21 @@ import java.util.Map;
  * 实现功能：
  *
  * @author 马超(Vision.Mac)
- * @version 1.0.00  2020-04-15 08:40
+ * @version 1.0.00  2021-04-09 17:03
  */
-public class TestSSO {
-    private static final Logger LOG = LoggerFactory.getLogger(TestSSO.class);
+public class ChGtAuthUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(ChGtAuthUtil.class);
 
     private static final String EXP = "exp";
 
     private static final String PAYLOAD = "payload";
 
-
-    private static String SECURITY = "123";
-
     public static void main(String[] args) {
+        String security = "123";
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODcwMDMxMDQ4NjAsInBheWxvYWQiOiJ7XCJuYW1lXCI6XCIyMDA0NTIwM1wifSJ9.OXHBldS8Q83wo9MyHC-BWgVH7rS68-Gl6TRzXeZ3CPM";
-        String account = unsign(token);
+        String account = unsign(token, security);
         token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1ODcwMDEwODI5NTMsInBheWxvYWQiOiJ7XCJ1c2VyX2lkXCI6XCIyMDA0NTIwM1wiLFwicGFnZVwiOlwiMVwiLFwicm93c1wiOlwiN1wifSJ9.CjM8gDke2C57_ipF9DqyYKKq3171PiuUXrRX-nAsLaY";
-        TodoTaskRequest request = unsignTodoTaskVo(token);
+        TodoTaskRequest request = unsignTodoTaskVo(token, security);
         System.out.println(account);
         System.out.println(request);
     }
@@ -38,13 +36,13 @@ public class TestSSO {
     /**
      * JWT解析 -- 通过密钥解析token，获取是否过期以及用户信息
      *
-     * @param jwt    需解析的token参数
+     * @param jwt 需解析的token参数
      */
-    private static String unsign(String jwt) {
-        if (StringUtils.isBlank(SECURITY)) {
+    public static String unsign(String jwt, String security) {
+        if (StringUtils.isBlank(security)) {
             LOG.error("密钥为空！");
         }
-        final JWTVerifier verifier = new JWTVerifier(SECURITY);
+        final JWTVerifier verifier = new JWTVerifier(security);
         try {
             //解析jwt 并转换token信息
             final Map<String, Object> claims = verifier.verify(jwt);
@@ -56,9 +54,9 @@ public class TestSSO {
                 long currentTimeMillis = System.currentTimeMillis();
                 //验证token是否过期
 //                if (exp > currentTimeMillis) {
-                    String json = (String) claims.get(PAYLOAD);
-                    JSONObject jsonObject = new JSONObject(json);
-                    return jsonObject.getString("name");
+                String json = (String) claims.get(PAYLOAD);
+                JSONObject jsonObject = new JSONObject(json);
+                return jsonObject.getString("name");
 //                } else {
 //                    LOG.error("token过期！");
 //                }
@@ -74,11 +72,11 @@ public class TestSSO {
      *
      * @param jwt 需解析的token参数
      */
-    public static TodoTaskRequest unsignTodoTaskVo(String jwt) {
-        if (StringUtils.isBlank(SECURITY)) {
+    public static TodoTaskRequest unsignTodoTaskVo(String jwt, String security) {
+        if (StringUtils.isBlank(security)) {
             LOG.error("密钥为空！");
         }
-        final JWTVerifier verifier = new JWTVerifier(SECURITY);
+        final JWTVerifier verifier = new JWTVerifier(security);
         try {
             //解析jwt 并转换token信息
             final Map<String, Object> claims = verifier.verify(jwt);
@@ -90,8 +88,8 @@ public class TestSSO {
                 long currentTimeMillis = System.currentTimeMillis();
                 //验证token是否过期
 //                if (exp > currentTimeMillis) {
-                    String json = (String) claims.get(PAYLOAD);
-                    return JsonUtils.fromJson(json, TodoTaskRequest.class);
+                String json = (String) claims.get(PAYLOAD);
+                return JsonUtils.fromJson(json, TodoTaskRequest.class);
 //                } else {
 //                    LOG.error("token过期！");
 //                }

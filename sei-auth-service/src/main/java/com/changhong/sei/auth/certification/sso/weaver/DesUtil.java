@@ -1,5 +1,8 @@
 package com.changhong.sei.auth.certification.sso.weaver;
 
+import com.changhong.sei.util.EncodeUtil;
+import com.changhong.sei.util.IdGenerator;
+import com.changhong.sei.util.RSAUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Base64Utils;
 
@@ -9,7 +12,9 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * 实现功能：
@@ -20,13 +25,40 @@ import java.nio.charset.StandardCharsets;
 public class DesUtil {
 
     private final static String DES = "DES";
+    public final static String DEFAULT_KEY = "sei_auth";
     // des 向量
     private static final byte[] BYTEIV = {0x12, 0x34, 0x56, 0x78, (byte) 0x90, (byte) 0xab, (byte) 0xcd, (byte) 0xef};
 
     public static void main(String[] args) {
         try {
-            System.out.println(encrypt("Admin", "_myhome_"));
-            System.out.println(decrypt("XL0E2nT6DS8=", "_myhome_"));
+            String s = IdGenerator.uuid2();
+            System.out.println(s);
+            s = encrypt(s, DEFAULT_KEY);
+            System.out.println(s);
+            System.out.println(URLEncoder.encode(s, "utf-8"));
+            System.out.println(decrypt(s, DEFAULT_KEY));
+
+            System.out.println();
+            System.out.println("----------------");
+            System.out.println();
+
+            String s1 = IdGenerator.uuid2();
+            System.out.println(s1);
+            s1 = EncodeUtil.aesEncrypt(s1, DEFAULT_KEY);
+            System.out.println(s1);
+            System.out.println(URLEncoder.encode(s1, "utf-8"));
+            s1 = EncodeUtil.aesDecrypt(s1, DEFAULT_KEY);
+            System.out.println(s1);
+
+            System.out.println();
+            System.out.println("----------------");
+            System.out.println();
+
+            Map<String, String> keyMap = RSAUtils.getKeys();
+            String message = IdGenerator.uuid2();;
+            String result = RSAUtils.encryptByPrivateKey(message, keyMap.get(RSAUtils.PRIVATE_KEY));
+            System.out.println(result);
+            System.out.println(RSAUtils.decryptByPublicKey(result, keyMap.get(RSAUtils.PUBLIC_KEY)));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,7 +85,6 @@ public class DesUtil {
 
         byte[] bt = encrypt(data.getBytes(StandardCharsets.UTF_8), key.getBytes(StandardCharsets.UTF_8));
         String strs = Base64Utils.encodeToString(bt);
-//        String strs = new BASE64Encoder().encode(bt);
         return strs;
     }
 
@@ -62,8 +93,7 @@ public class DesUtil {
      *
      * @param key 加密键,必须8位以及以上
      */
-    public static String decrypt(String data, String key) throws IOException,
-            Exception {
+    public static String decrypt(String data, String key) throws IOException, Exception {
 
         if (StringUtils.isEmpty(data)) {
             throw new Exception("解密字符串为空");
@@ -77,8 +107,6 @@ public class DesUtil {
             throw new Exception("密钥长度必须为8位");
         }
 
-//        BASE64Decoder decoder = new BASE64Decoder();
-//        byte[] buf = decoder.decodeBuffer(data);
         byte[] buf = Base64Utils.decodeFromString(data);
         byte[] bt = decrypt(buf, key.getBytes());
         return new String(bt, StandardCharsets.UTF_8);
