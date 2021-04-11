@@ -70,7 +70,7 @@ public interface TodoTaskApi {
      */
     @ResponseBody
     @ApiOperation(value = "长虹SSO待办任务清单", notes = "长虹SSO待办任务清单")
-    @RequestMapping(value = {"/todoTaskList4CH"})
+    @RequestMapping(value = {"/todoTaskList4CH"}, method = {RequestMethod.GET, RequestMethod.POST})
     TodoTaskResponse todoTaskList4CH(HttpServletRequest request);
 
     /**
