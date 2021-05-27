@@ -44,9 +44,9 @@ public interface VerifyCodeApi {
     @GetMapping(path = "sendVerifyCode")
     @ApiOperation(value = "发送验证码", notes = "验证码5分钟有效期")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "reqId", value = "请求id", required = true, paramType = "query", allowableValues = "手机号或邮箱"),
-            @ApiImplicitParam(name = "channel", value = "通道", required = true, paramType = "query", allowableValues = "Mobile, EMAIL"),
-            @ApiImplicitParam(name = "operation", value = "操作简介", required = true, paramType = "query")
+            @ApiImplicitParam(name = "reqId", value = "请求id", dataTypeClass = String.class, required = true, paramType = "query", allowableValues = "手机号或邮箱"),
+            @ApiImplicitParam(name = "channel", value = "通道", dataTypeClass = String.class, required = true, paramType = "query", allowableValues = "Mobile, EMAIL"),
+            @ApiImplicitParam(name = "operation", value = "操作简介", dataTypeClass = String.class, required = true, paramType = "query")
     })
     ResultData<String> sendVerifyCode(@RequestParam("reqId") @NotBlank String reqId,
                                       @RequestParam("channel") @NotBlank String channel,
@@ -62,8 +62,8 @@ public interface VerifyCodeApi {
     @PostMapping(path = "check")
     @ApiOperation(value = "校验验证码", notes = "校验验证码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "reqId", value = "请求id", required = true, paramType = "query"),
-            @ApiImplicitParam(name = "code", value = "校验值", required = true, paramType = "query")
+            @ApiImplicitParam(name = "reqId", value = "请求id", dataTypeClass = String.class, required = true, paramType = "query"),
+            @ApiImplicitParam(name = "code", value = "校验值", dataTypeClass = String.class, required = true, paramType = "query")
     })
     ResultData<String> check(@RequestParam("reqId") @NotBlank String reqId, @RequestParam("code") @NotBlank String code);
 }

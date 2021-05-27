@@ -1,0 +1,59 @@
+# spring 环境配置
+spring:
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.4.208.134:3306/sei_auth?characterEncoding=utf8&useSSL=false
+    username: sei
+    password: 123456
+    hikari:
+      # 最小空闲连接
+      minimum-idle: 10
+      # 最大连接数
+      maximum-pool-size: 100
+      # 连接超时时间
+      connection-timeout: 30000
+      # 空闲连接超时时间
+      idle-timeout: 180000
+      # 连接最大存活时间
+      max-lifetime: 1800000
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL57Dialect
+
+  redis:
+    host: 10.4.208.132
+    port: 6379
+    password: ZmkDbgaua3Rso33T
+    database: 0
+  kafka:
+    bootstrap-servers: 10.4.208.132:9092
+
+sei:
+  auth:
+    # 前端web根url地址
+    web-base-url: http://tsei.changhong.com:8090/sei-portal-web
+    # 服务网关根url地址
+    api-base-url: http://tsei.changhong.com:8090/api-gateway
+    # 默认密码
+    password: 123456
+    # 密码默认过期天数
+    password-expire: 180
+    sso:
+      # 认证类型
+      auth-type: weChat
+      # 社交平台分发给SEI平台的id
+      app-id: wwdc99e9511ccac381
+      # 企业微信:自建应用id
+      agent-id: 1000003
+      # 访问密钥
+      crop-secret: xIKMGprmIKWrK1VJ5oALdgeUAFng3DzxIpmPgT56XAA
+  # 忽略token认证的url
+  http:
+    filter:
+      enable: false
+#      ignore-auth-url: /auth/check,/auth/getAnonymousToken,/auth/verifyCode,/sso/
+
+

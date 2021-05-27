@@ -40,7 +40,7 @@ public class SingleSignOnController implements Constants {
     @Autowired
     private TokenAuthenticatorBuilder builder;
 
-    @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
+    @ApiOperation(value = "OAuth2授权路由(PC端)", notes = "OAuth2授权路由(PC端使用)")
     @RequestMapping(path = AUTHORIZE_ENDPOINT, method = {RequestMethod.GET, RequestMethod.POST})
     public String authorize(HttpServletRequest request) {
         String authType = request.getParameter("authType");
@@ -50,12 +50,12 @@ public class SingleSignOnController implements Constants {
         Oauth2Authenticator authenticator = builder.getOauth2Authenticator(authType);
 
         String endpoint = authenticator.getAuthorizeEndpoint(request);
-        LOG.info("【微信网页授权】获取code, endpoint={}", endpoint);
+        LOG.info("【OAuth2网页授权】获取code, endpoint={}", endpoint);
         return "redirect:" + endpoint;
     }
 
     @ResponseBody
-    @ApiOperation(value = "微信授权路由", notes = "微信授权路由")
+    @ApiOperation(value = "OAuth2授权路由(移动端)", notes = "OAuth2授权路由(移动端使用)")
     @RequestMapping(path = "/sso/authorizeData", method = {RequestMethod.GET, RequestMethod.POST})
     public ResultData<Map<String, String>> authorizeData(HttpServletRequest request) {
         String authType = request.getParameter("authType");
@@ -65,7 +65,9 @@ public class SingleSignOnController implements Constants {
         Oauth2Authenticator authenticator = builder.getOauth2Authenticator(authType);
 
         ResultData<Map<String, String>> result = authenticator.getAuthorizeData(request);
-        LOG.info("【微信网页授权】获取code, result = {}", JsonUtils.toJson(result));
+        if  (LOG.isInfoEnabled()) {
+            LOG.info("【OAuth2网页授权】获取code, result = {}", JsonUtils.toJson(result));
+        }
         return result;
     }
 

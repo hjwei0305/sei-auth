@@ -13,6 +13,7 @@ import com.changhong.sei.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,13 +25,10 @@ import java.util.Objects;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-04-14 14:31
  */
+@Lazy
 @Component(SingleSignOnAuthenticator.AUTH_TYPE_CH_GT)
 public class ChGtSingleSignOnAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator {
     private static final Logger LOG = LoggerFactory.getLogger(ChGtSingleSignOnAuthenticator.class);
-
-    private static final String EXP = "exp";
-
-    private static final String PAYLOAD = "payload";
 
     private static String SECURITY;
     private final AuthProperties authProperties;

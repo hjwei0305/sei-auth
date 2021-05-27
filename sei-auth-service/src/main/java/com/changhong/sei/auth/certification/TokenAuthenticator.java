@@ -46,6 +46,14 @@ public interface TokenAuthenticator {
      * 预制单点认证
      */
     String AUTH_TYPE_SEI = "sei";
+    /**
+     * IDM OAuth2认证
+     */
+    String AUTH_TYPE_IDM_OAUTH2 = "idmOAuth2";
+    /**
+     * 蓝凌OA认证
+     */
+    String AUTH_TYPE_LANDRAY = "landray";
 
     String[] AGENT = {"iphone", "android", "ipad", "phone", "mobile", "wap", "netfront", "java", "operamobi",
             "operamini", "ucweb", "windowsce", "symbian", "series", "webos", "sony", "blackberry", "dopod",

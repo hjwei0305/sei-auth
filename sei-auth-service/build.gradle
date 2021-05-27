@@ -20,7 +20,6 @@ dependencies {
     compile(
             "org.springframework.boot:spring-boot-configuration-processor",
 
-
             // 直接引用消息通知包
             "com.changhong.sei:sei-notify-sdk:$sei_version",
 
@@ -28,14 +27,19 @@ dependencies {
             "com.changhong.sei:sei-cloud-starter:$sei_version"
     )
 
-//    // 蓝凌OA
-//    compile(
-//            "com.landray.sso.client:EKP-SSO-client-java:1.0"
-//    )
-
     // 获取用户浏览器、操作系统等信息
     compile 'eu.bitwalker:UserAgentUtils:1.21'
 
+    // IDM
+    compile(
+            "org.bouncycastle:bcprov-jdk15on:1.46",
+            "idm:siam-client-core:3.3.3"
+    )
+
+    // 蓝凌OA
+    compile(
+            "com.landray.sso.client:EKP-SSO-client-java:1.0"
+    )
 
     //长虹单点登录组件包
     compile group: 'com.auth0', name: 'java-jwt', version: '2.3.0'

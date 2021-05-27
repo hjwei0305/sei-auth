@@ -19,6 +19,7 @@ import com.changhong.sei.util.Signature;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ import java.util.Objects;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-04-23 17:27
  */
+@Lazy
 @Component(SingleSignOnAuthenticator.AUTH_TYPE_WE_CHAT)
 public class WeChatAuthenticator extends AbstractTokenAuthenticator implements Oauth2Authenticator, SingleSignOnAuthenticator, Constants {
     private static final Logger LOG = LoggerFactory.getLogger(WeChatAuthenticator.class);

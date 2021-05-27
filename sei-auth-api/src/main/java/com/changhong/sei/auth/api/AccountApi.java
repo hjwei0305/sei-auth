@@ -108,9 +108,9 @@ public interface AccountApi {
     @PostMapping(path = "resetPass")
     @ApiOperation("重置密码")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "tenant", value = "租户代码", required = true),
-            @ApiImplicitParam(name = "account", value = "账号", required = true),
-            @ApiImplicitParam(name = "password", value = "密码(MD5散列值). 为空时,为配置的默认密码")
+            @ApiImplicitParam(name = "tenant", value = "租户代码", dataTypeClass = String.class, required = true),
+            @ApiImplicitParam(name = "account", value = "账号", dataTypeClass = String.class, required = true),
+            @ApiImplicitParam(name = "password", value = "密码(MD5散列值). 为空时,为配置的默认密码", dataTypeClass = String.class)
     })
     ResultData<String> resetPassword(@RequestParam("tenant") @NotBlank String tenant,
                                      @RequestParam("account") @NotBlank String account,
@@ -161,8 +161,8 @@ public interface AccountApi {
     @GetMapping(path = "sendVerifyCode")
     @ApiOperation(value = "找回密码验证码", notes = "验证码5分钟有效期")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "账号id", required = true, paramType = "query"),
-            @ApiImplicitParam(name = "channel", value = "通道", required = true, paramType = "query", allowableValues = "Mobile, EMAIL")
+            @ApiImplicitParam(name = "id", value = "账号id", dataTypeClass = String.class, required = true, paramType = "query"),
+            @ApiImplicitParam(name = "channel", value = "通道", dataTypeClass = String.class, required = true, paramType = "query", allowableValues = "Mobile, EMAIL")
     })
     ResultData<String> sendVerifyCode(@RequestParam("id") @NotBlank String accountId,
                                       @RequestParam("channel") @NotBlank String channel);
