@@ -116,7 +116,7 @@ public class IdmOAuth2Authenticator extends AbstractTokenAuthenticator implement
      */
     @Override
     public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
-        String url = properties.getSso().getLogoutUrl();
+        String url = properties.getSso().getLogout();
         LOG.info("单点登录失败：需要绑定平台账号！跳转至: {}", url);
         return url;
     }
@@ -192,7 +192,7 @@ public class IdmOAuth2Authenticator extends AbstractTokenAuthenticator implement
                     // access_token：访问令牌
                     String accessToken = data.get("access_token");
                     if (StringUtils.isNotBlank(accessToken) && accessToken.contains("access_token=")) {
-                        accessToken = accessToken.replaceAll("access_token", "");
+                        accessToken = accessToken.replaceAll("access_token=", "");
                     }
                     url.delete(0, url.length());
                     url.append(profileUrl).append("?access_token=").append(accessToken);

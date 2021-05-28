@@ -21,6 +21,8 @@ public class IDMTest {
         // https://loginuatin.newhopedairy.cn/siam/oauth2.0/accessTokenByJson?client_id=AUTH_CGFSSC&client_secret=f811ba58gewqtj9i&grant_type=authorization_code&redirect_uri=http://10.200.16.10/api-gateway/sei-auth/sso/login?authType=landray&code=ST-9124-bZgcWdNO1cWk0RPOdvyd-SIAM
         // https://loginuatin.newhopedairy.cn/siam/oauth2.0/accessTokenByJson?client_id=AUTH_CGFSSC&client_secret=f811ba58gewqtj9i&grant_type=authorization_code&redirect_uri=http://10.200.16.10/api-gateway/sei-auth/sso/login?authType=idmOAuth2&code=ST-9123-mC2MhfNbD1dHDKogsyk2-SIAM
         // https://loginuatin.newhopedairy.cn/siam/oauth2.0/accessTokenByJson?client_id=AUTH_CGFSSC&client_secret=f811ba58gewqtj9i&grant_type=authorization_code&redirect_uri=http://10.200.16.10/api-gateway/sei-auth/sso/login?authType=idmOAuth2&code=ST-9126-2Rb4yz5nlbcNUdmDZEqr-SIAM
+        // https://loginuatin.newhopedairy.cn/siam/oauth2.0/accessTokenByJson?client_id=AUTH_CGFSSC&client_secret=f811ba58gewqtj9i&grant_type=authorization_code&redirect_uri=http://10.200.16.10/api-gateway/sei-auth/sso/login?authType=idmOAuth2&code=ST-9226-dIIrgPtf5aAOKdgBHTP7-SIAM
+        // https://loginuatin.newhopedairy.cn/siam/oauth2.0/accessTokenByJson?client_id=AUTH_CGFSSC&client_secret=f811ba58gewqtj9i&grant_type=authorization_code&redirect_uri=http://10.200.16.10/api-gateway/sei-auth/sso/login?authType=idmOAuth2&code=ST-9228-kl1Iigg6ykCcPIx0ucqb-SIAM
         // 检查缓存中是否存在有效token
         String redirectUri = "http://10.200.16.10/api-gateway/sei-auth/sso/login?authType=idmOAuth2";
         StringBuilder url = new StringBuilder();
@@ -29,7 +31,7 @@ public class IDMTest {
                 .append("?client_id=").append("AUTH_CGFSSC")
                 .append("&client_secret=").append("f811ba58gewqtj9i")
                 .append("&grant_type=authorization_code&redirect_uri=").append(redirectUri)
-                .append("&code=").append("ST-9142-bJcnBbqfB4OuprKm17tc-SIAM");
+                .append("&code=").append("ST-9228-kl1Iigg6ykCcPIx0ucqb-SIAM");
         Map<String, String> data = IdmOAuth2Authenticator.httpRequest(url.toString(), "POST", null);
         System.out.println(data);
         if (data != null && StringUtils.equalsIgnoreCase("true", data.get("status"))) {

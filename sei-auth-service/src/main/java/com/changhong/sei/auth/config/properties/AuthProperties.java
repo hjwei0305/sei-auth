@@ -88,11 +88,11 @@ public class AuthProperties {
         /**
          * 登录成功url地址
          */
-        private String indexUrl;
+        private String index;
         /**
          * 登录失败url地址
          */
-        private String logoutUrl;
+        private String logout;
         /**
          * 认证类型
          * QQ\微信\企业微信\钉钉\微博\长虹SSO\泛微OA\蓝凌OA
@@ -112,20 +112,20 @@ public class AuthProperties {
          */
         private String cropSecret;
 
-        public String getIndexUrl() {
-            return indexUrl;
+        public String getIndex() {
+            return index;
         }
 
-        public void setIndexUrl(String indexUrl) {
-            this.indexUrl = indexUrl;
+        public void setIndex(String index) {
+            this.index = index;
         }
 
-        public String getLogoutUrl() {
-            return logoutUrl;
+        public String getLogout() {
+            return logout;
         }
 
-        public void setLogoutUrl(String logoutUrl) {
-            this.logoutUrl = logoutUrl;
+        public void setLogout(String logout) {
+            this.logout = logout;
         }
 
         public String getAuthType() {
