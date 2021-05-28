@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -46,17 +47,17 @@ public class IdmOAuth2Authenticator extends AbstractTokenAuthenticator implement
     public final String authorizeUrl;
     public final String accessUrl;
     public final String profileUrl;
-    private final String clientId = "AUTH_CGFSSC";
-    private final String clientSecret = "f811ba58gewqtj9i";
+
+    @Value("${sei.auth.sso.idm.client:AUTH_CGFSSC}")
+    private String clientId;
+    @Value("${sei.auth.sso.idm.secret:f811ba58gewqtj9i}")
+    private String clientSecret;
 
     private final AuthProperties properties;
 
     public IdmOAuth2Authenticator(AuthProperties properties) {
         this.properties = properties;
 
-        AuthProperties.SingleSignOnProperties ssoProp = properties.getSso();
-//        this.clientId = ssoProp.getAppId();
-//        this.clientSecret = ssoProp.getCropSecret();
         this.authorizeUrl = ContextUtil.getProperty("sei.auth.sso.idm.authorize", "https://loginuatin.newhopedairy.cn/siam/oauth2.0/authorize");
         this.accessUrl = ContextUtil.getProperty("sei.auth.sso.idm.access", "https://loginuatin.newhopedairy.cn/siam/oauth2.0/accessTokenByJson");
         this.profileUrl = ContextUtil.getProperty("sei.auth.sso.idm.profile", "https://loginuatin.newhopedairy.cn/siam/oauth2.0/profileByJson");
