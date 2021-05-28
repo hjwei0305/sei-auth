@@ -1,8 +1,7 @@
 # Docker for java  sei-auth
 
 # 基础镜像
-FROM openjdk:8-jre-alpine
-
+FROM rddhub.changhong.com/library/openjdk:8-jre-alpine-ttf
 # 作者
 LABEL maintainer="hua.feng@changhong.com"
 
