@@ -54,6 +54,6 @@ sei:
   http:
     filter:
       enable: false
-#      ignore-auth-url: /auth/check,/auth/getAnonymousToken,/auth/verifyCode,/sso/
+      ignore-auth-url: /auth/check,/auth/getAnonymousToken,/auth/verifyCode,/sso/
 
 
