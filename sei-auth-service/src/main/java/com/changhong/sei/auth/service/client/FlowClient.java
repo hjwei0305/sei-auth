@@ -20,13 +20,11 @@ public interface FlowClient {
      *
      * @param searchConfig    查询条件
      * @param businessModelId 为空查询全部
-     * @param appSign         应用标识
      * @return 可批量审批待办信息
      */
     @ResponseBody
     @PostMapping(path = "findByBusinessModelIdWithAllCount", consumes = MediaType.APPLICATION_JSON_VALUE)
-    FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@RequestParam("businessModelId") String businessModelId,
-                                                                     @RequestParam("appSign") String appSign,
+    FlowTaskPageResultVO<FlowTask> findByBusinessModelIdWithAllCount(@RequestParam(name = "businessModelId", required = false) String businessModelId,
                                                                      @RequestBody Search searchConfig);
 
 }
