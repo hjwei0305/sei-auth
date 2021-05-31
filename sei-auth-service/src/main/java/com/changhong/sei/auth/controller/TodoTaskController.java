@@ -206,7 +206,7 @@ public class TodoTaskController implements TodoTaskApi {
                         sb.delete(0, sb.length());
                         //会话token
                         String sign = Signature.sign("sei" + account + flowTask.getId() + stamp);
-                        sb.append(authProperties.getApiBaseUrl()).append(request.getContextPath()).append("/ssoTask");
+                        sb.append(authProperties.getApiBaseUrl()).append(request.getContextPath()).append("/task/ssoTask");
                         sb.append("?sign=").append(sign);
                         sb.append("&taskId=").append(flowTask.getId());
                         sb.append("&account=").append(account);
