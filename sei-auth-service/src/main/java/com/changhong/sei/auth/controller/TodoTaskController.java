@@ -326,7 +326,7 @@ public class TodoTaskController implements TodoTaskApi {
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             if (StringUtils.endsWithAny(key, "sign", "stamp", "token", "account")) {
-                break;
+                continue;
             }
             redirectUrl.append(first ? "?" : "&").append(key).append("=").append(request.getParameter(key));
             first = false;
