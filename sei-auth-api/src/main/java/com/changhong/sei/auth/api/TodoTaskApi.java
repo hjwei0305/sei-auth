@@ -79,7 +79,7 @@ public interface TodoTaskApi {
      * @param request  带参数请求
      * @param response 跳转响应
      */
-    @GetMapping(path = "ssoTask")
+    @RequestMapping(path = "ssoTask", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "单点登录鉴权跳转", notes = "第三方系统通过链接进入,进行登录认证,并跳转到相应页面")
     void ssoTask(HttpServletRequest request, HttpServletResponse response);
 
