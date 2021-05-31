@@ -19,11 +19,11 @@ public class TodoTaskRequest implements Serializable {
     /**
      * 当前页
      */
-    private Integer page;
+    private Integer page = 1;
     /**
      * 行数
      */
-    private Integer rows;
+    private Integer rows = 10;
 
     public String getAccount() {
         return account;
