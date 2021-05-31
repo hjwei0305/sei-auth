@@ -178,11 +178,11 @@ public class TodoTaskController implements TodoTaskApi {
                 Search search = new Search();
                 //重新设置pageInfo消息 pageinfo 必不可少，否则报错
                 PageInfo pageInfo = new PageInfo();
-                pageInfo.setPage(todoTaskVo.getPage());
-                pageInfo.setRows(todoTaskVo.getRows());
+                pageInfo.setPage(Objects.isNull(todoTaskVo.getPage()) ? 1 : todoTaskVo.getPage());
+                pageInfo.setRows(Objects.isNull(todoTaskVo.getRows()) ? 10 : todoTaskVo.getRows());
                 search.setPageInfo(pageInfo);
 
-                FlowTaskPageResultVO<FlowTask> flowTaskPageResult = flowClient.findByBusinessModelIdWithAllCount(null, search);
+                FlowTaskPageResultVO<FlowTask> flowTaskPageResult = flowClient.findByBusinessModelIdWithAllCount("", search);
                 if (Objects.nonNull(flowTaskPageResult) && CollectionUtils.isNotEmpty(flowTaskPageResult.getRows())) {
                     List<TodoTaskInfo> todoTaskInfos = result.getTodolist();
                     //数据条目数
