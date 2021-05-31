@@ -31,6 +31,8 @@ import com.changhong.sei.util.thread.ThreadLocalUtil;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,6 +56,7 @@ import java.util.Objects;
 @Api(value = "TodoTaskApi", tags = "待办任务webhook服务")
 @RequestMapping(path = TodoTaskApi.PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class TodoTaskController implements TodoTaskApi {
+    private static final Logger LOG = LoggerFactory.getLogger(TodoTaskController.class);
 
     @Autowired
     private TodoTaskService service;
@@ -94,7 +97,9 @@ public class TodoTaskController implements TodoTaskApi {
      * 判断User-Agent 是不是来自于手机
      */
     private boolean checkAgentIsMobile(String ua) {
-        LogUtil.error("User-Agent的类型为:" + ua);
+        if (LOG.isInfoEnabled()) {
+            LOG.info("User-Agent的类型为: {}", ua);
+        }
         if (ua != null) {
             ua = ua.toLowerCase();
             // 排除 苹果桌面系统
@@ -162,7 +167,9 @@ public class TodoTaskController implements TodoTaskApi {
         TodoTaskResponse result = new TodoTaskResponse();
         try {
             TodoTaskRequest todoTaskVo = ChGtAuthUtil.unsignTodoTaskVo(tocken, properties.getSecurity());
-            LogUtil.bizLog("todoTaskVo: {}", todoTaskVo);
+            if (LOG.isInfoEnabled()) {
+                LogUtil.bizLog("todoTaskVo: {}", todoTaskVo);
+            }
             if (Objects.nonNull(todoTaskVo)) {
                 //获取账号,并模拟用户
                 Account accountObj = accountService.getByAccountAndTenantCode(todoTaskVo.getAccount(), properties.getTenant());
@@ -179,7 +186,9 @@ public class TodoTaskController implements TodoTaskApi {
                 // 会话id关联token(redis或db等)
                 sessionService.addSession(sessionUser.getSessionId(), sessionUser.getToken());
 
-                LogUtil.bizLog("接收SSO待办调用 SessionUser: {}", sessionUser);
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("接收SSO待办调用 SessionUser: {}", sessionUser);
+                }
 
                 Search search = new Search();
                 //重新设置pageInfo消息 pageinfo 必不可少，否则报错
@@ -230,7 +239,9 @@ public class TodoTaskController implements TodoTaskApi {
         } catch (Exception e) {
             LogUtil.error("待办任务清单异常.", e);
         }
-        LogUtil.bizLog("接收SSO待办调用成功，返回数据" + result);
+        if (LOG.isInfoEnabled()) {
+            LOG.info("接收SSO待办调用成功，返回数据 {}", result);
+        }
         return result;
     }
 
@@ -249,10 +260,9 @@ public class TodoTaskController implements TodoTaskApi {
         String stamp = request.getParameter("stamp");
         //会话token
         String sign = request.getParameter("sign");
-        LogUtil.debug("loginid ：{}", account);
-        LogUtil.debug("taskId ：{}", taskId);
-        LogUtil.debug("stamp ：{}", stamp);
-        LogUtil.debug("sign ：{}", sign);
+        if (LOG.isInfoEnabled()) {
+            LOG.info("loginid ：{}, taskId ：{}, stamp ：{}, sign ：{}", account, taskId, stamp, sign);
+        }
         //获取账号,并模拟用户
         Account accountObj = accountService.getByAccountAndTenantCode(account, properties.getTenant());
         //根据当前账号获取用户会话
@@ -287,7 +297,6 @@ public class TodoTaskController implements TodoTaskApi {
             //跳转页面
             response.setContentType("application/json;UTF-8");
             response.sendRedirect(getPage.getData());
-
         } catch (Exception e) {
             String msg = "登录认证异常:" + e.getMessage();
             LogUtil.error(msg, e);
@@ -313,22 +322,21 @@ public class TodoTaskController implements TodoTaskApi {
         //系统基地址 + 待办相对地址
         StringBuilder redirectUrl = new StringBuilder(flowTask.getTaskFormUrl());
         Enumeration<String> keys = request.getParameterNames();
-        boolean first = true;
-        if (redirectUrl.indexOf("?") > 0) {
-            first = false;
-        }
+        boolean first = redirectUrl.indexOf("?") <= 0;
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
-            if (StringUtils.endsWithAny(key, "stamp", "token")) {
+            if (StringUtils.endsWithAny(key, "sign", "stamp", "token", "account")) {
                 break;
             }
             redirectUrl.append(first ? "?" : "&").append(key).append("=").append(request.getParameter(key));
             first = false;
         }
-        LogUtil.bizLog("请求token:" + ContextUtil.getToken());
-        redirectUrl.append(first ? "?" : "&").append("sessionId").append("=").append(sessionUser.getSessionId());
+        LogUtil.bizLog("请求token: {}", ContextUtil.getToken());
+        redirectUrl.append(first ? "?" : "&");
+        redirectUrl.append("sessionId").append("=").append(sessionUser.getSessionId());
+        redirectUrl.append("&sid").append("=").append(sessionUser.getSessionId());
         String page = redirectUrl.toString().replace("businessId", "id");
-        LogUtil.error("OA登录验证成功，跳转页面：{}", page);
+        LogUtil.bizLog("OA登录验证成功，跳转页面：{}", page);
         return ResultData.success(page);
 
     }
@@ -348,7 +356,7 @@ public class TodoTaskController implements TodoTaskApi {
                 //拼接单号
                 businessCode +
                 "?sessionId=" + sessionUser.getSessionId();
-        LogUtil.error("OA登录验证成功，跳转页面：{}", redirectUrl);
+        LogUtil.bizLog("OA登录验证成功，跳转页面：{}", redirectUrl);
         return ResultData.success(redirectUrl);
     }
 
@@ -380,7 +388,7 @@ public class TodoTaskController implements TodoTaskApi {
         if (StringUtils.isNotBlank(businessCode)) {
             redirectUrl = redirectUrl + "&businessCode=" + businessCode;
         }
-        LogUtil.error("OA登录验证成功，跳转页面：{}", redirectUrl);
+        LogUtil.bizLog("OA登录验证成功，跳转页面：{}", redirectUrl);
         return ResultData.success(redirectUrl);
     }
 
