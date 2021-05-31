@@ -27,6 +27,7 @@ import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.util.DateUtils;
 import com.changhong.sei.util.Signature;
+import com.changhong.sei.util.thread.ThreadLocalUtil;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -170,6 +171,11 @@ public class TodoTaskController implements TodoTaskApi {
                         request.getLocale().toLanguageTag());
                 SessionUser sessionUser = resultData.getData();
                 ContextUtil.generateToken(sessionUser);
+
+                ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
+                // 设置token到可传播的线程全局变量中
+                ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
+
                 // 会话id关联token(redis或db等)
                 sessionService.addSession(sessionUser.getSessionId(), sessionUser.getToken());
 
@@ -254,6 +260,10 @@ public class TodoTaskController implements TodoTaskApi {
                 request.getLocale().toLanguageTag());
         SessionUser sessionUser = resultData.getData();
         ContextUtil.generateToken(sessionUser);
+
+        ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
+        // 设置token到可传播的线程全局变量中
+        ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
 
         try {
             // 会话id关联token(redis或db等)
