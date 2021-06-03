@@ -1,7 +1,7 @@
 # 应用全局配置
 sei:
   application:
-    env: DEV
+    env: AUDIT-TEST
     code: sei-auth
     version: '@project_version@'
     description: '@project_description@'
@@ -11,17 +11,19 @@ sei:
     enable: true
   mock: # 本地调试的当前用户配置
     user:
-      account: admin
+      account: 20231880
       user-name: 管理员
-      tenant-code: 10044
+      tenant-code: AUDIT
+      user-id: 2466CD20-B3C8-11EB-AF09-0242C0A84415
 
-#knife4j:
+    #knife4j:
 #  basic:
 #    enable: true
     ## Basic认证用户名
 #    username: admin
     ## Basic认证密码
 #    password: 123456
+
 
 spring:
   application:
@@ -32,6 +34,7 @@ spring:
       token: DEjjbZxTrSWNf
       # 配置中心服务地址
       uri: http://sei.changhong.com/sei-manager/configserver
+#      uri: http://10.200.16.10/sei-manager/configserver
 #      uri: http://dsei.changhong.com/config-center
 #      uri: http://fsscdev.eppen.com.cn:18800/config-center
 #      uri: http://base-service.changhong.com/config-center
@@ -42,7 +45,9 @@ spring:
       # zookeeper注册中心开关
       enabled: true
       # zk 地址
-      connect-string: 10.4.208.132:2181
+#      connect-string: 10.4.208.132:2181
+      connect-string: 10.4.1.242:2181
+#      connect-string: 10.200.26.100:2181
 #      connect-string: fsscdev.eppen.com.cn:18182
     consul:
       # consul注册中心开关
@@ -63,3 +68,6 @@ logging:
           basic:
             service:
               UserService: error
+#server:
+#  servlet:
+#    context-path: /sei-auth/

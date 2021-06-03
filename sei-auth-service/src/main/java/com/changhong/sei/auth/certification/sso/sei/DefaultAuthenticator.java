@@ -48,7 +48,7 @@ public class DefaultAuthenticator extends AbstractTokenAuthenticator implements 
         //配置中心读取秘钥
         SECURITY = properties.getSecurity();
         if (StringUtils.isBlank(SECURITY)) {
-            LOG.error("未配置单点认证秘钥[sei.sso.security]！");
+            LOG.error("SEI默认单点集成未配置单点认证秘钥[sei.sso.security]！若未使用可忽略");
         }
     }
 

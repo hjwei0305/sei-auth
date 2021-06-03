@@ -52,10 +52,14 @@ public class LandrayAuthenticator extends AbstractTokenAuthenticator implements 
         //配置中心读取秘钥
         String security = properties.getSecurity();
         if (StringUtils.isBlank(security)) {
-            LOG.error("未配置单点认证秘钥[sei.sso.security]！");
+            LOG.error("蓝凌OA单点集成未配置单点认证秘钥[sei.sso.security]！若未使用可忽略");
         } else {
-            this.ltpaTokenGenerator.setSecurityKey(security);
-            this.ltpaTokenGenerator.setCookieName(COOKIE_NAME);
+            try {
+                this.ltpaTokenGenerator.setSecurityKey(security);
+                this.ltpaTokenGenerator.setCookieName(COOKIE_NAME);
+            } catch (Exception e) {
+                LOG.error("蓝凌OA单点集成认证秘钥[sei.sso.security]加载异常！若未使用可忽略");
+            }
         }
     }
 
