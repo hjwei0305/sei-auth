@@ -117,6 +117,6 @@ public class LoginLogController implements LoginLogApi {
             List<LoginHistoryDto> dtoList = histories.stream().map(h -> modelMapper.map(h, LoginHistoryDto.class)).collect(Collectors.toList());
             result.setRows(dtoList);
         }
-        return ResultData.success();
+        return ResultData.success(result);
     }
 }
