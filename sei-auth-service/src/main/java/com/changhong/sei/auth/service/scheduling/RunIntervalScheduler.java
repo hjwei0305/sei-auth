@@ -1,11 +1,14 @@
 package com.changhong.sei.auth.service.scheduling;
 
+import com.changhong.sei.auth.common.RandomUtils;
 import com.changhong.sei.auth.service.OnlineUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 实现功能：定时间隔任务
@@ -46,7 +49,13 @@ public class RunIntervalScheduler {
     @Scheduled(cron = "13 11 */1 * * ?")
 //    @Scheduled(initialDelay = 3600, fixedRate = 3600)
     public void timedLogout() {
-        LOG.info("启动定时任务-定时注销会话");
-        onlineUserService.timedLogout();
+        try {
+            // 通过增加随机数,尽量避免多实例并发处理,导致数据库锁表
+            TimeUnit.SECONDS.sleep(RandomUtils.nextInt(10));
+            LOG.info("启动定时任务-定时注销会话");
+            onlineUserService.timedLogout();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

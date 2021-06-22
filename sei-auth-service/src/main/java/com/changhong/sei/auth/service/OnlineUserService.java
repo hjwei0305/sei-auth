@@ -118,7 +118,7 @@ public class OnlineUserService extends BaseEntityService<OnlineUser> {
     /**
      * 定时注销
      */
-//    @Async
+    @Async
     @Transactional(rollbackFor = Exception.class)
     @SeiLock(key = "'auth:timedLogout'")
     public void timedLogout() {
