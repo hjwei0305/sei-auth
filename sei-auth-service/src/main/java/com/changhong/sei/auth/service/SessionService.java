@@ -7,6 +7,7 @@ import com.changhong.sei.core.util.JwtTokenUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.concurrent.CompletableFuture;
@@ -35,6 +36,7 @@ public class SessionService {
      *
      * @param sessionUser 会话信息
      */
+    @Transactional(rollbackFor = Exception.class)
     public void addSession(SessionUser sessionUser) {
         final String sid = sessionUser.getSessionId();
         final String value = sessionUser.getToken();
@@ -84,6 +86,7 @@ public class SessionService {
      * @param sid     会话id
      * @param timeOut 会话延迟过期时间(秒).为保证后续业务的处理,通常需要延迟会话一定的过期时间
      */
+    @Transactional(rollbackFor = Exception.class)
     public void removeSession(final String sid, final long timeOut) {
         CompletableFuture.runAsync(() -> {
             if (timeOut > 0) {

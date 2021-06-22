@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @version 1.0.00  2020-04-30 10:37
  */
 @Configuration
+@EnableAsync
 @EnableScheduling
 @EnableConfigurationProperties({AuthProperties.class, SsoProperties.class})
 public class SingleSignOnConfig {
