@@ -2,6 +2,7 @@ package com.changhong.sei.auth.dao;
 
 import com.changhong.sei.auth.entity.OnlineUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -31,6 +32,7 @@ public interface OnlineUserDao extends BaseEntityDao<OnlineUser> {
      *
      * @param sids 要删除的会话id清单
      */
+    @Modifying
     @Query("delete from OnlineUser t where t.sid in :sids ")
     void removeSids(@Param("sids") Set<String> sids);
 }
