@@ -118,22 +118,26 @@ public class OnlineUserService extends BaseEntityService<OnlineUser> {
     /**
      * 定时注销
      */
-    @Async
+//    @Async
     @Transactional(rollbackFor = Exception.class)
-    @SeiLock(key = "'auth:timedLogout")
+    @SeiLock(key = "'auth:timedLogout'")
     public void timedLogout() {
         int count = 0;
         Set<String> keys = stringRedisTemplate.keys(Constants.REDIS_KEY_PREFIX.concat("*"));
         List<OnlineUser> users = dao.getAllOnlineUsers();
         if (CollectionUtils.isNotEmpty(users)) {
-            count = users.size();
             List<String> sidList = users.stream().map(OnlineUser::getSid).collect(Collectors.toList());
             users.clear();
-            Set<String> delSids = sidList.stream().filter(o -> !keys.contains(o)).collect(Collectors.toSet());
-            // 移除会话
-            dao.removeSids(delSids);
-            // 更新退出时间
-            loginHistoryService.batchSetLogoutTime(delSids);
+            Set<String> delSids = sidList.stream()
+                    .filter(o -> !keys.contains(Constants.REDIS_KEY_PREFIX.concat(o)))
+                    .collect(Collectors.toSet());
+            if (CollectionUtils.isNotEmpty(delSids)) {
+                count = delSids.size();
+                // 移除会话
+                dao.removeSids(delSids);
+                // 更新退出时间
+                loginHistoryService.batchSetLogoutTime(delSids);
+            }
         }
         if (LOG.isInfoEnabled()) {
             LOG.info("自动清除会话: {}个", count);
