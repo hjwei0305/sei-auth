@@ -43,8 +43,8 @@ public class RunIntervalScheduler {
      * 每小时触发一次
      * 第一次延迟1小时后执行，之后按fixedDelay的规则每3600秒执行一次
      */
-//    @Scheduled(cron = "13 11 */1 * * ?")
-    @Scheduled(initialDelay = 3600, fixedDelay = 3600)
+    @Scheduled(cron = "13 11 */1 * * ?")
+//    @Scheduled(initialDelay = 3600, fixedRate = 3600)
     public void timedLogout() {
         LOG.info("启动定时任务-定时注销会话");
         onlineUserService.timedLogout();

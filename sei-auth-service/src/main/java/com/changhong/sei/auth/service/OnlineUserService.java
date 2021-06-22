@@ -6,6 +6,7 @@ import com.changhong.sei.auth.dao.OnlineUserDao;
 import com.changhong.sei.auth.entity.OnlineUser;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dao.BaseEntityDao;
+import com.changhong.sei.core.limiter.support.lock.SeiLock;
 import com.changhong.sei.core.service.BaseEntityService;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import eu.bitwalker.useragentutils.Browser;
@@ -119,6 +120,7 @@ public class OnlineUserService extends BaseEntityService<OnlineUser> {
      */
     @Async
     @Transactional(rollbackFor = Exception.class)
+    @SeiLock(key = "'auth:timedLogout")
     public void timedLogout() {
         int count = 0;
         Set<String> keys = stringRedisTemplate.keys(Constants.REDIS_KEY_PREFIX.concat("*"));

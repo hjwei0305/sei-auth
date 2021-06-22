@@ -70,6 +70,7 @@ public class AuthenticationController implements AuthenticationApi {
      */
     @Override
     public ResultData<String> logout(String sid) {
+        LogUtil.bizLog("登出: {}", sid);
         try {
             sessionService.removeSession(sid, 0);
             return ResultData.success("OK");
