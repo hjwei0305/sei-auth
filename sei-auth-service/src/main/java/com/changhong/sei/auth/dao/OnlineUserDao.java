@@ -24,7 +24,7 @@ public interface OnlineUserDao extends BaseEntityDao<OnlineUser> {
      *
      * @return 当前所有会话
      */
-    @Query("select t from OnlineUser t ")
+    @Query("select t from OnlineUser t where t.timestamp > 0")
     List<OnlineUser> getAllOnlineUsers();
 
     /**
