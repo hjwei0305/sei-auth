@@ -168,7 +168,7 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
 
             try {
                 // 会话id关联token(redis或db等)
-                sessionService.addSession(sessionUser.getSessionId(), sessionUser.getToken());
+                sessionService.addSession(sessionUser);
                 result = ResultData.success(dto);
             } catch (Exception e) {
                 result = ResultData.fail("登录认证异常:" + e.getMessage());

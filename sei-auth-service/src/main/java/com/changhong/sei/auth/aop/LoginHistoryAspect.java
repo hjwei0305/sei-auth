@@ -89,7 +89,7 @@ public class LoginHistoryAspect {
                     history.setLoginStatus(SessionUserResponse.LoginStatus.failure);
                     history.setLoginLog(result.getMessage());
                 }
-                historyService.save(history);
+                historyService.addHistory(history);
             } catch (Exception e) {
                 LOG.error(loginRequest.getAccount() + " -登录历史记录异常", e);
             }

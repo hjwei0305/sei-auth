@@ -41,7 +41,7 @@ public class LoginHistory extends BaseEntity implements ITenant {
      * 会话id
      */
     @Column(name = "session_id", length = 36)
-    private String sessionId;
+    private String sessionId = "none";
     /**
      * 登录时间
      */
@@ -72,6 +72,11 @@ public class LoginHistory extends BaseEntity implements ITenant {
      */
     @Column(name = "os_name")
     private String osName;
+    /**
+     * 登出时间
+     */
+    @Column(name = "logout_date")
+    private LocalDateTime logoutDate;
 
     @Override
     public String getTenantCode() {
@@ -153,6 +158,14 @@ public class LoginHistory extends BaseEntity implements ITenant {
 
     public void setOsName(String osName) {
         this.osName = osName;
+    }
+
+    public LocalDateTime getLogoutDate() {
+        return logoutDate;
+    }
+
+    public void setLogoutDate(LocalDateTime logoutDate) {
+        this.logoutDate = logoutDate;
     }
 
     @Override

@@ -2,8 +2,11 @@ package com.changhong.sei.auth.controller;
 
 import com.changhong.sei.auth.api.LoginLogApi;
 import com.changhong.sei.auth.dto.LoginHistoryDto;
+import com.changhong.sei.auth.dto.OnlineUserDto;
 import com.changhong.sei.auth.entity.LoginHistory;
+import com.changhong.sei.auth.entity.OnlineUser;
 import com.changhong.sei.auth.service.LoginHistoryService;
+import com.changhong.sei.auth.service.OnlineUserService;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
@@ -34,6 +37,8 @@ public class LoginLogController implements LoginLogApi {
     private ModelMapper modelMapper;
     @Autowired
     private LoginHistoryService loginHistoryService;
+    @Autowired
+    private OnlineUserService onlineUserService;
 
     /**
      * 获取系统登录总次数
@@ -115,6 +120,24 @@ public class LoginLogController implements LoginLogApi {
         List<LoginHistory> histories = pageResult.getRows();
         if (CollectionUtils.isNotEmpty(histories)) {
             List<LoginHistoryDto> dtoList = histories.stream().map(h -> modelMapper.map(h, LoginHistoryDto.class)).collect(Collectors.toList());
+            result.setRows(dtoList);
+        }
+        return ResultData.success(result);
+    }
+
+    /**
+     * 分页查询在线用户
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @Override
+    public ResultData<PageResult<OnlineUserDto>> getOnlineUserByPage(Search search) {
+        PageResult<OnlineUser> pageResult = onlineUserService.findByPage(search);
+        PageResult<OnlineUserDto> result = new PageResult<>(pageResult);
+        List<OnlineUser> onlineUsers = pageResult.getRows();
+        if (CollectionUtils.isNotEmpty(onlineUsers)) {
+            List<OnlineUserDto> dtoList = onlineUsers.stream().map(h -> modelMapper.map(h, OnlineUserDto.class)).collect(Collectors.toList());
             result.setRows(dtoList);
         }
         return ResultData.success(result);

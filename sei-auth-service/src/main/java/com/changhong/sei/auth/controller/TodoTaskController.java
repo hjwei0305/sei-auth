@@ -184,7 +184,7 @@ public class TodoTaskController implements TodoTaskApi {
                 ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
 
                 // 会话id关联token(redis或db等)
-                sessionService.addSession(sessionUser.getSessionId(), sessionUser.getToken());
+                sessionService.addSession(sessionUser);
 
                 if (LOG.isInfoEnabled()) {
                     LOG.info("接收SSO待办调用 SessionUser: {}", sessionUser);
@@ -277,7 +277,7 @@ public class TodoTaskController implements TodoTaskApi {
 
         try {
             // 会话id关联token(redis或db等)
-            sessionService.addSession(sessionUser.getSessionId(), sessionUser.getToken());
+            sessionService.addSession(sessionUser);
             //待办,已办区分标志 对应todo-待办 done-已办
             String todoFlag = request.getParameter("flag");
             todoFlag = StringUtils.isBlank(todoFlag) ? "todo" : todoFlag;

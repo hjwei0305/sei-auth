@@ -8,6 +8,10 @@ package com.changhong.sei.auth.common;
  */
 public interface Constants {
     /**
+     * 会话认证缓存key
+     */
+    String REDIS_KEY_PREFIX = "sei:auth:login:";
+    /**
      * 认证码缓存key
      */
     String VERIFY_CODE_KEY = "sei:auth:verify_code:";

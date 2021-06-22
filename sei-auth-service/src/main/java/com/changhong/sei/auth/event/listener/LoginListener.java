@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.event.listener;
 
 import com.changhong.sei.auth.aop.LoginHistoryAspect;
+import com.changhong.sei.auth.common.OSUtil;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.LoginHistory;
@@ -11,7 +12,6 @@ import com.changhong.sei.util.thread.ThreadLocalUtil;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,31 +33,6 @@ public class LoginListener {
 
     @Autowired
     private LoginHistoryService historyService;
-
-    private final static String[] BROWSER = new String[] {
-            "Chrome", "Firefox", "Microsoft Edge", "Safari", "Opera"
-    };
-    private final static String[] OPERATING_SYSTEM = new String[]{
-            "Android", "Linux", "Mac OS X", "Ubuntu", "Windows 10", "Windows 8", "Windows 7", "Windows XP", "Windows Vista"
-    };
-
-    private static String simplifyOperatingSystem(String operatingSystem) {
-        for (String b : OPERATING_SYSTEM) {
-            if (StringUtils.containsIgnoreCase(operatingSystem, b)) {
-                return b;
-            }
-        }
-        return operatingSystem;
-    }
-
-    private static String simplifyBrowser(String browser) {
-        for (String b : BROWSER) {
-            if (StringUtils.containsIgnoreCase(browser, b)) {
-                return b;
-            }
-        }
-        return browser;
-    }
 
     @Async
     @EventListener({LoginEvent.class})
@@ -83,12 +58,13 @@ public class LoginListener {
             OperatingSystem operatingSystem = userAgent.getOperatingSystem();
 
             // 浏览器名
-            history.setBrowser(simplifyBrowser(browser.getName()));
+            history.setBrowser(OSUtil.simplifyBrowser(browser.getName()));
             // 操作系统名
-            history.setOsName(simplifyOperatingSystem(operatingSystem.getName()));
+            history.setOsName(OSUtil.simplifyOperatingSystem(operatingSystem.getName()));
 
             if (result.getSuccess()) {
                 SessionUserResponse dto = result.getData();
+                history.setSessionId(dto.getSessionId());
                 history.setTenantCode(dto.getTenantCode());
                 history.setLoginStatus(dto.getLoginStatus());
                 history.setLoginLog(result.getMessage());
@@ -105,7 +81,7 @@ public class LoginListener {
                 history.setLoginStatus(SessionUserResponse.LoginStatus.failure);
                 history.setLoginLog(result.getMessage());
             }
-            historyService.save(history);
+            historyService.addHistory(history);
         } catch (Exception e) {
             LOG.error(request.getAccount() + " -登录历史记录异常", e);
         }

@@ -2,6 +2,7 @@ package com.changhong.sei.auth.api;
 
 import com.changhong.sei.auth.dto.AccountResponse;
 import com.changhong.sei.auth.dto.LoginHistoryDto;
+import com.changhong.sei.auth.dto.OnlineUserDto;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
@@ -101,5 +102,15 @@ public interface LoginLogApi {
     @PostMapping(path = "getLoginLogByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "分页查询登录日志", notes = "分页查询登录日志")
     ResultData<PageResult<LoginHistoryDto>> getLoginLogByPage(@RequestBody Search search);
+
+    /**
+     * 分页查询在线用户
+     *
+     * @param search 查询参数
+     * @return 分页查询结果
+     */
+    @PostMapping(path = "getOnlineUserByPage", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "分页查询在线用户", notes = "分页查询在线用户")
+    ResultData<PageResult<OnlineUserDto>> getOnlineUserByPage(@RequestBody Search search);
 
 }
