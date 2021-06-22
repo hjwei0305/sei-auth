@@ -89,6 +89,7 @@ public class LoginListener {
 
             if (result.getSuccess()) {
                 SessionUserResponse dto = result.getData();
+                history.setTenantCode(dto.getTenantCode());
                 history.setLoginStatus(dto.getLoginStatus());
                 history.setLoginLog(result.getMessage());
 

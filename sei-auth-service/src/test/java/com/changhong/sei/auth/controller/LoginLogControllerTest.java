@@ -4,6 +4,7 @@ import com.changhong.sei.auth.dto.LoginHistoryDto;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.dto.serach.SearchFilter;
 import com.changhong.sei.core.test.BaseUnit5Test;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ class LoginLogControllerTest extends BaseUnit5Test {
     @Test
     void getLoginLogByPage() {
         Search search = Search.createSearch();
+        search.addFilter(new SearchFilter("loginDate", "2021-06-01 08:12:12", SearchFilter.Operator.GE, "date"));
         ResultData<PageResult<LoginHistoryDto>> resultData = controller.getLoginLogByPage(search);
         System.out.println(resultData);
     }

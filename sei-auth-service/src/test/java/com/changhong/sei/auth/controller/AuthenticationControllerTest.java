@@ -27,7 +27,7 @@ public class AuthenticationControllerTest extends BaseUnitTest {
     @Test
     public void login() {
         LoginRequest request = new LoginRequest();
-        request.setTenant("10044");
+//        request.setTenant("10044");
         request.setAccount("admin");
         System.out.println("e10adc3949ba59abbe56e057f20f883e".equals(encrypt.encrypt("sei123456")));
         request.setPassword(encrypt.encrypt("sei123456"));

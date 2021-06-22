@@ -73,6 +73,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
             // 发布登录账号或密码错误事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
+        } else {
+            loginRequest.setTenant(entity.getTenantCode());
         }
 
         // 验证密码
