@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.controller;
 
 import com.changhong.sei.auth.dto.LoginHistoryDto;
+import com.changhong.sei.auth.dto.OnlineUserDto;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
@@ -54,6 +55,14 @@ class LoginLogControllerTest extends BaseUnit5Test {
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter("loginDate", "2021-06-01 08:12:12", SearchFilter.Operator.GE, "date"));
         ResultData<PageResult<LoginHistoryDto>> resultData = controller.getLoginLogByPage(search);
+        System.out.println(resultData);
+    }
+
+    @Test
+    void getOnlineUserByPage() {
+        Search search = Search.createSearch();
+        search.addFilter(new SearchFilter("loginDate", "2021-06-01 08:12:12", SearchFilter.Operator.GE, "date"));
+        ResultData<PageResult<OnlineUserDto>> resultData = controller.getOnlineUserByPage(search);
         System.out.println(resultData);
     }
 }

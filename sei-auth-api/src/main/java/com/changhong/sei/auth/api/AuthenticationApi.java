@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
@@ -31,7 +32,7 @@ public interface AuthenticationApi {
      */
     @PostMapping(path = "login")
     @ApiOperation("登录")
-    ResultData<SessionUserResponse> login(@RequestBody @Valid LoginRequest loginRequest);
+    ResultData<SessionUserResponse> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request);
 
     /**
      * 登出

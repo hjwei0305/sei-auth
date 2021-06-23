@@ -1,6 +1,5 @@
 package com.changhong.sei.auth.event.listener;
 
-import com.changhong.sei.auth.aop.LoginHistoryAspect;
 import com.changhong.sei.auth.common.OSUtil;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
@@ -29,7 +28,7 @@ import java.time.LocalDateTime;
  */
 @EnableAsync
 public class LoginListener {
-    private static final Logger LOG = LoggerFactory.getLogger(LoginHistoryAspect.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoginListener.class);
 
     @Autowired
     private LoginHistoryService historyService;

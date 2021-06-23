@@ -15,7 +15,9 @@ import io.swagger.annotations.Api;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,12 +50,13 @@ public class AuthenticationController implements AuthenticationApi {
      * 4.返回会话id
      */
     @Override
-    public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
-        HttpServletRequest req = HttpUtils.getRequest();
+    public ResultData<SessionUserResponse> login(LoginRequest loginRequest, HttpServletRequest request) {
+        LogUtil.bizLog("IP测试: {}", getIp((ServerHttpRequest) request));
+        LogUtil.bizLog("IP测试: {}", HttpUtils.getClientIP(request));
         // 客户端ip
-        ThreadLocalUtil.setTranVar("ClientIP", HttpUtils.getClientIP(req));
+        ThreadLocalUtil.setTranVar("ClientIP", HttpUtils.getClientIP(request));
         // 浏览器信息
-        ThreadLocalUtil.setTranVar("UserAgent", req.getHeader("user-agent"));
+        ThreadLocalUtil.setTranVar("UserAgent", request.getHeader("user-agent"));
 
         ResultData<SessionUserResponse> resultData = authenticatorBuilder.getAuthenticator(loginRequest.getAuthType()).auth(loginRequest);
         SessionUserResponse userResponse = resultData.getData();
@@ -62,6 +65,38 @@ public class AuthenticationController implements AuthenticationApi {
             userResponse.setEnv(ContextUtil.getProperty("spring.cloud.config.profile"));
         }
         return resultData;
+    }
+
+
+    private String getIp(ServerHttpRequest request) {
+        HttpHeaders headers = request.getHeaders();
+        String ip = headers.getFirst("x-forwarded-for");
+        if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
+            // 多次反向代理后会有多个ip值，第一个ip才是真实ip
+            if (ip.contains(",")) {
+                ip = ip.split(",")[0];
+            }
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = headers.getFirst("X-Real-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddress().getAddress().getHostAddress();
+        }
+
+        return ip.replaceAll(":", ".");
     }
 
     /**
