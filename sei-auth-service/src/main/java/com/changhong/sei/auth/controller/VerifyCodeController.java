@@ -4,6 +4,7 @@ import com.changhong.sei.auth.api.VerifyCodeApi;
 import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.auth.service.ValidateCodeService;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.annotation.AccessLog;
 import com.changhong.sei.util.EnumUtils;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.Objects;
  * @version 1.0.00  2020-09-04 13:25
  */
 @RestController
+@AccessLog(AccessLog.FilterReply.DENY)
 @Api(value = "VerifyCodeApi", tags = "验证码服务")
 @RequestMapping(path = VerifyCodeApi.PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class VerifyCodeController implements VerifyCodeApi {

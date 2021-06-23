@@ -2,12 +2,8 @@ package com.changhong.sei.auth.service.mq;
 
 import com.changhong.sei.auth.entity.AccessRecord;
 import com.changhong.sei.auth.service.AccessRecordService;
-import com.changhong.sei.core.context.ContextUtil;
-import com.changhong.sei.core.context.SessionUser;
-import com.changhong.sei.core.monitor.producer.AccessLogProducer;
 import com.changhong.sei.core.util.JsonUtils;
 import eu.bitwalker.useragentutils.UserAgent;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +37,6 @@ public class AccessRecordConsumer {
             return;
         }
 
-        AccessLogVo logVo;
-        AccessRecord accessRecord;
         String value = record.value();
         if (LOG.isDebugEnabled()) {
             LOG.debug("received key='{}' message = '{}'", record.key(), value);
@@ -51,16 +45,12 @@ public class AccessRecordConsumer {
         if (optional.isPresent()) {
             // 执行业务处理逻辑
             try {
-                logVo = JsonUtils.fromJson(value, AccessLogVo.class);
+                AccessLogVo logVo = JsonUtils.fromJson(value, AccessLogVo.class);
                 if (Objects.nonNull(logVo)) {
-                    // 跳过消息监听
-                    if (StringUtils.endsWith(logVo.getPath(), "/message/unreadCount")) {
-                        return;
-                    }
                     //解析agent字符串
                     UserAgent userAgent = UserAgent.parseUserAgentString(logVo.getUserAgent());
 
-                    accessRecord = new AccessRecord();
+                    AccessRecord accessRecord = new AccessRecord();
                     accessRecord.setType("API");
 
                     accessRecord.setTenantCode(logVo.getTenantCode());
@@ -81,7 +71,7 @@ public class AccessRecordConsumer {
                     accessRecord.setOsName(userAgent.getOperatingSystem().getName());
                     accessRecord.setAccessTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(logVo.getAccessTime()), ZoneId.systemDefault()));
 
-                    service.save(accessRecord);
+                    service.addRecord(accessRecord);
                 }
             } catch (Exception e) {
                 LOG.error("访问日志消费异常!", e);

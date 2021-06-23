@@ -5,6 +5,7 @@ import com.changhong.sei.auth.dto.AccessRecordUserResponse;
 import com.changhong.sei.auth.entity.AccessRecord;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -62,5 +63,14 @@ public interface AccessRecordDao extends BaseEntityDao<AccessRecord> {
     @Query("SELECT new com.changhong.sei.auth.dto.AccessRecordFeatureResponse(MAX(a.appModule),MAX(a.feature),a.path,COUNT(a.path),MAX(a.accessTime)) " +
             "FROM AccessRecord a WHERE a.tenantCode = :tenant AND a.userAccount = :account AND a.accessTime >= :time GROUP BY a.path ORDER BY a.path DESC ")
     List<AccessRecordFeatureResponse> getFeaturesByUser(@Param("tenant") String tenant, @Param("account") String account, @Param("time") LocalDateTime time, Pageable pageable);
+
+    /**
+     * 清除小于指定时间的数据
+     *
+     * @param time 时间
+     */
+    @Modifying
+    @Query("DELETE FROM AccessRecord a WHERE a.accessTime <= :time ")
+    void cleanAccessLog(@Param("time") LocalDateTime time);
 
 }

@@ -10,6 +10,7 @@ import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
+import com.changhong.sei.core.log.annotation.AccessLog;
 import io.swagger.annotations.Api;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,6 +48,7 @@ public class AccountController implements AccountApi {
      * @param account 账号
      */
     @Override
+    @AccessLog(AccessLog.FilterReply.DENY)
     public ResultData<SessionUserResponse> getByTenantAccount(String tenant, String account) {
         Account accountObj = accountService.getByAccountAndTenantCode(account, tenant);
         if (Objects.isNull(accountObj)) {

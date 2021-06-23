@@ -7,6 +7,7 @@ import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.annotation.AccessLog;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.WebException;
 import io.swagger.annotations.Api;
@@ -33,6 +34,7 @@ import java.util.Map;
  * @version 1.0.00  2020-04-16 14:52
  */
 @Controller
+@AccessLog(AccessLog.FilterReply.DENY)
 @Api(value = "SingleSignOnApi", tags = "单点登录服务")
 public class SingleSignOnController implements Constants {
     private static final Logger LOG = LoggerFactory.getLogger(SingleSignOnController.class);

@@ -9,6 +9,7 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
+import com.changhong.sei.core.log.annotation.AccessLog;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import io.swagger.annotations.Api;
@@ -48,6 +49,7 @@ public class AuthenticationController implements AuthenticationApi {
      * 4.返回会话id
      */
     @Override
+    @AccessLog(AccessLog.FilterReply.DENY)
     public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
         HttpServletRequest request = HttpUtils.getRequest();
         // 客户端ip
@@ -86,6 +88,7 @@ public class AuthenticationController implements AuthenticationApi {
      * 3.返回true
      */
     @Override
+    @AccessLog(AccessLog.FilterReply.DENY)
     public ResultData<String> check(String sid) {
         try {
             // 获取会话并续期
@@ -104,6 +107,7 @@ public class AuthenticationController implements AuthenticationApi {
      * 获取匿名token
      */
     @Override
+    @AccessLog(AccessLog.FilterReply.DENY)
     public ResultData<String> getAnonymousToken() {
         SessionUser sessionUser = new SessionUser();
         sessionUser.setTenantCode("anonymous");

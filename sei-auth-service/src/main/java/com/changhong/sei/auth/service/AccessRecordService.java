@@ -5,9 +5,9 @@ import com.changhong.sei.auth.dto.AccessRecordFeatureResponse;
 import com.changhong.sei.auth.dto.AccessRecordUserResponse;
 import com.changhong.sei.auth.dto.TimePeriod;
 import com.changhong.sei.auth.entity.AccessRecord;
-import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.core.limiter.support.lock.SeiLock;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,14 +26,9 @@ import java.util.Objects;
  * @since 2020-03-30 11:09:01
  */
 @Service("accessRecordService")
-public class AccessRecordService extends BaseEntityService<AccessRecord> {
+public class AccessRecordService {
     @Autowired
     private AccessRecordDao dao;
-
-    @Override
-    protected BaseEntityDao<AccessRecord> getDao() {
-        return dao;
-    }
 
     /**
      * 添加访问记录
@@ -48,6 +44,28 @@ public class AccessRecordService extends BaseEntityService<AccessRecord> {
         } else {
             return ResultData.fail("访问记录不能为空");
         }
+    }
+
+    /**
+     * 批量添加访问记录
+     *
+     * @param records 访问记录
+     * @return 添加结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void batchAddRecord(List<AccessRecord> records) {
+        if (CollectionUtils.isNotEmpty(records)) {
+            dao.save(records);
+        }
+    }
+
+    /**
+     * 清除小于指定时间的数据
+     */
+    @SeiLock(key = "'auth:cleanAccessLog'")
+    @Transactional(rollbackFor = Exception.class)
+    public void cleanAccessLog() {
+        dao.cleanAccessLog(LocalDateTime.now().minusHours(5));
     }
 
     /**
