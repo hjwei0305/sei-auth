@@ -23,6 +23,7 @@ dependencies {
 
             // 直接引用消息通知包
             "com.changhong.sei:sei-notify-sdk:$sei_version",
+            "com.changhong.sei:sei-monitor-starter:$sei_version",
 
             "mysql:mysql-connector-java:$mysqlVersion",
             "com.changhong.sei:sei-cloud-starter:$sei_version"

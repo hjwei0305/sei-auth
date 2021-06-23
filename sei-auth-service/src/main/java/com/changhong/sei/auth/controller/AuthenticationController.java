@@ -48,11 +48,12 @@ public class AuthenticationController implements AuthenticationApi {
      * 4.返回会话id
      */
     @Override
-    public ResultData<SessionUserResponse> login(LoginRequest loginRequest, HttpServletRequest request) {
+    public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
+        HttpServletRequest request = HttpUtils.getRequest();
         // 客户端ip
         ThreadLocalUtil.setTranVar("ClientIP", HttpUtils.getClientIP(request));
         // 浏览器信息
-        ThreadLocalUtil.setTranVar("UserAgent", request.getHeader("user-agent"));
+        ThreadLocalUtil.setTranVar("UserAgent", HttpUtils.getUserAgent(request));
 
         ResultData<SessionUserResponse> resultData = authenticatorBuilder.getAuthenticator(loginRequest.getAuthType()).auth(loginRequest);
         SessionUserResponse userResponse = resultData.getData();

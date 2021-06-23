@@ -32,7 +32,7 @@ public interface AuthenticationApi {
      */
     @PostMapping(path = "login")
     @ApiOperation("登录")
-    ResultData<SessionUserResponse> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request);
+    ResultData<SessionUserResponse> login(@RequestBody @Valid LoginRequest loginRequest);
 
     /**
      * 登出
