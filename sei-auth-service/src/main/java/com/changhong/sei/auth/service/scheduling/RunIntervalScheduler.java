@@ -65,9 +65,9 @@ public class RunIntervalScheduler {
 
     /**
      * 定时清除访问日志数据
-     * 第一次延迟1小时后执行，之后按fixedDelay的规则每3600秒执行一次
+     * 上次执行完毕后36000秒再执行一次
      */
-    @Scheduled(initialDelay = 3600, fixedDelay = 36000)
+    @Scheduled(fixedDelay = 36000000)
     public void cleanAccessLog() {
         try {
             // 通过增加随机数,尽量避免多实例并发处理,导致数据库锁表
