@@ -17,11 +17,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
 import java.util.Objects;
 
 /**
@@ -51,7 +51,7 @@ public class AuthenticationController implements AuthenticationApi {
      */
     @Override
     public ResultData<SessionUserResponse> login(LoginRequest loginRequest, HttpServletRequest request) {
-        LogUtil.bizLog("IP测试: {}", getIp((ServerHttpRequest) request));
+        LogUtil.bizLog("IP测试: {}", getIp(request));
         LogUtil.bizLog("IP测试: {}", HttpUtils.getClientIP(request));
         // 客户端ip
         ThreadLocalUtil.setTranVar("ClientIP", HttpUtils.getClientIP(request));
@@ -68,9 +68,8 @@ public class AuthenticationController implements AuthenticationApi {
     }
 
 
-    private String getIp(ServerHttpRequest request) {
-        HttpHeaders headers = request.getHeaders();
-        String ip = headers.getFirst("x-forwarded-for");
+    private String getIp(HttpServletRequest request) {
+        String ip = request.getHeader("x-forwarded-for");
         if (ip != null && ip.length() != 0 && !"unknown".equalsIgnoreCase(ip)) {
             // 多次反向代理后会有多个ip值，第一个ip才是真实ip
             if (ip.contains(",")) {
@@ -78,22 +77,22 @@ public class AuthenticationController implements AuthenticationApi {
             }
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = headers.getFirst("Proxy-Client-IP");
+            ip = request.getHeader("Proxy-Client-IP");
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = headers.getFirst("WL-Proxy-Client-IP");
+            ip = request.getHeader("WL-Proxy-Client-IP");
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = headers.getFirst("HTTP_CLIENT_IP");
+            ip = request.getHeader("HTTP_CLIENT_IP");
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = headers.getFirst("HTTP_X_FORWARDED_FOR");
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = headers.getFirst("X-Real-IP");
+            ip = request.getHeader("X-Real-IP");
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddress().getAddress().getHostAddress();
+            ip = request.getRemoteAddr();
         }
 
         return ip.replaceAll(":", ".");
