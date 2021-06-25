@@ -65,7 +65,7 @@ public class AccessRecordService {
     @SeiLock(key = "'auth:cleanAccessLog'")
     @Transactional(rollbackFor = Exception.class)
     public void cleanAccessLog() {
-        dao.cleanAccessLog(LocalDateTime.now().minusHours(5));
+        dao.cleanAccessLog(LocalDateTime.now().minusMonths(1));
     }
 
     /**

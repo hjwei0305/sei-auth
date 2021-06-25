@@ -84,12 +84,12 @@ public class AccessRecord extends BaseEntity implements ITenant, Serializable {
      * 状态代码
      */
     @Column(name = "status_code")
-    private Integer statusCode;
+    private Integer statusCode = -1;
     /**
      * 耗时(ms)
      */
     @Column(name = "duration")
-    private Long duration;
+    private Long duration = -1L;
     /**
      * ip地址
      */

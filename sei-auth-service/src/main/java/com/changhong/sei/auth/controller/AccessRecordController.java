@@ -16,6 +16,8 @@ import eu.bitwalker.useragentutils.UserAgent;
 import io.swagger.annotations.Api;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,14 +35,13 @@ import java.util.Map;
  */
 @RestController
 @Api(value = "AccessRecordApi", tags = "访问记录服务")
+@RequestMapping(path = AccessRecordApi.PATH, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AccessRecordController implements AccessRecordApi {
     /**
      * 访问记录服务对象
      */
     @Autowired
     private AccessRecordService accessRecordService;
-    @Autowired
-    private ModelMapper modelMapper;
 
     /**
      * 添加访问记录
@@ -59,11 +60,13 @@ public class AccessRecordController implements AccessRecordApi {
         accessRecord.setUserAccount(sessionUser.getLoginAccount());
         accessRecord.setUserName(sessionUser.getUserName());
         accessRecord.setAppModule(record.getAppCode());
+        accessRecord.setFeatureCode(record.getFeatureCode());
         accessRecord.setFeature(record.getFeature());
         accessRecord.setTraceId("NaN");
         accessRecord.setPath(record.getUrl());
         accessRecord.setUrl(record.getUrl());
         accessRecord.setMethod("GET");
+        accessRecord.setStatusCode(200);
         accessRecord.setDuration(-1L);
         accessRecord.setIp(HttpUtils.getClientIP(request));
         //解析agent字符串

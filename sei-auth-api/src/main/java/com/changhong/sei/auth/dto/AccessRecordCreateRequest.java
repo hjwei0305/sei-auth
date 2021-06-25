@@ -16,14 +16,17 @@ import java.io.Serializable;
 public class AccessRecordCreateRequest implements Serializable {
 
     private static final long serialVersionUID = -153710753627693002L;
+
+    @NotBlank
     @ApiModelProperty(notes = "应用代码", required = true)
-    @NotBlank
     private String appCode;
-    @ApiModelProperty(notes = "功能名", required = true)
+    @ApiModelProperty(notes = "功能代码")
+    private String featureCode;
     @NotBlank
+    @ApiModelProperty(notes = "功能名称", required = true)
     private String feature;
-    @ApiModelProperty(notes = "地址", required = true)
     @NotBlank
+    @ApiModelProperty(notes = "地址", required = true)
     private String url;
 
     public String getAppCode() {
@@ -32,6 +35,14 @@ public class AccessRecordCreateRequest implements Serializable {
 
     public void setAppCode(String appCode) {
         this.appCode = appCode;
+    }
+
+    public String getFeatureCode() {
+        return featureCode;
+    }
+
+    public void setFeatureCode(String featureCode) {
+        this.featureCode = featureCode;
     }
 
     public String getFeature() {
