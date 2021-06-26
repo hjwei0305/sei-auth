@@ -54,23 +54,18 @@ public class AccountController implements AccountApi {
         if (Objects.isNull(accountObj)) {
             return ResultData.fail("账户不存在！");
         }
-        ResultData<SessionUser> resultData = accountService.getSessionUser(accountObj, StringUtils.EMPTY, StringUtils.EMPTY);
-        if (resultData.successful()) {
-            SessionUser sessionUser = resultData.getData();
-            SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
-            dto.setSessionId(sessionUser.getSessionId());
-            dto.setTenantCode(sessionUser.getTenantCode());
-            dto.setUserId(sessionUser.getUserId());
-            dto.setAccount(sessionUser.getAccount());
-            dto.setLoginAccount(sessionUser.getLoginAccount());
-            dto.setUserName(sessionUser.getUserName());
-            dto.setUserType(sessionUser.getUserType());
-            dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
-            dto.setLocale(sessionUser.getLocale());
-            return ResultData.success(dto);
-        } else {
-            return ResultData.fail(resultData.getMessage());
-        }
+        SessionUser sessionUser = accountService.convertSessionUser(accountObj, StringUtils.EMPTY, StringUtils.EMPTY);
+        SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
+        dto.setSessionId(sessionUser.getSessionId());
+        dto.setTenantCode(sessionUser.getTenantCode());
+        dto.setUserId(sessionUser.getUserId());
+        dto.setAccount(sessionUser.getAccount());
+        dto.setLoginAccount(sessionUser.getLoginAccount());
+        dto.setUserName(sessionUser.getUserName());
+        dto.setUserType(sessionUser.getUserType());
+        dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
+        dto.setLocale(sessionUser.getLocale());
+        return ResultData.success(dto);
     }
 
     /**

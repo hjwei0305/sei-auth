@@ -77,7 +77,8 @@ public class AccountService extends BaseEntityService<Account> {
      * @param ipAddr  ip地址
      * @param lang    语言
      */
-    public ResultData<SessionUser> getSessionUser(Account account, String ipAddr, String lang) {
+    @Transactional(rollbackFor = Exception.class)
+    public SessionUser convertSessionUser(Account account, String ipAddr, String lang) {
         SessionUser sessionUser = new SessionUser();
         sessionUser.setTenantCode(account.getTenantCode());
         sessionUser.setUserId(account.getUserId());
@@ -114,7 +115,7 @@ public class AccountService extends BaseEntityService<Account> {
             info.setAccount(account.getAccount());
             this.updateAccountInfo(info);
         }
-        return ResultData.success(sessionUser);
+        return sessionUser;
     }
 
     public ResultData<AccountInfo> getAccountInfo(String tenantCode, String account) {

@@ -147,40 +147,31 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
 
         // 客户端ip
         String ipAddr = ThreadLocalUtil.getTranVar("ClientIP");
-        ResultData<SessionUser> resultData = accountService.getSessionUser(entity, ipAddr, loginRequest.getLocale());
-        if (resultData.successful()) {
-            SessionUser sessionUser = resultData.getData();
+        SessionUser sessionUser = accountService.convertSessionUser(entity, ipAddr, loginRequest.getLocale());
+        // 生产token
+        ContextUtil.generateToken(sessionUser);
 
-            // 生产token
-            ContextUtil.generateToken(sessionUser);
+        SessionUserResponse dto = SessionUserResponse.build();
+        dto.setLoginStatus(SessionUserResponse.LoginStatus.success);
+        dto.setSessionId(sessionUser.getSessionId());
+        dto.setTenantCode(sessionUser.getTenantCode());
+        dto.setUserId(sessionUser.getUserId());
+        dto.setAccount(sessionUser.getAccount());
+        dto.setLoginAccount(sessionUser.getLoginAccount());
+        dto.setUserName(sessionUser.getUserName());
+        dto.setUserType(sessionUser.getUserType());
+        dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
+        dto.setLocale(sessionUser.getLocale());
 
-            SessionUserResponse dto = SessionUserResponse.build();
-            dto.setLoginStatus(SessionUserResponse.LoginStatus.success);
-            dto.setSessionId(sessionUser.getSessionId());
-            dto.setTenantCode(sessionUser.getTenantCode());
-            dto.setUserId(sessionUser.getUserId());
-            dto.setAccount(sessionUser.getAccount());
-            dto.setLoginAccount(sessionUser.getLoginAccount());
-            dto.setUserName(sessionUser.getUserName());
-            dto.setUserType(sessionUser.getUserType());
-            dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
-            dto.setLocale(sessionUser.getLocale());
-
-            try {
-                // 会话id关联token(redis或db等)
-                sessionService.addSession(sessionUser);
-                result = ResultData.success(dto);
-            } catch (Exception e) {
-                result = ResultData.fail("登录认证异常:" + e.getMessage());
-            }
-            // 发布登录事件
-            ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
-            return result;
-        } else {
-            result = ResultData.fail("登录认证失败:" + resultData.getMessage());
-            // 发布登录事件
-            ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
-            return result;
+        try {
+            // 会话id关联token(redis或db等)
+            sessionService.addSession(sessionUser);
+            result = ResultData.success(dto);
+        } catch (Exception e) {
+            result = ResultData.fail("登录认证异常:" + e.getMessage());
         }
+        // 发布登录事件
+        ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
+        return result;
     }
 }

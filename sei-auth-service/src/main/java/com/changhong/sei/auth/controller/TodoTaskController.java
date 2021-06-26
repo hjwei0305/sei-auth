@@ -174,9 +174,8 @@ public class TodoTaskController implements TodoTaskApi {
                 //获取账号,并模拟用户
                 Account accountObj = accountService.getByAccountAndTenantCode(todoTaskVo.getAccount(), properties.getTenant());
                 //根据当前账号获取用户会话
-                ResultData<SessionUser> resultData = accountService.getSessionUser(accountObj, HttpUtils.getClientIP(request),
+                SessionUser sessionUser = accountService.convertSessionUser(accountObj, HttpUtils.getClientIP(request),
                         request.getLocale().toLanguageTag());
-                SessionUser sessionUser = resultData.getData();
                 ContextUtil.generateToken(sessionUser);
 
                 ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
@@ -266,9 +265,8 @@ public class TodoTaskController implements TodoTaskApi {
         //获取账号,并模拟用户
         Account accountObj = accountService.getByAccountAndTenantCode(account, properties.getTenant());
         //根据当前账号获取用户会话
-        ResultData<SessionUser> resultData = accountService.getSessionUser(accountObj, HttpUtils.getClientIP(request),
+        SessionUser sessionUser = accountService.convertSessionUser(accountObj, HttpUtils.getClientIP(request),
                 request.getLocale().toLanguageTag());
-        SessionUser sessionUser = resultData.getData();
         ContextUtil.generateToken(sessionUser);
 
         ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
