@@ -8,8 +8,10 @@ import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.annotation.AccessLog;
+import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.WebException;
+import com.changhong.sei.util.thread.ThreadLocalUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
@@ -91,6 +93,11 @@ public class SingleSignOnController implements Constants {
         } else {
             request.setAttribute("LoginType", "SSO");
         }
+
+        // 客户端ip
+        ThreadLocalUtil.setTranVar("ClientIP", HttpUtils.getClientIP(request));
+        // 浏览器信息
+        ThreadLocalUtil.setTranVar("UserAgent", HttpUtils.getUserAgent(request));
 
         SessionUserResponse userResponse = null;
         // 单点登录地址
