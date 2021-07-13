@@ -1,16 +1,20 @@
 package com.changhong.sei.auth.config;
 
+import com.changhong.sei.auth.common.validatecode.IVerifyCodeGen;
+import com.changhong.sei.auth.common.validatecode.SimpleCharVerifyCodeGenImpl;
 import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.config.properties.SsoProperties;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.changhong.sei.auth.event.listener.LoginListener;
+import com.changhong.sei.core.encryption.IEncrypt;
+import com.changhong.sei.core.encryption.provider.Md5EncryptProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * 实现功能：
@@ -53,4 +57,28 @@ public class SingleSignOnConfig {
 //        container.addMessageListener(orderStateListener(), ChannelTopic.of(OnlineSubscribeListener.TOPIC));
 //        return container;
 //    }
+
+    @Bean
+    @ConditionalOnMissingBean(IEncrypt.class)
+    public IEncrypt encrypt() {
+        return new Md5EncryptProvider("");
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(PasswordEncoder.class)
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IVerifyCodeGen.class)
+    public IVerifyCodeGen verifyCodeGen() {
+        return new SimpleCharVerifyCodeGenImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(LoginListener.class)
+    public LoginListener loginListener() {
+        return new LoginListener();
+    }
 }
