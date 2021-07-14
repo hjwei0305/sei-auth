@@ -2,14 +2,24 @@ package com.changhong.sei.auth.service;
 
 import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.core.cache.CacheBuilder;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
+import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JwtTokenUtil;
+import com.changhong.sei.util.Signature;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -20,11 +30,16 @@ import java.util.concurrent.CompletableFuture;
  */
 @Service
 public class SessionService {
+    private static final Logger LOG = LoggerFactory.getLogger(SessionService.class);
 
     private final JwtTokenUtil jwtTokenUtil;
     private final CacheBuilder cacheBuilder;
     @Autowired
     private OnlineUserService onlineUserService;
+    @Value("${sei.auth.enable.cookie:false}")
+    private boolean enableCookie;
+    private static final String COOKIE_SID = "x-sid";
+    private static final String COOKIE_CLIENT = "SEI_CLIENT";
 
     public SessionService(JwtTokenUtil jwtTokenUtil, CacheBuilder cacheBuilder) {
         this.jwtTokenUtil = jwtTokenUtil;
@@ -42,6 +57,24 @@ public class SessionService {
         final String value = sessionUser.getToken();
         cacheBuilder.set(Constants.REDIS_KEY_PREFIX + sid, value, onlineUserService.getExpireTime());
         onlineUserService.addSession(sessionUser);
+
+        if (enableCookie) {
+            try {
+                HttpServletRequest request = HttpUtils.getRequest();
+                HttpServletResponse response = HttpUtils.getResponse();
+                if (Objects.nonNull(request) && Objects.nonNull(response)) {
+                    byte[] encodedCookieBytes = Base64.getEncoder().encode(value.getBytes());
+                    String sidBase64 = new String(encodedCookieBytes);
+                    // sid写入cookie
+                    HttpUtils.writeCookieValue(COOKIE_SID, sidBase64, request, response);
+                    HttpUtils.writeCookieValue("_s", sidBase64, request, response);
+                    // 用户id写入cookie,以此控制同一个浏览器客户端是否允许登录不同的账号
+                    HttpUtils.writeCookieValue(COOKIE_CLIENT, Signature.sign(sessionUser.getUserId()), request, response);
+                }
+            } catch (Exception e) {
+                LOG.error("登录写入cookie异常", e);
+            }
+        }
     }
 
     /**
@@ -50,7 +83,7 @@ public class SessionService {
      * @param sid 会话id
      * @return 存在则返回会话信息, 不存在则返回null
      */
-    public String getAndTouchSession(String sid) {
+    public String touchSession(String sid) {
         String value = cacheBuilder.get(Constants.REDIS_KEY_PREFIX + sid);
         try {
             if (StringUtils.isNotBlank(value)) {
@@ -70,16 +103,26 @@ public class SessionService {
         } catch (Exception e) {
             value = null;
         }
+        if (StringUtils.isNotBlank(value) && enableCookie) {
+            try {
+                HttpServletRequest request = HttpUtils.getRequest();
+                HttpServletResponse response = HttpUtils.getResponse();
+                if (Objects.nonNull(request) && Objects.nonNull(response)) {
+                    // 用户id写入cookie,以此控制同一个浏览器客户端是否允许登录不同的账号
+                    String userIdSign = HttpUtils.readCookieValue(COOKIE_CLIENT, request);
+                    if (StringUtils.isNotBlank(userIdSign)) {
+                        // 获取当前用户会话
+                        SessionUser sessionUser = ContextUtil.getSessionUser(value);
+                        if (!userIdSign.equals(Signature.sign(sessionUser.getUserId()))) {
+                            value = null;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LOG.error("登录写入cookie异常", e);
+            }
+        }
         return value;
-    }
-
-    /**
-     * 会话续期
-     *
-     * @param sid 会话id
-     */
-    public void touchSession(String sid) {
-        getAndTouchSession(sid);
     }
 
     /**
@@ -96,6 +139,21 @@ public class SessionService {
             } else {
                 // 立即删除
                 cacheBuilder.remove(Constants.REDIS_KEY_PREFIX + sid);
+            }
+
+            // 删除cookie
+            if (enableCookie) {
+                try {
+                    HttpServletRequest request = HttpUtils.getRequest();
+                    if (Objects.nonNull(request)) {
+                        // 删除cookie
+                        HttpUtils.deleteCookie(COOKIE_SID, request);
+                        // 删除cookie
+                        HttpUtils.deleteCookie(COOKIE_CLIENT, request);
+                    }
+                } catch (Exception e) {
+                    LOG.error("登录删除cookie异常", e);
+                }
             }
         });
         onlineUserService.removeSession(sid);

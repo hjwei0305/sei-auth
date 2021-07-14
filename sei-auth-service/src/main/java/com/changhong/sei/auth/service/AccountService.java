@@ -108,7 +108,7 @@ public class AccountService extends BaseEntityService<Account> {
             } catch (Exception ignored) {
             }
             // 设置语言
-            sessionUser.setLocale(StringUtils.isBlank(lang) ? accountInfo.getLanguageCode() : lang);
+            sessionUser.setLocale(StringUtils.isBlank(lang) ? accountInfo.getLanguageCode() : lang.replace("-", "_"));
         } else {
             AccountInfo info = new AccountInfo();
             info.setTenantCode(account.getTenantCode());

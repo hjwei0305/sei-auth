@@ -92,7 +92,7 @@ public class AuthenticationController implements AuthenticationApi {
     public ResultData<String> check(String sid) {
         try {
             // 获取会话并续期
-            String token = sessionService.getAndTouchSession(sid);
+            String token = sessionService.touchSession(sid);
             if (StringUtils.isNotBlank(token)) {
                 return ResultData.success(token);
             } else {
@@ -125,7 +125,7 @@ public class AuthenticationController implements AuthenticationApi {
     @Override
     public ResultData<SessionUserResponse> getSessionUser(String sid) {
         // 获取会话并续期
-        String token = sessionService.getAndTouchSession(sid);
+        String token = sessionService.touchSession(sid);
         if (StringUtils.isNotBlank(token)) {
             SessionUserResponse response = new SessionUserResponse();
             try {
