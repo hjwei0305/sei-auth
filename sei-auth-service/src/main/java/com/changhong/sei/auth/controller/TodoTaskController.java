@@ -264,6 +264,9 @@ public class TodoTaskController implements TodoTaskApi {
         }
         //获取账号,并模拟用户
         Account accountObj = accountService.getByAccountAndTenantCode(account, properties.getTenant());
+        if (Objects.isNull(accountObj)) {
+            errorMsg(response, "用户[" + account + "]不存在,请检查用户同步数据.");
+        }
         //根据当前账号获取用户会话
         SessionUser sessionUser = accountService.convertSessionUser(accountObj, HttpUtils.getClientIP(request),
                 request.getLocale().toLanguageTag());
