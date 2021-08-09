@@ -6,6 +6,7 @@ import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.annotation.AccessLog;
 import com.changhong.sei.core.util.HttpUtils;
@@ -49,7 +50,8 @@ public class SingleSignOnController implements Constants {
     public String authorize(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
-            throw new WebException("单点登录失败：authType不能为空！");
+            // 单点登录失败：authType不能为空！
+            throw new WebException(ContextUtil.getMessage("sso_0001"));
         }
         Oauth2Authenticator authenticator = builder.getOauth2Authenticator(authType);
 
@@ -64,7 +66,8 @@ public class SingleSignOnController implements Constants {
     public ResultData<Map<String, String>> authorizeData(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
-            throw new WebException("单点登录失败：authType不能为空！");
+            // 单点登录失败：authType不能为空！
+            throw new WebException(ContextUtil.getMessage("sso_0001"));
         }
         Oauth2Authenticator authenticator = builder.getOauth2Authenticator(authType);
 
@@ -80,7 +83,8 @@ public class SingleSignOnController implements Constants {
     public String ssoLogin(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
-            throw new WebException("单点登录失败：authType不能为空！");
+            // 单点登录失败：authType不能为空！
+            throw new WebException(ContextUtil.getMessage("sso_0001"));
         }
         SingleSignOnAuthenticator authenticator = builder.getSingleSignOnAuthenticator(authType);
 
@@ -134,7 +138,8 @@ public class SingleSignOnController implements Constants {
     public ResultData<Map<String, String>> jsSdk(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
-            throw new WebException("单点登录失败：authType不能为空！");
+            // 单点登录失败：authType不能为空！
+            throw new WebException(ContextUtil.getMessage("sso_0001"));
         }
         Oauth2Authenticator authenticator = builder.getOauth2Authenticator(authType);
         return authenticator.jsapi_ticket();

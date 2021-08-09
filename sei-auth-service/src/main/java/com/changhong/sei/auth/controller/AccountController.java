@@ -52,7 +52,8 @@ public class AccountController implements AccountApi {
     public ResultData<SessionUserResponse> getByTenantAccount(String tenant, String account) {
         Account accountObj = accountService.getByAccountAndTenantCode(account, tenant);
         if (Objects.isNull(accountObj)) {
-            return ResultData.fail("账户不存在！");
+            // 账户不存在
+            return ResultData.fail(ContextUtil.getMessage("account_0001"));
         }
         SessionUser sessionUser = accountService.convertSessionUser(accountObj, StringUtils.EMPTY, StringUtils.EMPTY);
         SessionUserResponse dto = SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.success);
@@ -77,7 +78,8 @@ public class AccountController implements AccountApi {
     public ResultData<AccountResponse> getById(String id) {
         Account account = accountService.findOne(id);
         if (account == null) {
-            return ResultData.fail("账户不存在！");
+            // 账户不存在
+            return ResultData.fail(ContextUtil.getMessage("account_0001"));
         }
         AccountResponse dto = modelMapper.map(account, AccountResponse.class);
         return ResultData.success(dto);
@@ -100,7 +102,8 @@ public class AccountController implements AccountApi {
     public ResultData<String> register(RegisterAccountRequest request) {
         Account account = modelMapper.map(request, Account.class);
         if (Objects.isNull(account)) {
-            return ResultData.fail("参数不能为空！");
+            // 参数不能为空
+            return ResultData.fail(ContextUtil.getMessage("0001"));
         }
         AccountInfo accountInfo = modelMapper.map(request, AccountInfo.class);
 
@@ -116,7 +119,8 @@ public class AccountController implements AccountApi {
     public ResultData<String> create(CreateAccountRequest request) {
         Account account = modelMapper.map(request, Account.class);
         if (Objects.isNull(account)) {
-            return ResultData.fail("参数不能为空！");
+            // 参数不能为空
+            return ResultData.fail(ContextUtil.getMessage("0001"));
         }
         account.setPassword(StringUtils.EMPTY);
         AccountInfo accountInfo = modelMapper.map(request, AccountInfo.class);
@@ -132,11 +136,13 @@ public class AccountController implements AccountApi {
     @Override
     public ResultData<String> update(UpdateAccountRequest request) {
         if (ObjectUtils.isEmpty(request.getId())) {
-            return ResultData.fail("参数id不能为空！");
+            // 参数id不能为空
+            return ResultData.fail(ContextUtil.getMessage("account_0002"));
         }
         Account account = accountService.findOne(request.getId());
         if (account == null) {
-            return ResultData.fail("账户数据不存在！");
+            // 账户数据不存在！
+            return ResultData.fail(ContextUtil.getMessage("account_0003"));
         }
         // 允许修改的账户信息
         account.setName(request.getName());
@@ -165,7 +171,8 @@ public class AccountController implements AccountApi {
     public ResultData<String> updateByTenantAccount(UpdateAccountByAccountRequest request) {
         Account account = accountService.getByAccountAndTenantCode(request.getAccount(), request.getTenantCode());
         if (Objects.isNull(account)) {
-            return ResultData.fail("租户[" + request.getTenantCode() + "]账户[" + request.getAccount() + "]数据不存在！");
+            // 租户[{0}]账户[{1}]数据不存在！
+            return ResultData.fail(ContextUtil.getMessage("account_0004", request.getTenantCode(), request.getAccount()));
         }
         // 允许修改的账户信息
         account.setName(request.getName());
@@ -191,7 +198,8 @@ public class AccountController implements AccountApi {
     @Override
     public ResultData<String> updatePassword(UpdatePasswordRequest request) {
         if (request == null) {
-            return ResultData.fail("请求参数不能为空！");
+            // 请求参数不能为空！
+            return ResultData.fail(ContextUtil.getMessage("account_0005"));
         }
         return accountService.updatePassword(request);
     }
@@ -259,7 +267,8 @@ public class AccountController implements AccountApi {
             accounts.forEach(a -> responseList.add(modelMapper.map(a, AccountResponse.class)));
             return ResultData.success(responseList);
         } else {
-            return ResultData.fail("用户ID[" + userId + "]未找到对应的账户信息");
+            // 用户ID[{0}]未找到对应的账户信息
+            return ResultData.fail(ContextUtil.getMessage("account_0006", userId));
         }
     }
 

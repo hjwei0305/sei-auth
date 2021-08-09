@@ -3,6 +3,7 @@ package com.changhong.sei.auth.controller;
 import com.changhong.sei.auth.api.VerifyCodeApi;
 import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.auth.service.ValidateCodeService;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.annotation.AccessLog;
 import com.changhong.sei.util.EnumUtils;
@@ -54,7 +55,7 @@ public class VerifyCodeController implements VerifyCodeApi {
         if (Objects.nonNull(channelEnum)) {
             return validateCodeService.sendVerifyCode(reqId, reqId, channelEnum, operation);
         } else {
-            return ResultData.fail("不支持的发送通道类型[" + channel + "]");
+            return ResultData.fail(ContextUtil.getMessage("verify_code_0001", channel));
         }
     }
 

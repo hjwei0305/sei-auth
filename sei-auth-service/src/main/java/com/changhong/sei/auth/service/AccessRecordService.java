@@ -5,6 +5,7 @@ import com.changhong.sei.auth.dto.AccessRecordFeatureResponse;
 import com.changhong.sei.auth.dto.AccessRecordUserResponse;
 import com.changhong.sei.auth.dto.TimePeriod;
 import com.changhong.sei.auth.entity.AccessRecord;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.limiter.support.lock.SeiLock;
 import org.apache.commons.collections.CollectionUtils;
@@ -42,7 +43,8 @@ public class AccessRecordService {
             dao.save(record);
             return ResultData.success();
         } else {
-            return ResultData.fail("访问记录不能为空");
+            // 访问记录不能为空
+            return ResultData.fail(ContextUtil.getMessage("access_record_0001"));
         }
     }
 
@@ -50,7 +52,6 @@ public class AccessRecordService {
      * 批量添加访问记录
      *
      * @param records 访问记录
-     * @return 添加结果
      */
     @Transactional(rollbackFor = Exception.class)
     public void batchAddRecord(List<AccessRecord> records) {
@@ -73,7 +74,8 @@ public class AccessRecordService {
      */
     public ResultData<List<AccessRecordFeatureResponse>> getTopFeatures(String tenant, String type, TimePeriod period, int topNum) {
         if (StringUtils.isBlank(tenant)) {
-            return ResultData.fail("租户代码不能为空.");
+            // 租户代码不能为空.
+            return ResultData.fail(ContextUtil.getMessage("access_record_0002"));
         }
         if (topNum <= 0) {
             topNum = 10;
@@ -96,7 +98,8 @@ public class AccessRecordService {
      */
     public ResultData<List<AccessRecordUserResponse>> getTopUsers(String tenant, String type, TimePeriod period, int topNum) {
         if (StringUtils.isBlank(tenant)) {
-            return ResultData.fail("租户代码不能为空.");
+            // 租户代码不能为空.
+            return ResultData.fail(ContextUtil.getMessage("access_record_0002"));
         }
         if (topNum <= 0) {
             topNum = 10;
@@ -119,10 +122,12 @@ public class AccessRecordService {
      */
     public ResultData<List<AccessRecordUserResponse>> getUsersByFeature(String tenant, String feature, TimePeriod period, int topNum) {
         if (StringUtils.isBlank(tenant)) {
-            return ResultData.fail("租户代码不能为空.");
+            // 租户代码不能为空.
+            return ResultData.fail(ContextUtil.getMessage("access_record_0002"));
         }
         if (StringUtils.isBlank(feature)) {
-            return ResultData.fail("功能不能为空.");
+            // 功能不能为空.
+            return ResultData.fail(ContextUtil.getMessage("access_record_0003"));
         }
         if (topNum <= 0) {
             topNum = 10;
@@ -140,10 +145,12 @@ public class AccessRecordService {
      */
     public ResultData<List<AccessRecordFeatureResponse>> getFeaturesByUser(String tenant, String account, TimePeriod period, int topNum) {
         if (StringUtils.isBlank(tenant)) {
-            return ResultData.fail("租户代码不能为空.");
+            // 租户代码不能为空.
+            return ResultData.fail(ContextUtil.getMessage("access_record_0002"));
         }
         if (StringUtils.isBlank(account)) {
-            return ResultData.fail("账号参数不能为空.");
+            // 账号参数不能为空.
+            return ResultData.fail(ContextUtil.getMessage("access_record_0004"));
         }
         if (topNum <= 0) {
             topNum = 10;

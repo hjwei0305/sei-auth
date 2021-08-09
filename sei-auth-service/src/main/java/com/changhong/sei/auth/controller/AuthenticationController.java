@@ -77,7 +77,8 @@ public class AuthenticationController implements AuthenticationApi {
             sessionService.removeSession(sid, 0);
             return ResultData.success("OK");
         } catch (Exception e) {
-            return ResultData.fail("登出异常:" + e.getMessage());
+            // 登出异常: {0}
+            return ResultData.fail(ContextUtil.getMessage("authentication_0001", e.getMessage()));
         }
     }
 
@@ -96,10 +97,12 @@ public class AuthenticationController implements AuthenticationApi {
             if (StringUtils.isNotBlank(token)) {
                 return ResultData.success(token);
             } else {
-                return ResultData.fail("认证失败");
+                // 认证失败
+                return ResultData.fail(ContextUtil.getMessage("authentication_0002"));
             }
         } catch (Exception e) {
-            return ResultData.fail("认证会话id异常:" + e.getMessage());
+            // 认证会话id异常
+            return ResultData.fail(ContextUtil.getMessage("authentication_0003", e.getMessage()));
         }
     }
 
@@ -135,10 +138,12 @@ public class AuthenticationController implements AuthenticationApi {
                 return ResultData.success(response);
             } catch (Exception e) {
                 LogUtil.error("获取会话信息异常", e);
-                return ResultData.fail("获取会话信息异常:" + e.getMessage());
+                // 获取会话信息异常
+                return ResultData.fail(ContextUtil.getMessage("authentication_0004", e.getMessage()));
             }
         } else {
-            return ResultData.fail("无会话信息");
+            // 无会话信息
+            return ResultData.fail(ContextUtil.getMessage("authentication_0005"));
         }
     }
 }

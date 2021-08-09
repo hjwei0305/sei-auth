@@ -265,7 +265,8 @@ public class TodoTaskController implements TodoTaskApi {
         //获取账号,并模拟用户
         Account accountObj = accountService.getByAccountAndTenantCode(account, properties.getTenant());
         if (Objects.isNull(accountObj)) {
-            errorMsg(response, "用户[" + account + "]不存在,请检查用户同步数据.");
+            // "用户[" + account + "]不存在,请检查用户同步数据."
+            errorMsg(response, ContextUtil.getMessage("task_0001", account));
         }
         //根据当前账号获取用户会话
         SessionUser sessionUser = accountService.convertSessionUser(accountObj, HttpUtils.getClientIP(request),
@@ -299,7 +300,8 @@ public class TodoTaskController implements TodoTaskApi {
             response.setContentType("application/json;UTF-8");
             response.sendRedirect(getPage.getData());
         } catch (Exception e) {
-            String msg = "登录认证异常:" + e.getMessage();
+            // 登录认证异常
+            String msg = ContextUtil.getMessage("task_0002", e.getMessage());
             LogUtil.error(msg, e);
             errorMsg(response, msg);
         }
