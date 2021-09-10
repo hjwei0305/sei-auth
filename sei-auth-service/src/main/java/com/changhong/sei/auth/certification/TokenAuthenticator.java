@@ -47,6 +47,10 @@ public interface TokenAuthenticator {
      */
     String AUTH_TYPE_SEI = "sei";
     /**
+     * SEI默认OAuth2认证
+     */
+    String AUTH_TYPE_SEI_OAUTH2 = "oauth2";
+    /**
      * IDM OAuth2认证
      */
     String AUTH_TYPE_IDM_OAUTH2 = "idmOAuth2";

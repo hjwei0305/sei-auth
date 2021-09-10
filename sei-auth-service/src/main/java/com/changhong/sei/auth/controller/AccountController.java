@@ -103,7 +103,7 @@ public class AccountController implements AccountApi {
         Account account = modelMapper.map(request, Account.class);
         if (Objects.isNull(account)) {
             // 参数不能为空
-            return ResultData.fail(ContextUtil.getMessage("0001"));
+            return ResultData.fail(ContextUtil.getMessage("account_0005"));
         }
         AccountInfo accountInfo = modelMapper.map(request, AccountInfo.class);
 
@@ -120,7 +120,7 @@ public class AccountController implements AccountApi {
         Account account = modelMapper.map(request, Account.class);
         if (Objects.isNull(account)) {
             // 参数不能为空
-            return ResultData.fail(ContextUtil.getMessage("0001"));
+            return ResultData.fail(ContextUtil.getMessage("account_0005"));
         }
         account.setPassword(StringUtils.EMPTY);
         AccountInfo accountInfo = modelMapper.map(request, AccountInfo.class);
