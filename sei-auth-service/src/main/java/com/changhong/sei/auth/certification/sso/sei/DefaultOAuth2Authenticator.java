@@ -11,6 +11,7 @@ import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -20,14 +21,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import javax.net.ssl.*;
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.net.ConnectException;
-import java.net.URL;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -104,8 +100,9 @@ public class DefaultOAuth2Authenticator extends AbstractTokenAuthenticator imple
             // PC
             url = getWebBaseUrl() + "/#/sso/ssoWrapperPage?sid=" + userResponse.getSessionId();
         }
-        LOG.info("单点登录跳转地址: {}", url);
-
+        if (LOG.isInfoEnabled()) {
+            LOG.info("单点登录跳转地址: {}", url);
+        }
         //单点错误页面
         return url;
     }
@@ -118,7 +115,9 @@ public class DefaultOAuth2Authenticator extends AbstractTokenAuthenticator imple
     @Override
     public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
         String url = properties.getSso().getLogout();
-        LOG.info("单点登录失败：需要绑定平台账号！跳转至: {}", url);
+        if (LOG.isInfoEnabled()) {
+            LOG.info("单点登录失败：跳转至登录页面: {}", url);
+        }
         return url;
     }
 
@@ -133,7 +132,9 @@ public class DefaultOAuth2Authenticator extends AbstractTokenAuthenticator imple
         String url = "%s?client_id=%s&redirect_uri=%s&response_type=code&state=%s";
 
         String redirectUrl = String.format(url, authorizeUrl, clientId, data.get("redirect_uri"), data.get("state"));
-        LOG.info("获取授权码页面地址: {}", redirectUrl);
+        if (LOG.isInfoEnabled()) {
+            LOG.info("获取授权码页面地址: {}", redirectUrl);
+        }
         return redirectUrl;
     }
 
@@ -143,7 +144,9 @@ public class DefaultOAuth2Authenticator extends AbstractTokenAuthenticator imple
         String state = "sei";
         // 用户OAuth2认证授权登录后重定向的页面路由
         String redirectUri = String.format("%s%s%s?authType=%s", getApiBaseUrl(), request.getContextPath(), SSO_LOGIN_ENDPOINT, SingleSignOnAuthenticator.AUTH_TYPE_SEI_OAUTH2);
-        LOG.debug("获取授权码后重定向的页面路由: {}", redirectUri);
+        if (LOG.isInfoEnabled()) {
+            LOG.info("获取授权码后重定向的页面路由: {}", redirectUri);
+        }
         try {
             redirectUri = URLEncoder.encode(redirectUri, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -180,15 +183,22 @@ public class DefaultOAuth2Authenticator extends AbstractTokenAuthenticator imple
             String redirectUri = String.format("%s%s%s?authType=%s", getApiBaseUrl(), request.getContextPath(), SSO_LOGIN_ENDPOINT, SingleSignOnAuthenticator.AUTH_TYPE_SEI_OAUTH2);
 
             try {
+                // 取得有效的AccessToken值
                 StringBuilder url = new StringBuilder();
                 url.append(accessUrl)
                         .append("?client_id=").append(clientId)
                         .append("&client_secret=").append(clientSecret)
                         .append("&grant_type=authorization_code&redirect_uri=").append(redirectUri)
                         .append("&code=").append(code);
-                // 取得有效的AccessToken值
-                Map<String, String> data = httpRequest(url.toString(), "POST", null);
-                if (data != null && StringUtils.equalsIgnoreCase("true", data.get("status"))) {
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("取得有效的AccessToken值URL:{}", url);
+                }
+                String postResult = HttpUtils.sendPost(url.toString(), "");
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("取得有效的AccessToken值: {}", postResult);
+                }
+                Map<String, String> data = JsonUtils.fromJson(postResult, HashMap.class);
+                if (data != null) {
                     // access_token：访问令牌
                     String accessToken = data.get("access_token");
                     if (StringUtils.isNotBlank(accessToken) && accessToken.contains("access_token=")) {
@@ -197,19 +207,29 @@ public class DefaultOAuth2Authenticator extends AbstractTokenAuthenticator imple
                     url.delete(0, url.length());
                     url.append(profileUrl).append("?access_token=").append(accessToken);
                     // 用户信息
-                    Map<String, String> userMap = httpRequest(url.toString(), "POST", null);
-                    LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
+                    postResult = HttpUtils.sendGet(url.toString(), "");
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("通过AccessToken获取用户信息: {}", postResult);
+                    }
+                    Map<String, String> userMap = JsonUtils.fromJson(postResult, HashMap.class);
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
+                    }
                     // OAuth2认证用户信息
                     String openId = userMap.get("id");
 
                     SessionUserResponse userResponse = new SessionUserResponse();
                     userResponse.setLoginStatus(SessionUserResponse.LoginStatus.failure);
                     userResponse.setOpenId(openId);
-                    LOG.info("OpenId: {}", openId);
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("OpenId: {}", openId);
+                    }
 
                     // 检查是否有账号绑定
                     ResultData<Account> resultData = accountService.checkAccount(ChannelEnum.SEI, openId);
-                    LOG.info("检查是否有账号绑定: {}", resultData);
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info("检查是否有账号绑定: {}", resultData);
+                    }
                     if (resultData.successful()) {
                         Account account = resultData.getData();
 
@@ -218,7 +238,9 @@ public class DefaultOAuth2Authenticator extends AbstractTokenAuthenticator imple
                         loginRequest.setAccount(account.getAccount());
                         loginRequest.setReqId(code);
                         ResultData<SessionUserResponse> result = login(loginRequest, account);
-                        LOG.info("微信关联账号登录验证: {}", result);
+                        if (LOG.isInfoEnabled()) {
+                            LOG.info("OAuth2认证中心账号登录验证结果: {}", result);
+                        }
                         userResponse.setTenantCode(account.getTenantCode());
                         userResponse.setAccount(account.getAccount());
                         userResponse.setLoginAccount(account.getOpenId());
@@ -253,84 +275,4 @@ public class DefaultOAuth2Authenticator extends AbstractTokenAuthenticator imple
         return ResultData.fail("OAuth2认证不需要.");
     }
 
-    /**
-     * 发起https请求并获取结果
-     *
-     * @param requestUrl    请求地址
-     * @param requestMethod 请求方式（GET、POST）
-     * @param outputStr     提交的数据
-     * @return JSONObject(通过JSONObject.get ( key)的方式获取json对象的属性值)
-     */
-    public static Map<String, String> httpRequest(String requestUrl, String requestMethod, String outputStr) {
-        // log.error("发起https请求并获取结果 :"+requestUrl+","+requestMethod+","+outputStr);
-        Map<String, String> map = new HashMap<>();
-        HttpsURLConnection httpUrlConn = null;
-        try {
-            // 创建SSLContext对象，并使用我们指定的信任管理器初始化
-            TrustManager[] tm = {new X509TrustManager() {
-                @Override
-                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-                }
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }
-            }};
-            SSLContext sslContext = SSLContext.getInstance("SSL", "SunJSSE");
-            sslContext.init(null, tm, new java.security.SecureRandom());
-            // 从上述SSLContext对象中得到SSLSocketFactory对象
-            SSLSocketFactory ssf = sslContext.getSocketFactory();
-            URL url = new URL(requestUrl);
-            httpUrlConn = (HttpsURLConnection) url.openConnection();
-            httpUrlConn.setSSLSocketFactory(ssf);
-            httpUrlConn.setDoOutput(true);
-            httpUrlConn.setDoInput(true);
-            httpUrlConn.setUseCaches(false);
-            httpUrlConn.setConnectTimeout(60 * 1000);
-            httpUrlConn.setReadTimeout(60 * 1000);
-            // 设置请求方式（GET/POST）
-            httpUrlConn.setRequestMethod(requestMethod);
-            httpUrlConn.connect();
-            // if ("GET".equalsIgnoreCase(requestMethod))
-            // 当有数据需要提交时
-            if (null != outputStr) {
-                OutputStream outputStream = httpUrlConn.getOutputStream();
-                // 注意编码格式，防止中文乱码
-                outputStream.write(outputStr.getBytes("UTF-8"));
-                outputStream.close();
-            }
-
-            // 将返回的输入流转换成字符串
-            StringBuilder buffer = new StringBuilder();
-            try (InputStream inputStream = httpUrlConn.getInputStream();
-                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8");
-                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);) {
-                String str = null;
-                while ((str = bufferedReader.readLine()) != null) {
-                    buffer.append(str);
-                }
-            } catch (Exception e) {
-                LOG.error("输入流转换成字符串异常", e);
-            }
-            // 返回map
-            map = JsonUtils.fromJson(buffer.toString(), HashMap.class);
-        } catch (ConnectException ce) {
-            LOG.error("Connection Timed Out......", ce);
-        } catch (Exception e) {
-            String result = String.format("Https Request Error:%s", e);
-            LOG.error(result, e);
-        } finally {
-            if (Objects.nonNull(httpUrlConn)) {
-                httpUrlConn.disconnect();
-            }
-        }
-        return map;
-    }
 }
