@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.StringJoiner;
 
@@ -21,33 +22,39 @@ public class LoginRequest implements Serializable {
      * 社交账号绑定时是openId
      */
     @NotBlank
+    @Size(max = 36)
     @ApiModelProperty(notes = "请求id.社交账号绑定时是openId的值", required = true)
     private String reqId;
     /**
      * 验证码
      */
+    @Size(max = 6)
     @ApiModelProperty(notes = "验证码")
     private String verifyCode;
     /**
      * 代码
      */
+    @Size(max = 10)
     @ApiModelProperty(notes = "租户代码")
     private String tenant;
     /**
      * 账户
      */
     @NotBlank
+    @Size(max = 100)
     @ApiModelProperty(notes = "账户", required = true)
     private String account;
     /**
      * 密码
      */
     @NotBlank
+    @Size(max = 100)
     @ApiModelProperty(notes = "密码(md5散列后的值)", required = true, example = "e10adc3949ba59abbe56e057f20f883e")
     private String password;
     /**
      * 语言环境
      */
+    @Size(max = 5)
     @ApiModelProperty(notes = "语言环境")
     private String locale = "zh_CN";
 

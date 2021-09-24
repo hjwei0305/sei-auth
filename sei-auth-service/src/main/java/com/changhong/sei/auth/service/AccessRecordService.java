@@ -3,7 +3,7 @@ package com.changhong.sei.auth.service;
 import com.changhong.sei.auth.dao.AccessRecordDao;
 import com.changhong.sei.auth.dto.AccessRecordFeatureResponse;
 import com.changhong.sei.auth.dto.AccessRecordUserResponse;
-import com.changhong.sei.auth.dto.TimePeriod;
+import com.changhong.sei.auth.common.TimePeriod;
 import com.changhong.sei.auth.entity.AccessRecord;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;

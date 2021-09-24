@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -17,15 +18,19 @@ public class AccessRecordCreateRequest implements Serializable {
 
     private static final long serialVersionUID = -153710753627693002L;
 
+    @Size(max = 10)
     @NotBlank
     @ApiModelProperty(notes = "应用代码", required = true)
     private String appCode;
+    @Size(max = 30)
     @ApiModelProperty(notes = "功能代码")
     private String featureCode;
     @NotBlank
+    @Size(max = 50)
     @ApiModelProperty(notes = "功能名称", required = true)
     private String feature;
     @NotBlank
+    @Size(max = 300)
     @ApiModelProperty(notes = "地址", required = true)
     private String url;
 

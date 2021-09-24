@@ -4,6 +4,7 @@ import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.test.BaseUnitTest;
+import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.core.util.JwtTokenUtil;
 import com.changhong.sei.util.DateUtils;
@@ -16,6 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -41,7 +44,15 @@ public class WeChatAuthenticatorTest {
     }
 
     @Test
-    public void auth() {
+    public void auth() throws Exception {
+        String url;
+        url = "http://182.140.244.93:81/esc-sso/oauth2.0/accessToken?client_id=f2b1766bf30b448d&client_secret=03c3e7eb794f40a2a2e41d1b0ac3dd23&grant_type=authorization_code&redirect_uri=http://182.140.244.93/api-gateway/sei-auth/sso/login?authType=oauth2&code=OC-28-FoPa2FZyhAjf5lQUabjvIBocFGDFVbBLACm";
+        String postResult;
+        postResult = HttpUtils.sendPost(url, "");
+        System.out.println(postResult);
+        url = "http://182.140.244.93:81/esc-sso/oauth2.0/profile";
+        postResult = HttpUtils.sendGet(url + "?access_token=AT-19-h0mrQfixBRjuSVxycPhoYfrrKqnkKnoSVbK", "");
+        System.out.println(postResult);
     }
 
     @Test

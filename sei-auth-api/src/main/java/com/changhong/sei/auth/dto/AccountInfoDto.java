@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -22,6 +23,7 @@ public class AccountInfoDto implements Serializable {
      */
     @ApiModelProperty(notes = "租户代码", required = true)
     @NotBlank
+    @Size(max = 10)
     protected String tenantCode;
     /**
      * 账号
@@ -30,15 +32,18 @@ public class AccountInfoDto implements Serializable {
      */
     @ApiModelProperty(notes = "账号", required = true)
     @NotBlank
+    @Size(max = 100)
     protected String account;
     /**
      * 移动电话
      */
+    @Size(max = 50)
     @ApiModelProperty(notes = "移动电话")
     private String mobile;
     /**
      * 邮箱
      */
+    @Size(max = 100)
     @ApiModelProperty(notes = "邮箱")
     private String email;
     /**
@@ -49,6 +54,7 @@ public class AccountInfoDto implements Serializable {
     /**
      * 身份证号码
      */
+    @Size(max = 18)
     @ApiModelProperty(notes = "身份证号码")
     private String idCard;
     /**

@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -23,6 +24,7 @@ public class UpdateAccountByAccountRequest extends AccountInfoDto implements Ser
      */
     @ApiModelProperty(notes = "名称", required = true)
     @NotBlank
+    @Size(max = 100)
     private String name;
     /**
      * 冻结

@@ -1,7 +1,7 @@
 # 应用全局配置
 sei:
   application:
-    env: DEV
+    env: PRD
     code: sei-auth
     version: '@project_version@'
     description: '@project_description@'
@@ -12,10 +12,11 @@ sei:
   mock: # 本地调试的当前用户配置
     user:
       account: admin
-#      user-name: 管理员
-      tenant-code: 10044
+      user-name: 管理员
+      tenant-code: RCSIT
+      locale: en_US
 #      tenant-code: AUDIT
-#      user-id: 2466CD20-B3C8-11EB-AF09-0242C0A84415
+      user-id: 2466CD20-B3C8-11EB-AF09-0242C0A84415
 
     #knife4j:
 #  basic:
@@ -34,7 +35,8 @@ spring:
       # 配置中心认证token
       token: DEjjbZxTrSWNf
       # 配置中心服务地址
-      uri: http://sei.changhong.com/sei-manager/configserver
+      uri: http://10.4.208.125:20000/config-center/
+#      uri: http://sei.changhong.com/sei-manager/configserver
 #      uri: http://10.200.16.10/sei-manager/configserver
 #      uri: http://dsei.changhong.com/config-center
 #      uri: http://fsscdev.eppen.com.cn:18800/config-center
@@ -47,7 +49,7 @@ spring:
       enabled: true
       # zk 地址
 #      connect-string: 10.4.208.132:2181
-      connect-string: 10.4.1.242:2181
+      connect-string: 10.4.208.125:2181
 #      connect-string: 10.200.26.100:2181
 #      connect-string: fsscdev.eppen.com.cn:18182
     consul:

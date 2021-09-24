@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -20,12 +21,14 @@ public class BindingAccountRequest implements Serializable {
     /**
      * 验证码
      */
+    @Size(max = 6)
     @ApiModelProperty(notes = "验证码")
     private String verifyCode;
     /**
      * 绑定账号
      */
     @NotBlank
+    @Size(max = 100)
     @ApiModelProperty(notes = "绑定账号 openId", required = true)
     private String openId;
 

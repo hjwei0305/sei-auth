@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,7 +48,7 @@ public class LoginLogController implements LoginLogApi {
      */
     @Override
     public ResultData<Long> getTotalVisitCount() {
-        return null;
+        return ResultData.success(0L);
     }
 
     /**
@@ -57,7 +58,7 @@ public class LoginLogController implements LoginLogApi {
      */
     @Override
     public ResultData<Long> getTodayVisitCount() {
-        return null;
+        return ResultData.success(0L);
     }
 
     /**
@@ -67,7 +68,7 @@ public class LoginLogController implements LoginLogApi {
      */
     @Override
     public ResultData<Long> getTodayIp() {
-        return null;
+        return ResultData.success(0L);
     }
 
     /**
@@ -78,7 +79,7 @@ public class LoginLogController implements LoginLogApi {
      */
     @Override
     public ResultData<List<Map<String, Object>>> getLastTenDaysVisitCount(String account) {
-        return null;
+        return ResultData.success(new ArrayList<>());
     }
 
     /**
@@ -86,7 +87,7 @@ public class LoginLogController implements LoginLogApi {
      */
     @Override
     public ResultData<List<Map<String, Object>>> getByBrowser() {
-        return null;
+        return ResultData.success(new ArrayList<>());
     }
 
     /**
@@ -94,7 +95,7 @@ public class LoginLogController implements LoginLogApi {
      */
     @Override
     public ResultData<List<Map<String, Object>>> getByOperatingSystem() {
-        return null;
+        return ResultData.success(new ArrayList<>());
     }
 
     /**
@@ -104,7 +105,7 @@ public class LoginLogController implements LoginLogApi {
      * @param clearBeforeNum  多少条
      */
     public ResultData<Void> clearLog(Integer clearBeforeDays, Integer clearBeforeNum) {
-        return null;
+        return ResultData.success();
     }
 
     /**

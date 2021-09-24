@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -20,12 +21,14 @@ public class FindPasswordRequest implements Serializable {
      */
     @ApiModelProperty(notes = "账户id", required = true)
     @NotBlank
+    @Size(max = 36)
     private String id;
     /**
      * 新账号密码
      */
     @ApiModelProperty(notes = "新账号密码.MD5散列后的值", required = true, example = "e10adc3949ba59abbe56e057f20f883e")
     @NotBlank
+    @Size(max = 100)
     private String newPassword;
     /**
      * 验证码

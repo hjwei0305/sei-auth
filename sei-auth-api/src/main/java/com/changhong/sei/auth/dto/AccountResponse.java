@@ -1,11 +1,13 @@
 package com.changhong.sei.auth.dto;
 
+import com.changhong.sei.core.dto.serializer.EnumJsonSerializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -22,6 +24,7 @@ public class AccountResponse extends AccountInfoDto {
     /**
      * id主键
      */
+    @Size(max = 36)
     @ApiModelProperty(notes = "id主键")
     private String id;
     /**
@@ -29,10 +32,12 @@ public class AccountResponse extends AccountInfoDto {
      */
     @ApiModelProperty(notes = "用户id", required = true)
     @NotBlank
+    @Size(max = 36)
     private String userId;
     /**
      * openId
      */
+    @Size(max = 100)
     @ApiModelProperty(notes = "openId", required = true)
     private String openId;
     ;
@@ -41,10 +46,12 @@ public class AccountResponse extends AccountInfoDto {
      */
     @ApiModelProperty(notes = "名称", required = true)
     @NotBlank
+    @Size(max = 100)
     private String name;
     /**
      * 来源系统(sei,wechat,dingtalk等)
      */
+    @JsonSerialize(using = EnumJsonSerializer.class)
     @ApiModelProperty(notes = "来源系统", required = true)
     private ChannelEnum channel = ChannelEnum.SEI;
     /**

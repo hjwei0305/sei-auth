@@ -1,6 +1,5 @@
 package com.changhong.sei.auth.api;
 
-import com.changhong.sei.auth.dto.AccountResponse;
 import com.changhong.sei.auth.dto.LoginHistoryDto;
 import com.changhong.sei.auth.dto.OnlineUserDto;
 import com.changhong.sei.core.dto.ResultData;

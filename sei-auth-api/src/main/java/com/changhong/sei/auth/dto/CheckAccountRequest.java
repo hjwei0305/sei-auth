@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -17,22 +18,26 @@ public class CheckAccountRequest implements Serializable {
 
     private static final long serialVersionUID = 7977208546901875698L;
 
+    @Size(max = 36)
     @ApiModelProperty(notes = "请求id", required = true)
     private String reqId;
     /**
      * 验证码
      */
+    @Size(max = 6)
     @ApiModelProperty(notes = "验证码", required = true)
     private String verifyCode;
     /**
      * 账户
      */
     @NotBlank
+    @Size(max = 100)
     @ApiModelProperty(notes = "账号", required = true)
     private String openId;
     /**
      * 代码
      */
+    @Size(max = 10)
     @ApiModelProperty(notes = "租户代码")
     private String tenant;
 
