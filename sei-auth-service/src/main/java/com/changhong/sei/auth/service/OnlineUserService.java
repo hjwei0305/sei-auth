@@ -67,7 +67,7 @@ public class OnlineUserService extends BaseEntityService<OnlineUser> {
      *
      * @param sessionUser 会话信息
      */
-    @Async
+    // @Async
     @Transactional(rollbackFor = Exception.class)
     public void addSession(SessionUser sessionUser) {
         OnlineUser session = new OnlineUser();
@@ -104,13 +104,9 @@ public class OnlineUserService extends BaseEntityService<OnlineUser> {
      *
      * @param sid 会话id
      */
-    @Async
     @Transactional(rollbackFor = Exception.class)
     public void removeSession(String sid) {
-        OnlineUser session = dao.findFirstByProperty(OnlineUser.FIELD_SID, sid);
-        if (Objects.nonNull(session)) {
-            dao.delete(session);
-        }
+        int count = dao.removeSid(sid);
         // 更新退出时间
         loginHistoryService.setLogoutTime(sid);
     }
@@ -118,7 +114,7 @@ public class OnlineUserService extends BaseEntityService<OnlineUser> {
     /**
      * 定时注销
      */
-    @Async
+    // @Async
     @Transactional(rollbackFor = Exception.class)
     @SeiLock(key = "'auth:timedLogout'")
     public void timedLogout() {

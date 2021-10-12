@@ -28,11 +28,20 @@ public interface OnlineUserDao extends BaseEntityDao<OnlineUser> {
     List<OnlineUser> getAllOnlineUsers();
 
     /**
-     * 删除会话
+     * 批量删除会话
      *
      * @param sids 要删除的会话id清单
      */
     @Modifying
     @Query("delete from OnlineUser t where t.sid in :sids ")
     void removeSids(@Param("sids") Set<String> sids);
+
+    /**
+     * 删除会话
+     *
+     * @param sid 要删除的会话id
+     */
+    @Modifying
+    @Query("delete from OnlineUser t where t.sid = :sid ")
+    int removeSid(@Param("sid") String sid);
 }
