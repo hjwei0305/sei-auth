@@ -134,7 +134,7 @@ public class LoginLogController implements LoginLogApi {
      */
     @Override
     public ResultData<PageResult<OnlineUserDto>> getOnlineUserByPage(Search search) {
-        PageResult<OnlineUser> pageResult = onlineUserService.findByPage(search);
+        PageResult<OnlineUser> pageResult = onlineUserService.getOnlineUserByPage(search);
         PageResult<OnlineUserDto> result = new PageResult<>(pageResult);
         List<OnlineUser> onlineUsers = pageResult.getRows();
         if (CollectionUtils.isNotEmpty(onlineUsers)) {

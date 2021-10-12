@@ -5,9 +5,10 @@ import com.changhong.sei.auth.common.OSUtil;
 import com.changhong.sei.auth.dao.OnlineUserDao;
 import com.changhong.sei.auth.entity.OnlineUser;
 import com.changhong.sei.core.context.SessionUser;
-import com.changhong.sei.core.dao.BaseEntityDao;
+import com.changhong.sei.core.dto.serach.PageResult;
+import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.limiter.support.lock.SeiLock;
-import com.changhong.sei.core.service.BaseEntityService;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -18,13 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
  * @version 1.0.00  2020-01-20 12:01
  */
 @Service
-public class OnlineUserService extends BaseEntityService<OnlineUser> {
+public class OnlineUserService {
     private static final Logger LOG = LoggerFactory.getLogger(OnlineUserService.class);
     /**
      * 超时时间(秒)
@@ -49,11 +48,6 @@ public class OnlineUserService extends BaseEntityService<OnlineUser> {
     private LoginHistoryService loginHistoryService;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
-
-    @Override
-    protected BaseEntityDao<OnlineUser> getDao() {
-        return dao;
-    }
 
     /**
      * @return 获取会话超时时间
@@ -107,6 +101,7 @@ public class OnlineUserService extends BaseEntityService<OnlineUser> {
     @Transactional(rollbackFor = Exception.class)
     public void removeSession(String sid) {
         int count = dao.removeSid(sid);
+        LogUtil.bizLog("删除sid:{},条数:{}", sid, count);
         // 更新退出时间
         loginHistoryService.setLogoutTime(sid);
     }
@@ -138,5 +133,9 @@ public class OnlineUserService extends BaseEntityService<OnlineUser> {
         if (LOG.isInfoEnabled()) {
             LOG.info("自动清除会话: {}个", count);
         }
+    }
+
+    public PageResult<OnlineUser> getOnlineUserByPage(Search search) {
+        return dao.findByPage(search);
     }
 }

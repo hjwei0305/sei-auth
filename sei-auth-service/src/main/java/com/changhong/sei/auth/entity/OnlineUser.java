@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 public class OnlineUser extends BaseEntity implements ITenant {
     private static final long serialVersionUID = 1L;
-    public static final String FIELD_SID = "sid";
     /**
      * 会话id
      */
