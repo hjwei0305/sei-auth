@@ -131,6 +131,8 @@ public class SessionService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeSession(final String sid, final long timeOut) {
+        onlineUserService.removeSession(sid);
+
         CompletableFuture.runAsync(() -> {
             if (timeOut > 0) {
                 String value = cacheBuilder.get(Constants.REDIS_KEY_PREFIX + sid);
@@ -156,7 +158,6 @@ public class SessionService {
                 }
             }
         });
-        onlineUserService.removeSession(sid);
     }
 
 }
