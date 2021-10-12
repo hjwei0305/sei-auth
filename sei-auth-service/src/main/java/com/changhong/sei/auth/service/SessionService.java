@@ -4,6 +4,7 @@ import com.changhong.sei.auth.common.Constants;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JwtTokenUtil;
 import com.changhong.sei.util.Signature;
@@ -131,6 +132,7 @@ public class SessionService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeSession(final String sid, final long timeOut) {
+        LogUtil.bizLog("SID: " + sid);
         onlineUserService.removeSession(sid);
 
         CompletableFuture.runAsync(() -> {
