@@ -19,6 +19,10 @@ public interface Constants {
      * 半小时内登陆错误次数
      */
     String LOGIN_NUM_KEY = "sei:auth:login:num:";
+    /**
+     * OAuth2授权码缓存key
+     */
+    String OAUTH2_CODE_KEY = "sei:auth:verify_code:";
 
     /**
      * oauth2授权端点

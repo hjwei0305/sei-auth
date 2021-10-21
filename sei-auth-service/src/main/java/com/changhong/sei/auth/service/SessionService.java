@@ -54,9 +54,20 @@ public class SessionService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void addSession(SessionUser sessionUser) {
+        this.addSession(sessionUser, onlineUserService.getExpireTime());
+    }
+
+    /**
+     * 添加会话
+     *
+     * @param sessionUser 会话信息
+     * @param expire      会话超时时间(毫秒)
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void addSession(SessionUser sessionUser, long expire) {
         final String sid = sessionUser.getSessionId();
         final String value = sessionUser.getToken();
-        cacheBuilder.set(Constants.REDIS_KEY_PREFIX + sid, value, onlineUserService.getExpireTime());
+        cacheBuilder.set(Constants.REDIS_KEY_PREFIX + sid, value, expire);
         onlineUserService.addSession(sessionUser);
 
         if (enableCookie) {
