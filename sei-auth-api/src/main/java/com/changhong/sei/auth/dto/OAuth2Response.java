@@ -26,6 +26,16 @@ public class OAuth2Response implements Serializable {
      */
     @ApiModelProperty(notes = "会话token")
     private String accessToken;
+    /**
+     * 用户id
+     */
+    @ApiModelProperty(notes = "用户id")
+    private String userId;
+    /**
+     * 用户账号
+     */
+    @ApiModelProperty(notes = "用户账号")
+    private String account;
 
     @ApiModelProperty(notes = "过期时间")
     private final long expireIn;
@@ -52,5 +62,21 @@ public class OAuth2Response implements Serializable {
 
     public long getExpireIn() {
         return expireIn;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
     }
 }

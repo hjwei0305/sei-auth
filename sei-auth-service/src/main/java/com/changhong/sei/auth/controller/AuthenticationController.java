@@ -4,7 +4,6 @@ import com.changhong.sei.auth.api.AuthenticationApi;
 import com.changhong.sei.auth.certification.TokenAuthenticatorBuilder;
 import com.changhong.sei.auth.certification.sso.sei.DesUtil;
 import com.changhong.sei.auth.common.Constants;
-import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.OAuth2Response;
 import com.changhong.sei.auth.dto.SessionUserResponse;
@@ -30,9 +29,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -73,8 +70,6 @@ public class AuthenticationController implements AuthenticationApi {
     @Autowired
     private ApprovalsService approvalsService;
     @Autowired
-    private AuthProperties authProperties;
-    @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     /**
@@ -85,7 +80,6 @@ public class AuthenticationController implements AuthenticationApi {
      * 4.返回会话id
      */
     @Override
-    @ResponseBody
     @AccessLog(AccessLog.FilterReply.DENY)
     public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
         HttpServletRequest request = HttpUtils.getRequest();
@@ -108,7 +102,6 @@ public class AuthenticationController implements AuthenticationApi {
      * 清除会话id
      */
     @Override
-    @ResponseBody
     public ResultData<String> logout(String sid) {
         LogUtil.bizLog("登出: {}", sid);
         try {
@@ -127,7 +120,6 @@ public class AuthenticationController implements AuthenticationApi {
      * 3.返回true
      */
     @Override
-    @ResponseBody
     @AccessLog(AccessLog.FilterReply.DENY)
     public ResultData<String> check(String sid) {
         try {
@@ -149,7 +141,6 @@ public class AuthenticationController implements AuthenticationApi {
      * 获取匿名token
      */
     @Override
-    @ResponseBody
     @AccessLog(AccessLog.FilterReply.DENY)
     public ResultData<String> getAnonymousToken() {
         SessionUser sessionUser = new SessionUser();
@@ -166,7 +157,6 @@ public class AuthenticationController implements AuthenticationApi {
      * 获取指定会话用户信息
      */
     @Override
-    @ResponseBody
     public ResultData<SessionUserResponse> getSessionUser(String sid) {
         // 获取会话并续期
         String token = sessionService.touchSession(sid);
@@ -198,7 +188,6 @@ public class AuthenticationController implements AuthenticationApi {
      * @param sign       签名.
      */
     @Override
-    @ResponseBody
     public ResultData<OAuth2Response> signToken(String tenantCode, String clientId, String account, Long stamp, String sign,
                                                 HttpServletRequest request) {
         ClientDetail authClient = authClientService.getByClientId(tenantCode, clientId);
@@ -268,10 +257,6 @@ public class AuthenticationController implements AuthenticationApi {
         else if (StringUtils.equals(Constants.OAuth2Api.refresh, apiPath) && StringUtils.equals(Constants.OAuth2GrantType.refresh_token, grantType)) {
             return refreshToken(tenantCode, request);
         }
-        // doLogin 登录接口
-        else if (StringUtils.equals(Constants.OAuth2Api.doLogin, apiPath)) {
-            return doLogin(tenantCode, request, response);
-        }
         // doConfirm 确认授权接口
         else if (StringUtils.equals(Constants.OAuth2Api.doConfirm, apiPath)) {
             return doConfirm(tenantCode, request);
@@ -286,7 +271,7 @@ public class AuthenticationController implements AuthenticationApi {
         }
         // 模式四：凭证式
         else if (StringUtils.equals(Constants.OAuth2Api.client_token, apiPath) && StringUtils.equals(Constants.OAuth2GrantType.client_credentials, grantType)) {
-            return clientToken(tenantCode, request, response);
+            return clientToken(tenantCode, request);
         }
         // 默认返回
         return ResultData.fail("错误的oauth2请求.");
@@ -368,9 +353,16 @@ public class AuthenticationController implements AuthenticationApi {
         vo.setClientId(clientId);
         vo.setScope(scope);
         vo.setRedirectUri(url);
-        vo.setSid(sid);
+        vo.setUserId(sessionUser.getUserId());
+        vo.setAccount(sessionUser.getAccount());
+        vo.setLoginAccount(sessionUser.getLoginAccount());
+        vo.setUserName(sessionUser.getUserName());
+        vo.setUserType(sessionUser.getUserType());
+        vo.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
+        vo.setIp(HttpUtils.getClientIP(request));
+        vo.setLocale(sessionUser.getLocale());
         // 存入redis缓存
-        redisTemplate.boundValueOps(Constants.OAUTH2_CODE_KEY.concat(code)).set(vo, 3, TimeUnit.MINUTES);
+        redisTemplate.boundValueOps(Constants.OAUTH2_CODE_KEY.concat(code)).set(vo, 5, TimeUnit.MINUTES);
 
         String redirectUri;
         String responseType = request.getParameter(Constants.OAuth2Param.response_type);
@@ -437,18 +429,29 @@ public class AuthenticationController implements AuthenticationApi {
         }
 
         // 校验：Secret是否正确
-        ClientDetail authClient = authClientService.getByClientId(tenantCode, clientId);
-        if (Objects.isNull(authClient) || !StringUtils.equals(clientSecret, authClient.getClientSecret())) {
+        ClientDetail clientDetail = authClientService.getByClientId(tenantCode, clientId);
+        if (Objects.isNull(clientDetail) || !StringUtils.equals(clientSecret, clientDetail.getClientSecret())) {
             // 无效client_secret
             return ResultData.fail(ContextUtil.getMessage("oauth2_0006", clientId));
         }
 
-        SessionUser sessionUser = sessionService.getSessionUser(authorizeCodeVo.getSid());
+        SessionUser sessionUser = new SessionUser();
+        sessionUser.setTenantCode(tenantCode);
+        sessionUser.setUserId(authorizeCodeVo.getUserId());
+        sessionUser.setAccount(authorizeCodeVo.getAccount());
+        sessionUser.setLoginAccount(authorizeCodeVo.getLoginAccount());
+        sessionUser.setUserName(authorizeCodeVo.getUserName());
+        sessionUser.setUserType(authorizeCodeVo.getUserType());
+        sessionUser.setAuthorityPolicy(authorizeCodeVo.getAuthorityPolicy());
+        sessionUser.setIp(authorizeCodeVo.getIp());
+        sessionUser.setLocale(authorizeCodeVo.getLocale());
         // 生成会话token
         sessionService.addSession(sessionUser, TimeUnit.HOURS.toMillis(2));
         OAuth2Response oAuth2Response = new OAuth2Response(LocalDateTime.now().plusHours(2));
         oAuth2Response.setSid(sessionUser.getSessionId());
         oAuth2Response.setAccessToken(sessionUser.getToken());
+        oAuth2Response.setUserId(sessionUser.getUserId());
+        oAuth2Response.setAccount(sessionUser.getAccount());
         return ResultData.success(oAuth2Response);
     }
 
@@ -467,18 +470,6 @@ public class AuthenticationController implements AuthenticationApi {
         // 校验参数
 
         // todo 获取新Token返回
-        return null;
-    }
-
-    /**
-     * doLogin 登录接口
-     *
-     * @param req 请求对象
-     * @param res 响应对象
-     * @return 处理结果
-     */
-    private Object doLogin(String tenantCode, HttpServletRequest req, HttpServletResponse res) {
-
         return null;
     }
 
@@ -534,6 +525,8 @@ public class AuthenticationController implements AuthenticationApi {
             OAuth2Response oAuth2Response = new OAuth2Response(LocalDateTime.now().plusHours(2));
             oAuth2Response.setSid(userResponse.getSessionId());
             oAuth2Response.setAccessToken(sessionService.touchSession(userResponse.getSessionId()));
+            oAuth2Response.setUserId(userResponse.getUserId());
+            oAuth2Response.setAccount(userResponse.getAccount());
             // 返回 Access-Token
             return ResultData.success(oAuth2Response);
         } else {
@@ -545,10 +538,9 @@ public class AuthenticationController implements AuthenticationApi {
      * 模式四：凭证式
      *
      * @param req 请求对象
-     * @param res 响应对象
      * @return 处理结果
      */
-    private Object clientToken(String tenantCode, HttpServletRequest req, HttpServletResponse res) {
+    private Object clientToken(String tenantCode, HttpServletRequest req) {
         // 获取参数
         String clientId = req.getParameter(Constants.OAuth2Param.client_id);
         String clientSecret = req.getParameter(Constants.OAuth2Param.client_secret);
@@ -580,49 +572,6 @@ public class AuthenticationController implements AuthenticationApi {
         // 返回 Client-Token
         return ResultData.success(oAuth2Response);
     }
-
-    // /**
-    //  * 凭证式
-    //  *
-    //  * @param clientId 应用标示
-    //  * @param secret   应用秘钥
-    //  * @param scope    应用授权作用域
-    //  */
-    // @Override
-    // public ResultData<OAuth2Response> clientToken(String tenantCode, String clientId, String secret, String scope) {
-    //     RSAUtils.getKeys();
-    //     return null;
-    // }
-    //
-    // /**
-    //  * 密码式
-    //  *
-    //  * @param clientId 应用标示
-    //  * @param username 账号
-    //  * @param secret 密码
-    //  */
-    // @Override
-    // public ResultData<OAuth2Response> userToken(String tenantCode, String clientId, String username, String secret) {
-    //     return null;
-    // }
-    //
-    // /**
-    //  * 回收token
-    //  *
-    //  * @param sid
-    //  */
-    // @Override
-    // public ResultData<Void> revoke(String sid) {
-    //     return null;
-    // }
-    //
-    // /**
-    //  * 确认授权接口
-    //  */
-    // @Override
-    // public ResultData<Void> confirm() {
-    //     return null;
-    // }
 
     /**
      * 验证URL的正则表达式
