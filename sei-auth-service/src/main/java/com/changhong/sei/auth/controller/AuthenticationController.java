@@ -338,6 +338,7 @@ public class AuthenticationController implements AuthenticationApi {
         // 5、判断：如果此次申请的Scope，该用户尚未授权，则转到授权页面
         boolean isGrant = approvalsService.isGrant(tenantCode, clientId, sessionUser.getUserId(), scope);
         if (!isGrant) {
+            data.put("userId", sessionUser.getUserId());
             data.put("clientId", clientId);
             data.put("clientName", clientDetail.getClientName());
             data.put("scope", scope);
@@ -364,19 +365,19 @@ public class AuthenticationController implements AuthenticationApi {
         // 存入redis缓存
         redisTemplate.boundValueOps(Constants.OAUTH2_CODE_KEY.concat(code)).set(vo, 5, TimeUnit.MINUTES);
 
-        String redirectUri;
+        String redirectUri = request.getParameter(Constants.OAuth2Param.redirect_uri);
         String responseType = request.getParameter(Constants.OAuth2Param.response_type);
         // 如果是 授权码式，则：开始重定向授权，下放code
         if (Constants.OAuth2ResponseType.code.equals(responseType)) {
             // 重定向授权，下放code
-            redirectUri = joinParam(url, code);
+            redirectUri = joinParam(redirectUri, Constants.OAuth2Param.code, code);
             if (StringUtils.isNotBlank(state)) {
                 redirectUri = joinParam(redirectUri, Constants.OAuth2Param.scope, state);
             }
         }
         // 如果是 隐藏式，则：开始重定向授权，下放 token
         else if (Constants.OAuth2ResponseType.token.equals(responseType)) {
-            redirectUri = buildImplicitRedirectUri(url, sid, state);
+            redirectUri = buildImplicitRedirectUri(redirectUri, sid, state);
         } else {
             // 默认返回
             throw new WebException("无效response_type: " + responseType);
@@ -482,7 +483,7 @@ public class AuthenticationController implements AuthenticationApi {
     private Object doConfirm(String tenantCode, HttpServletRequest req) {
         String clientId = req.getParameter(Constants.OAuth2Param.client_id);
         String scope = req.getParameter(Constants.OAuth2Param.scope);
-        String userId = ContextUtil.getUserId();
+        String userId = req.getParameter(Constants.OAuth2Param.userId);
         return approvalsService.saveGrantScope(tenantCode, clientId, userId, scope);
     }
 

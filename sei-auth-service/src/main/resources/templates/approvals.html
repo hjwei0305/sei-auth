@@ -14,6 +14,8 @@
 </head>
 <body>
 <div class="login-box">
+    <input type="hidden" id="tenantCode" name="tenantCode" th:value="${tenantCode}">
+    <input type="hidden" id="user_id" name="user_id" th:value="${userId}">
     <h2>OAuth2-认证中心-确认授权页</h2> <br>
     <div>
         <div><b>应用ID：</b><span th:utext="${clientId}"></span></div>
@@ -29,24 +31,21 @@
     </div>
 </div>
 <script type="text/javascript">
-    /*<![CDATA[*/
-    var tenantCode = [[${tenantCode}]];
-    /*]]>*/
-
     // 同意授权
     function yes() {
         console.log('-----------');
         $.ajax({
             type: 'POST',
-            url: _ctxPath + tenantCode + '/oauth2/doConfirm',
+            url: _ctxPath + $("#tenantCode").val() + '/oauth2/doConfirm',
             data: {
+                user_id: $("#user_id").val(),
                 client_id: getParam('client_id'),
                 scope: getParam('scope')
             },
             dataType: 'json',
             success: function (res) {
                 if (res.success) {
-                    alert('授权成功！');
+                    //alert('授权成功！');
                     setTimeout(function () {
                         location.reload();
                     }, 800);

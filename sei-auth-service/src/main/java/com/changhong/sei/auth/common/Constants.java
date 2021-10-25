@@ -87,6 +87,7 @@ public interface Constants {
         public static String access_token = "access_token";
         public static String refresh_token = "refresh_token";
         public static String grant_type = "grant_type";
+        public static String userId = "user_id";
         public static String username = "username";
         public static String password = "password";
     }
