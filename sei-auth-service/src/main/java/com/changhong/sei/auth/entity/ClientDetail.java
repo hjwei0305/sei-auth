@@ -18,12 +18,11 @@ import java.time.LocalDate;
  * @version 1.0.00  2021-10-18 10:42
  */
 @Entity
-@Table(name = "auth_client")
+@Table(name = "client_detail")
 @DynamicInsert
 @DynamicUpdate
-public class AuthClient extends BaseAuditableEntity implements ITenant, Serializable {
+public class ClientDetail extends BaseAuditableEntity implements ITenant, Serializable {
     private static final long serialVersionUID = 676143817403479972L;
-    public static final String FIELD_CLIENT_ID = "clientId";
 
     /**
      * 租户代码

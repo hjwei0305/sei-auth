@@ -1,7 +1,7 @@
 package com.changhong.sei.auth.service;
 
-import com.changhong.sei.auth.dao.AuthClientDao;
-import com.changhong.sei.auth.entity.AuthClient;
+import com.changhong.sei.auth.dao.ClientDetailDao;
+import com.changhong.sei.auth.entity.ClientDetail;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import com.changhong.sei.core.service.BaseEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,16 +14,16 @@ import org.springframework.stereotype.Service;
  * @version 1.0.00  2021-10-21 17:42
  */
 @Service
-public class AuthClientService extends BaseEntityService<AuthClient> {
+public class ClientDetailService extends BaseEntityService<ClientDetail> {
     @Autowired
-    private AuthClientDao dao;
+    private ClientDetailDao dao;
 
     @Override
-    protected BaseEntityDao<AuthClient> getDao() {
+    protected BaseEntityDao<ClientDetail> getDao() {
         return dao;
     }
 
-    public AuthClient getByClientId(String tenantCode, String clientId) {
+    public ClientDetail getByClientId(String tenantCode, String clientId) {
         return dao.findByClientIdAndTenantCode(clientId, tenantCode);
     }
 }

@@ -20,6 +20,8 @@ dependencies {
     compile(
             "org.springframework.boot:spring-boot-configuration-processor",
             "org.springframework.boot:spring-boot-starter-websocket",
+            // thymeleaf
+            "org.springframework.boot:spring-boot-starter-thymeleaf",
 
             // 直接引用消息通知包
             "com.changhong.sei:sei-notify-sdk:$sei_version",

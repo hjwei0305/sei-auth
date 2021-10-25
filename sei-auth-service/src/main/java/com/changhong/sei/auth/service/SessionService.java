@@ -37,10 +37,10 @@ public class SessionService {
     private final CacheBuilder cacheBuilder;
     @Autowired
     private OnlineUserService onlineUserService;
-    @Value("${sei.auth.enable.cookie:false}")
-    private boolean enableCookie;
-    private static final String COOKIE_SID = "x-sid";
-    private static final String COOKIE_CLIENT = "SEI_CLIENT";
+    // @Value("${sei.auth.enable.cookie:false}")
+    // private boolean enableCookie;
+    @Value("${sei.auth.enable.cross-browser-tab:true}")
+    private boolean enableCrossBrowserTab = true;
 
     public SessionService(JwtTokenUtil jwtTokenUtil, CacheBuilder cacheBuilder) {
         this.jwtTokenUtil = jwtTokenUtil;
@@ -70,23 +70,22 @@ public class SessionService {
         cacheBuilder.set(Constants.REDIS_KEY_PREFIX + sid, value, expire);
         onlineUserService.addSession(sessionUser);
 
-        if (enableCookie) {
-            try {
-                HttpServletRequest request = HttpUtils.getRequest();
-                HttpServletResponse response = HttpUtils.getResponse();
-                if (Objects.nonNull(request) && Objects.nonNull(response)) {
-                    byte[] encodedCookieBytes = Base64.getEncoder().encode(value.getBytes());
-                    String sidBase64 = new String(encodedCookieBytes);
-                    // sid写入cookie
-                    HttpUtils.writeCookieValue(COOKIE_SID, sidBase64, request, response);
-                    HttpUtils.writeCookieValue("_s", sidBase64, request, response);
-                    // 用户id写入cookie,以此控制同一个浏览器客户端是否允许登录不同的账号
-                    HttpUtils.writeCookieValue(COOKIE_CLIENT, Signature.sign(sessionUser.getUserId()), request, response);
-                }
-            } catch (Exception e) {
-                LOG.error("登录写入cookie异常", e);
+        // if (enableCookie) {
+        try {
+            HttpServletRequest request = HttpUtils.getRequest();
+            HttpServletResponse response = HttpUtils.getResponse();
+            if (Objects.nonNull(request) && Objects.nonNull(response)) {
+                byte[] encodedCookieBytes = Base64.getEncoder().encode(sid.getBytes());
+                String sidBase64 = new String(encodedCookieBytes);
+                // sid写入cookie
+                HttpUtils.writeCookieValue(Constants.COOKIE_SID, sidBase64, request, response);
+                // 用户id写入cookie,以此控制同一个浏览器客户端是否允许登录不同的账号
+                HttpUtils.writeCookieValue(Constants.COOKIE_CLIENT, Signature.sign(sessionUser.getUserId()), request, response);
             }
+        } catch (Exception e) {
+            LOG.error("登录写入cookie异常", e);
         }
+        // }
     }
 
     /**
@@ -115,13 +114,13 @@ public class SessionService {
         } catch (Exception e) {
             value = null;
         }
-        if (StringUtils.isNotBlank(value) && enableCookie) {
+        if (StringUtils.isNotBlank(value) && !enableCrossBrowserTab) {
             try {
                 HttpServletRequest request = HttpUtils.getRequest();
                 HttpServletResponse response = HttpUtils.getResponse();
                 if (Objects.nonNull(request) && Objects.nonNull(response)) {
                     // 用户id写入cookie,以此控制同一个浏览器客户端是否允许登录不同的账号
-                    String userIdSign = HttpUtils.readCookieValue(COOKIE_CLIENT, request);
+                    String userIdSign = HttpUtils.readCookieValue(Constants.COOKIE_CLIENT, request);
                     if (StringUtils.isNotBlank(userIdSign)) {
                         // 获取当前用户会话
                         SessionUser sessionUser = ContextUtil.getSessionUser(value);
@@ -157,20 +156,26 @@ public class SessionService {
             }
 
             // 删除cookie
-            if (enableCookie) {
-                try {
-                    HttpServletRequest request = HttpUtils.getRequest();
-                    if (Objects.nonNull(request)) {
-                        // 删除cookie
-                        HttpUtils.deleteCookie(COOKIE_SID, request);
-                        // 删除cookie
-                        HttpUtils.deleteCookie(COOKIE_CLIENT, request);
-                    }
-                } catch (Exception e) {
-                    LOG.error("登录删除cookie异常", e);
+            try {
+                HttpServletRequest request = HttpUtils.getRequest();
+                if (Objects.nonNull(request)) {
+                    // 删除cookie
+                    HttpUtils.deleteCookie(Constants.COOKIE_SID, request);
+                    // 删除cookie
+                    HttpUtils.deleteCookie(Constants.COOKIE_CLIENT, request);
                 }
+            } catch (Exception e) {
+                LOG.error("登录删除cookie异常", e);
             }
         });
     }
 
+    public SessionUser getSessionUser(String sid) {
+        String token = cacheBuilder.get(Constants.REDIS_KEY_PREFIX + sid);
+        try {
+            return ContextUtil.getSessionUser(token);
+        } catch (Exception e) {
+            return new SessionUser();
+        }
+    }
 }

@@ -77,41 +77,12 @@ public interface AuthenticationApi {
 
     /**
      * OAuth2协议认证
-     *
-     * @param clientId     应用标示
-     * @param redirectUri  授权后重定向的回调链接地址，请使用urlencode对链接进行处理
-     * @param responseType 返回类型[授权码:code 隐藏式:token 密码式:password 客户端凭证:client_credentials],固定为code
-     * @param scope        应用授权作用域
-     * @param state        重定向后会带上state参数，可以填写a-zA-Z0-9的参数值，长度不可超过128个字节
      */
-    @GetMapping(path = "{tenantCode}/oauth2/authorize")
+    @RequestMapping(path = "{tenantCode}/oauth2/{apiPath}", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation("OAuth2协议认证")
-    ResultData<String> authorize(@PathVariable(name = "tenantCode") String tenantCode,
-                                 @RequestParam(name = "client_id") String clientId,
-                                 @RequestParam(name = "redirect_uri") String redirectUri,
-                                 @RequestParam(name = "response_type") String responseType,
-                                 @RequestParam(name = "scope") String scope,
-                                 @RequestParam(name = "state", required = false) String state,
-                                 HttpServletRequest request, HttpServletResponse response) throws IOException;
-
-    /**
-     * 通过授权码请求token
-     *
-     * @param clientId     应用标示
-     * @param clientSecret 应用秘钥
-     * @param grantType    授权方式
-     * @param code         授权码
-     * @param redirectUri  授权后重定向的回调链接地址，请使用urlencode对链接进行处理
-     */
-    @PostMapping(path = "{tenantCode}/oauth2/token")
-    @ApiOperation("通过OAuth2授权码请求Token")
-    ResultData<OAuth2Response> token(@PathVariable(name = "tenantCode") String tenantCode,
-                                     @RequestParam("client_id") String clientId,
-                                     @RequestParam("client_secret") String clientSecret,
-                                     @RequestParam("grant_type") String grantType,
-                                     @RequestParam("code") String code,
-                                     @RequestParam("redirect_uri") String redirectUri,
-                                     HttpServletRequest request);
+    Object oauth2(@PathVariable(name = "tenantCode") String tenantCode,
+                     @PathVariable(name = "apiPath") String apiPath,
+                     HttpServletRequest request, HttpServletResponse response);
 
     // /**
     //  * 凭证式

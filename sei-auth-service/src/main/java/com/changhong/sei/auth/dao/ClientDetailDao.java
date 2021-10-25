@@ -1,6 +1,6 @@
 package com.changhong.sei.auth.dao;
 
-import com.changhong.sei.auth.entity.AuthClient;
+import com.changhong.sei.auth.entity.ClientDetail;
 import com.changhong.sei.core.dao.BaseEntityDao;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * @version 1.0.00  2021-10-21 17:41
  */
 @Repository
-public interface AuthClientDao extends BaseEntityDao<AuthClient> {
+public interface ClientDetailDao extends BaseEntityDao<ClientDetail> {
 
-    AuthClient findByClientIdAndTenantCode(String clientId, String tenantCode);
+    ClientDetail findByClientIdAndTenantCode(String clientId, String tenantCode);
 }

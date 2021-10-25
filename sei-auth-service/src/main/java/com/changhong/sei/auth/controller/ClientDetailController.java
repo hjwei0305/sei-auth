@@ -1,9 +1,9 @@
 package com.changhong.sei.auth.controller;
 
-import com.changhong.sei.auth.api.AuthClientApi;
-import com.changhong.sei.auth.dto.AuthClientDto;
-import com.changhong.sei.auth.entity.AuthClient;
-import com.changhong.sei.auth.service.AuthClientService;
+import com.changhong.sei.auth.api.ClientDetailApi;
+import com.changhong.sei.auth.dto.ClientDetailDto;
+import com.changhong.sei.auth.entity.ClientDetail;
+import com.changhong.sei.auth.service.ClientDetailService;
 import com.changhong.sei.core.controller.BaseEntityController;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.serach.PageResult;
@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
  * @version 1.0.00  2021-10-21 17:44
  */
 @RestController
-@Api(value = "AuthClientApi", tags = "客户端信息服务")
-@RequestMapping(path = AuthClientApi.PATH, produces = MediaType.APPLICATION_JSON_VALUE)
-public class AuthClientController extends BaseEntityController<AuthClient, AuthClientDto> implements AuthClientApi {
+@Api(value = "ClientDetailApi", tags = "客户端信息服务")
+@RequestMapping(path = ClientDetailApi.PATH, produces = MediaType.APPLICATION_JSON_VALUE)
+public class ClientDetailController extends BaseEntityController<ClientDetail, ClientDetailDto> implements ClientDetailApi {
 
     @Autowired
-    private AuthClientService service;
+    private ClientDetailService service;
 
     /**
      * 获取使用的业务逻辑实现
@@ -35,7 +35,7 @@ public class AuthClientController extends BaseEntityController<AuthClient, AuthC
      * @return 业务逻辑
      */
     @Override
-    public BaseEntityService<AuthClient> getService() {
+    public BaseEntityService<ClientDetail> getService() {
         return service;
     }
 
@@ -46,7 +46,7 @@ public class AuthClientController extends BaseEntityController<AuthClient, AuthC
      * @return 分页查询结果
      */
     @Override
-    public ResultData<PageResult<AuthClientDto>> findByPage(Search search) {
+    public ResultData<PageResult<ClientDetailDto>> findByPage(Search search) {
         return convertToDtoPageResult(service.findByPage(search));
     }
 }

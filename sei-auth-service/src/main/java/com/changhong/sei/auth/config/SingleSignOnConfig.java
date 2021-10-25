@@ -15,6 +15,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * 实现功能：
@@ -26,7 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableAsync
 @EnableScheduling
 @EnableConfigurationProperties({AuthProperties.class, SsoProperties.class})
-public class SingleSignOnConfig {
+public class SingleSignOnConfig implements WebMvcConfigurer {
 
 //    private final RedisConnectionFactory redisConnectionFactory;
 //
@@ -57,6 +59,15 @@ public class SingleSignOnConfig {
 //        container.addMessageListener(orderStateListener(), ChannelTopic.of(OnlineSubscribeListener.TOPIC));
 //        return container;
 //    }
+
+    /**
+     * 添加静态资源的路径映射
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler( "/js/**", "/css/**", "/images/**")
+                .addResourceLocations("classpath:/static/js/", "classpath:/static/css/", "classpath:/static/images/");
+    }
 
     @Bean
     @ConditionalOnMissingBean(IEncrypt.class)

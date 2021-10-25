@@ -23,11 +23,19 @@ sei:
 #    username: admin
     ## Basic认证密码
 #    password: 123456
-
-
 spring:
   application:
     name: ${sei.application.code}
+  # 模版配置
+  thymeleaf:
+    prefix: classpath:/templates/
+    check-template-location: true
+    suffix: .html
+    encoding: UTF-8
+    mode: HTML
+    cache: false
+    servlet:
+      content-type: text/html
   cloud:
     config:
       # 配置中心认证token
@@ -61,6 +69,7 @@ spring:
 #        healthCheckInterval: 15s
 #        health-check-url: http://${spring.cloud.client.ip-address}:${server.port}/actuator/health
 #        hostname: ${spring.application.name}.industry
+
 logging:
   level:
     com:

@@ -23,7 +23,10 @@ public class AuthorizeCodeVo implements Serializable {
      * 应用id
      */
     private String clientId;
-
+    /**
+     * 当前登录会话id
+     */
+    private String sid;
     /**
      * 授权范围
      */
@@ -56,6 +59,14 @@ public class AuthorizeCodeVo implements Serializable {
 
     public void setClientId(String clientId) {
         this.clientId = clientId;
+    }
+
+    public String getSid() {
+        return sid;
+    }
+
+    public void setSid(String sid) {
+        this.sid = sid;
     }
 
     public String getScope() {

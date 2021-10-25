@@ -15,7 +15,7 @@ import java.time.LocalDate;
  * @version 1.0.00  2021-10-21 17:46
  */
 @ApiModel(description = "客户端信息DTO")
-public class AuthClientDto extends BaseEntityDto {
+public class ClientDetailDto extends BaseEntityDto {
     /**
      * 租户代码
      */
