@@ -20,6 +20,7 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.log.annotation.AccessLog;
 import com.changhong.sei.core.util.HttpUtils;
+import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.WebException;
 import com.changhong.sei.util.IdGenerator;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
@@ -94,6 +95,7 @@ public class AuthenticationController implements AuthenticationApi {
             // 设置当前环境
             userResponse.setEnv(ContextUtil.getProperty("spring.cloud.config.profile"));
         }
+        LogUtil.bizLog("登录结果: {}", JsonUtils.toJson(resultData));
         return resultData;
     }
 
