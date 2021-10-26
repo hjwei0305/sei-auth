@@ -127,7 +127,7 @@
     function doLogin() {
         $.ajax({
             type: 'POST',
-            url: _ctxPath + 'auth/login',
+            url: '/auth/login',
             contentType: 'application/json',
             data: JSON.stringify({
                 tenant: $('[name=tenant]').val(),
