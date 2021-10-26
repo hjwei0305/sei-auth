@@ -123,7 +123,7 @@
         console.log('-----------');
         $.ajax({
             type: 'POST',
-            url: baseUrl + $("#tenantCode").val() + '/oauth2/doConfirm',
+            url: baseUrl + "/" + $("#tenantCode").val() + '/oauth2/doConfirm',
             data: {
                 user_id: $("#user_id").val(),
                 client_id: getParam('client_id'),
@@ -194,5 +194,5 @@
 
 </script>
 </body>
-<script src="../static/js/jquery-3.0.0.min.js" th:src="${baseUrl + 'js/jquery-3.0.0.min.js'}"></script>
+<script src="../static/js/jquery-3.0.0.min.js" th:src="${baseUrl + '/js/jquery-3.0.0.min.js'}"></script>
 </html>

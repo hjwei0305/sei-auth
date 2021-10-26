@@ -127,7 +127,7 @@
     function doLogin() {
         $.ajax({
             type: 'POST',
-            url: baseUrl + 'auth/login',
+            url: baseUrl + '/auth/login',
             contentType: 'application/json',
             data: JSON.stringify({
                 tenant: $('[name=tenant]').val(),
@@ -165,6 +165,6 @@
     }
 </script>
 </body>
-<script src="../static/js/md5.js" th:src="${baseUrl + 'js/md5.js'}"></script>
-<script src="../static/js/jquery-3.0.0.min.js" th:src="${baseUrl + 'js/jquery-3.0.0.min.js'}"></script>
+<script src="../static/js/md5.js" th:src="${baseUrl + '/js/md5.js'}"></script>
+<script src="../static/js/jquery-3.0.0.min.js" th:src="${baseUrl + '/js/jquery-3.0.0.min.js'}"></script>
 </html>
