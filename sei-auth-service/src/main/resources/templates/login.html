@@ -2,7 +2,11 @@
 
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
     <th:block th:include="base/base :: base_head"/>
     <title>认证中心-OAuth2</title>
     <style type="text/css">
@@ -10,12 +14,83 @@
             margin: 0;
             padding: 0;
         }
+        body{
+            text-align: center;
+        }
+        h3{
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 auto 32px auto;
+            color: rgba(0,0,0,0.85);
+        }
 
         .login-box {
-            width: 400px;
-            margin: 20vh auto;
+            width: 290px;
             padding: 70px;
-            border: 1px #000 solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        form{
+            width: 100%;
+        }
+
+        input{
+            height:42px;
+            min-width: 180px;
+            width: 100%;
+            margin-bottom: 16px;
+            padding: 4px 11px;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #d9d9d9;
+            color: #666;
+            font-size: 16px;
+            border-radius: 4px;
+        }
+        .row-item{
+            width: 100%;
+        }
+        .btn-login{
+            width: 315px;
+            cursor: pointer;
+            background-color: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+            text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+            box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
+            line-height: 1.499;
+            position: relative;
+            display: inline-block;
+            font-weight: 400;
+            white-space: nowrap;
+            text-align: center;
+            background-image: none;
+            border: 1px solid transparent;
+            transition: all .3s cubic-bezier(.645,.045,.355,1);
+            user-select: none;
+            touch-action: manipulation;
+            padding: 0 15px;
+            border-radius: 4px;
+            margin-bottom: 0;
+            font-size: 16px;
+            height: 48px;
+        }
+        .btn-login:active{
+            background-color: #096dd9;
+            border-color: #096dd9;
+        }
+
+        .head-title{
+            height: 60px;
+            line-height: 60px;
+            text-align: left;
+            padding: 0 24px;
+            background-color: #001529;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
         }
 
         .login-box button {
@@ -25,19 +100,20 @@
     </style>
 </head>
 <body>
+    <div class="head-title">SEI-认证中心(OAuth2)</div>
 <div class="login-box">
     <form method="post" id="login_form" action="javascript:doLogin();">
-        <h3>认证中心(OAuth2)-登录页</h3>
-        <div>
-            <div>
+        <h3>用户登录</h3>
+        <div class="form-box">
+            <div class="row-item">
                 <input type="hidden" name="tenant" th:value="${tenantCode}"/>
-                <input type="text" placeholder="Account" name="account" autofocus="autofocus"/>
+                <input type="text" placeholder="Account" autocomplete="off" name="account" autofocus="autofocus"/>
             </div>
-            <div>
-                <input type="password" placeholder="Password" name="password"/>
+            <div class="row-item">
+                <input type="password" value="" autocomplete="off" placeholder="Password" name="password"/>
             </div>
-            <div>
-                <input type="submit" value="Login "/>
+            <div class="row-item">
+                <input type="submit" class="btn-login" value="Login "/>
             </div>
         </div>
     </form>

@@ -2,31 +2,118 @@
 
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1 maximum-scale=1, user-scalable=no">
     <th:block th:include="base/base :: base_head"/>
     <title>OAuth2-认证中心-确认授权页</title>
     <style type="text/css">
-        /*body{background-color: #83c4f0;}*/
-        *{margin: 0; padding: 0;}
-        .login-box{width: 400px; margin: 20vh auto; padding: 70px; border: 1px #000 solid;}
-        .login-box button{padding: 5px 15px; cursor: pointer; }
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            text-align: center;
+        }
+        h3{
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 auto 32px auto;
+            color: rgba(0,0,0,0.85);
+        }
+
+        .login-box {
+            width: 360px;
+            padding: 70px;
+            margin: 0 auto;
+        }
+        .row-item{
+            width: 100%;
+            text-align: left;
+            margin: 24px 0;
+        }
+        .row-item b{
+            color:rgba(0,0,0,0.65)
+        }
+        .row-item.tip{
+            color:rgb(235, 158, 17);
+            font-size: 20px;
+        }
+        button{
+            margin-top: 16px;
+            cursor: pointer;
+            width: 112px;
+            color: rgba(0,0,0,.65);
+            text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+            box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
+            line-height: 1.499;
+            position: relative;
+            display: inline-block;
+            font-weight: 400;
+            white-space: nowrap;
+            text-align: center;
+            background-image: none;
+            border: 1px solid transparent;
+            transition: all .3s cubic-bezier(.645,.045,.355,1);
+            user-select: none;
+            touch-action: manipulation;
+            padding: 0 15px;
+            border-radius: 4px;
+            margin-bottom: 0;
+            font-size: 16px;
+            height: 48px;
+            margin-right: 16px;
+        }
+        button:active{
+            background-color: #999;
+            border-color: #999;
+        }
+
+        button.primary{
+            color: #fff;
+            background-color: #1890ff;
+            border-color: #1890ff;
+            margin-right: 0;
+        }
+        button.primary:active{
+            background-color: #096dd9;
+            border-color: #096dd9;
+        }
+
+        .head-title{
+            height: 60px;
+            line-height: 60px;
+            text-align: left;
+            padding: 0 24px;
+            background-color: #001529;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
-<div class="login-box">
+    <div class="head-title">SEI-认证中心(OAuth2)</div>
+    <div class="login-box">
     <input type="hidden" id="tenantCode" name="tenantCode" th:value="${tenantCode}">
     <input type="hidden" id="user_id" name="user_id" th:value="${userId}">
-    <h2>OAuth2-认证中心-确认授权页</h2> <br>
-    <div>
-        <div><b>应用ID：</b><span th:utext="${clientId}"></span></div>
-        <div><b>应用名称：</b><span th:utext="${clientName}"></span></div>
-        <div><b>请求授权：</b><span th:utext="${scope}"></span></div>
-        <br>
-        <div>------------- 是否同意授权 -------------</div>
-        <br>
-        <div>
-            <button onclick="yes()">同意</button>
+    <h3>应用授权</h3>
+    <div class="form-box">
+        <div class="row-item">
+            <b>应用ID：</b><span th:utext="${clientId}"></span>
+        </div>
+        <div class="row-item">
+            <b>应用名称：</b><span th:utext="${clientName}"></span>
+        </div>
+        <div class="row-item">
+            <b>请求授权：</b><span th:utext="${scope}"></span>
+        </div>
+        <div class="row-item tip">-------- 是否同意授权 --------</div>
+        <div class="row-item">
             <button onclick="no()">拒绝</button>
+            <button onclick="yes()" class="primary">同意</button>
         </div>
     </div>
 </div>

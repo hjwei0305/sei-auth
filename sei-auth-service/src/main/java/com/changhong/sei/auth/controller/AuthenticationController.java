@@ -83,6 +83,7 @@ public class AuthenticationController implements AuthenticationApi {
     @Override
     @AccessLog(AccessLog.FilterReply.DENY)
     public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
+        LogUtil.bizLog("登录请求: {}", JsonUtils.toJson(loginRequest));
         HttpServletRequest request = HttpUtils.getRequest();
         // 客户端ip
         ThreadLocalUtil.setTranVar("ClientIP", HttpUtils.getClientIP(request));
