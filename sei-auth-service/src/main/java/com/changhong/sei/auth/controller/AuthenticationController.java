@@ -20,7 +20,6 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.log.annotation.AccessLog;
 import com.changhong.sei.core.util.HttpUtils;
-import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.WebException;
 import com.changhong.sei.util.IdGenerator;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
@@ -288,7 +287,12 @@ public class AuthenticationController implements AuthenticationApi {
     private Object authorize(String tenantCode, HttpServletRequest request, HttpServletResponse response) {
         Map<String, String> data = new HashMap<>();
         data.put("tenantCode", tenantCode);
-        data.put("baseUrl", request.getRequestURL().toString().replace(request.getServletPath(), "/"));
+        // todo 网关上下文地址,注意修改
+        String contextPath = request.getContextPath();
+        if (!StringUtils.startsWith(contextPath, "/")) {
+            contextPath = "/" + contextPath;
+        }
+        data.put("baseUrl", "/api-gateway".concat(contextPath));
 
         // 如果尚未登录, 则先去登录
         String sid = HttpUtils.readCookieValue(Constants.COOKIE_SID, request);

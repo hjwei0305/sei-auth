@@ -1,25 +1,17 @@
 <div xmlns:th="http://www.thymeleaf.org" th:fragment="base_head">
     <meta charset="UTF-8">
     <!-- content的取值为webkit,ie-comp,ie-stand之一，区分大小写，分别代表用webkit内核，IE兼容内核，IE标准内核 -->
-    <meta name="renderer" content="webkit"/>
-    <meta name="force-rendering" content="webkit"/>
+    <meta name="renderer" content="webkit" />
+    <meta name="force-rendering" content="webkit" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge chrome=1"/>
-    <base th:href="/api-gateway/${#request.getContextPath()}">
-
-    <script type="text/javascript">
-        /*<![CDATA[*/
-        var _basePath = window.location.origin + "[[${#request.contextPath}]]";
-        /*]]>*/
-    </script>
 
     <script type="application/javascript" th:inline="JavaScript">
         /*<![CDATA[*/
-        // var baseUrl = [[${baseUrl}]];
+        var _baseUrl = [[${baseUrl}]];
         /*]]>*/
-        // var _ctxPath = baseUrl;
-        // if (!baseUrl) {
-        //     _ctxPath = _basePath;
-        // }
-        var _ctxPath = [[${#request.contextPath}]]
+        var baseUrl = "";
+        if (!_baseUrl) {
+            baseUrl = _baseUrl;
+        }
     </script>
 </div>
