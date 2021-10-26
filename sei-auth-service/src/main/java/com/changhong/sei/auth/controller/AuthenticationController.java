@@ -382,7 +382,11 @@ public class AuthenticationController implements AuthenticationApi {
         }
         // 如果是 隐藏式，则：开始重定向授权，下放 token
         else if (Constants.OAuth2ResponseType.token.equals(responseType)) {
-            redirectUri = buildImplicitRedirectUri(redirectUri, sid, state);
+            // redirectUri = buildImplicitRedirectUri(redirectUri, sid, state);
+            redirectUri = joinParam(redirectUri, "sid", sid);
+            if (StringUtils.isNotBlank(state)) {
+                redirectUri = joinParam(redirectUri, Constants.OAuth2Param.scope, state);
+            }
         } else {
             // 默认返回
             throw new WebException("无效response_type: " + responseType);
