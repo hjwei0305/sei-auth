@@ -13,11 +13,12 @@
 
     <script type="application/javascript" th:inline="JavaScript">
         /*<![CDATA[*/
-        var baseUrl = [[${baseUrl}]];
+        // var baseUrl = [[${baseUrl}]];
         /*]]>*/
-        var _ctxPath = baseUrl;
-        if (!baseUrl) {
-            _ctxPath = _basePath;
-        }
+        // var _ctxPath = baseUrl;
+        // if (!baseUrl) {
+        //     _ctxPath = _basePath;
+        // }
+        var _ctxPath = [[${#request.contextPath}]]
     </script>
 </div>

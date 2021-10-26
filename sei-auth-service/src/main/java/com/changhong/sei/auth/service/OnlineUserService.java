@@ -64,7 +64,7 @@ public class OnlineUserService {
      */
     @Async
     @Transactional(rollbackFor = Exception.class)
-    public void addSession(SessionUser sessionUser) {
+    public void addOnlineUser(SessionUser sessionUser) {
         OnlineUser session = new OnlineUser();
         // 会话id
         session.setSid(sessionUser.getSessionId());
@@ -100,7 +100,7 @@ public class OnlineUserService {
      * @param sid 会话id
      */
     @Transactional(rollbackFor = Exception.class)
-    public void removeSession(String sid) {
+    public void removeOnlineUser(String sid) {
         int count = dao.removeSid(sid);
         LogUtil.bizLog("删除sid:{},条数:{}", sid, count);
         // 更新退出时间

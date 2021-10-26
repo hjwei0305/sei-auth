@@ -68,7 +68,7 @@ public class SessionService {
         final String sid = sessionUser.getSessionId();
         final String value = sessionUser.getToken();
         cacheBuilder.set(Constants.REDIS_KEY_PREFIX + sid, value, expire);
-        onlineUserService.addSession(sessionUser);
+        onlineUserService.addOnlineUser(sessionUser);
 
         // if (enableCookie) {
         try {
@@ -143,7 +143,7 @@ public class SessionService {
     @Transactional(rollbackFor = Exception.class)
     public void removeSession(final String sid, final long timeOut) {
         LogUtil.bizLog("SID: " + sid);
-        onlineUserService.removeSession(sid);
+        onlineUserService.removeOnlineUser(sid);
 
         CompletableFuture.runAsync(() -> {
             if (timeOut > 0) {

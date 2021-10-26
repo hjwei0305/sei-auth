@@ -83,7 +83,6 @@ public class AuthenticationController implements AuthenticationApi {
     @Override
     @AccessLog(AccessLog.FilterReply.DENY)
     public ResultData<SessionUserResponse> login(LoginRequest loginRequest) {
-        LogUtil.bizLog("登录请求: {}", JsonUtils.toJson(loginRequest));
         HttpServletRequest request = HttpUtils.getRequest();
         // 客户端ip
         ThreadLocalUtil.setTranVar("ClientIP", HttpUtils.getClientIP(request));
@@ -96,7 +95,6 @@ public class AuthenticationController implements AuthenticationApi {
             // 设置当前环境
             userResponse.setEnv(ContextUtil.getProperty("spring.cloud.config.profile"));
         }
-        LogUtil.bizLog("登录结果: {}", JsonUtils.toJson(resultData));
         return resultData;
     }
 
