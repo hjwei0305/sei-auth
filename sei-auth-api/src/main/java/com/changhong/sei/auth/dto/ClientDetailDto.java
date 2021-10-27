@@ -16,6 +16,7 @@ import java.time.LocalDate;
  */
 @ApiModel(description = "客户端信息DTO")
 public class ClientDetailDto extends BaseEntityDto {
+    private static final long serialVersionUID = -2204732427618978156L;
     /**
      * 租户代码
      */
