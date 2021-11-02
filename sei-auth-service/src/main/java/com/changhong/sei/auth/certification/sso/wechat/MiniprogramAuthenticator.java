@@ -178,19 +178,19 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
         // String url = String.format(GET_USER_URL, sso.getAppId(), sso.getCropSecret(), code);
         String url = String.format(GET_USER_URL, "wx21f216c29b156651", "4f812482a00235f70c042c8d20a9dc5b", code);
         Map<String, Object> userMap;
-        LogUtil.bizLog("小程序认证请求: {}", url);
+        LOG.info("小程序认证请求: {}", url);
         try {
             String result = HttpUtils.sendGet(url);
-            LogUtil.bizLog("小程序认证请求结果: {}", result);
+            LOG.info("小程序认证请求结果: {}", result);
             userMap = JsonUtils.fromJson(result, HashMap.class);
         } catch (Exception e) {
             LOG.error("发起微信平台请求[" + url + "]异常.", e);
             return ResultData.fail("发起微信平台请求[" + url + "]异常.");
         }
-        LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
-        if (!"0".equals(userMap.get("errcode"))) {
-            return ResultData.fail("" + userMap.get("errmsg"));
+        if (Objects.isNull(userMap)) {
+            return ResultData.fail("小程序认证失败.");
         }
+        LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
         String openId = (String) userMap.get("openid");
         String sessionKey = (String) userMap.get("session_key");
         // 暂存sessionKey
