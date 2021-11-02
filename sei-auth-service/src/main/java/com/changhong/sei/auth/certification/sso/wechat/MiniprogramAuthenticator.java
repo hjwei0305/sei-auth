@@ -171,8 +171,9 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
     public ResultData<SessionUserResponse> auth(HttpServletRequest request) {
         // 授权码
         String code = request.getParameter("code");
-        AuthProperties.SingleSignOnProperties sso = properties.getSso();
-        String url = String.format(GET_USER_URL, sso.getAppId(), sso.getCropSecret(), code);
+        // AuthProperties.SingleSignOnProperties sso = properties.getSso();
+        // String url = String.format(GET_USER_URL, sso.getAppId(), sso.getCropSecret(), code);
+        String url = String.format(GET_USER_URL, "wx21f216c29b156651", "4f812482a00235f70c042c8d20a9dc5b", code);
         Map<String, Object> userMap = WeChatUtil.httpRequest(url, "GET", null);
         LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
         if (!"0".equals(userMap.get("errcode"))) {
