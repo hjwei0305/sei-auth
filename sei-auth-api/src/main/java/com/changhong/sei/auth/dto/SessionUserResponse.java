@@ -223,7 +223,12 @@ public class SessionUserResponse implements Serializable {
         /**
          * 密码过期
          */
-        passwordExpire
+        passwordExpire,
+
+        /**
+         * 未绑定
+         */
+        noBind,
     }
 
     public static SessionUserResponse build() {

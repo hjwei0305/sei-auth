@@ -244,9 +244,13 @@ public class DefaultOAuth2Authenticator extends AbstractTokenAuthenticator imple
                         userResponse.setTenantCode(account.getTenantCode());
                         userResponse.setAccount(account.getAccount());
                         userResponse.setLoginAccount(account.getOpenId());
+                        userResponse.setUserId(account.getUserId());
+                        userResponse.setUserName(account.getName());
                         SessionUserResponse sessionUserResponse = result.getData();
                         if (Objects.nonNull(sessionUserResponse)) {
                             userResponse.setSessionId(sessionUserResponse.getSessionId());
+                            userResponse.setUserType(sessionUserResponse.getUserType());
+                            userResponse.setAuthorityPolicy(sessionUserResponse.getAuthorityPolicy());
                             userResponse.setLoginStatus(sessionUserResponse.getLoginStatus());
                         }
                     }

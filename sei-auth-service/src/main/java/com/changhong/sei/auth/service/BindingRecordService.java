@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  * @author sei
  * @since 2020-09-04 15:24:04
  */
-@Service("bindingRecordService")
+@Service
 public class BindingRecordService extends BaseEntityService<BindingRecord> {
     @Autowired
     private BindingRecordDao dao;
@@ -30,8 +30,8 @@ public class BindingRecordService extends BaseEntityService<BindingRecord> {
         return dao;
     }
 
-    @Transactional
-    public ResultData<String> recordBind(Account account, ChannelEnum channel, boolean isBind) {
+    @Transactional(rollbackFor = Exception.class)
+    public void recordBind(Account account, ChannelEnum channel, boolean isBind) {
         BindingRecord record = new BindingRecord();
         record.setTenantCode(account.getTenantCode());
         record.setUserId(account.getUserId());
@@ -42,6 +42,5 @@ public class BindingRecordService extends BaseEntityService<BindingRecord> {
         record.setChannel(channel);
 
         this.save(record);
-        return ResultData.success();
     }
 }

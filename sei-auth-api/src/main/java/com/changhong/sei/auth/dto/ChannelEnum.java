@@ -38,5 +38,11 @@ public enum ChannelEnum {
      * 钉钉
      */
     @Remark("钉钉")
-    DingTalk
+    DingTalk,
+
+    /**
+     * 企业微信
+     */
+    @Remark("微信小程序")
+    WXMiniProgram
 }

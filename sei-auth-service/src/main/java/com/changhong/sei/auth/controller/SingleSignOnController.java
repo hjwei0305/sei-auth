@@ -20,14 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -36,7 +34,7 @@ import java.util.Map;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-04-16 14:52
  */
-@Controller
+@RestController
 @AccessLog(AccessLog.FilterReply.DENY)
 @Api(value = "SingleSignOnApi", tags = "单点登录服务")
 public class SingleSignOnController implements Constants {
@@ -47,7 +45,7 @@ public class SingleSignOnController implements Constants {
 
     @ApiOperation(value = "OAuth2授权路由(PC端)", notes = "OAuth2授权路由(PC端使用)")
     @RequestMapping(path = AUTHORIZE_ENDPOINT, method = {RequestMethod.GET, RequestMethod.POST})
-    public String authorize(HttpServletRequest request) {
+    public String authorize(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
             // 单点登录失败：authType不能为空！
@@ -57,10 +55,12 @@ public class SingleSignOnController implements Constants {
 
         String endpoint = authenticator.getAuthorizeEndpoint(request);
         LOG.info("【OAuth2网页授权】获取code, endpoint={}", endpoint);
-        return "redirect:" + endpoint;
+        // 发送重定向
+        // return "redirect:" + endpoint;
+        response.sendRedirect(endpoint);
+        return null;
     }
 
-    @ResponseBody
     @ApiOperation(value = "OAuth2授权路由(移动端)", notes = "OAuth2授权路由(移动端使用)")
     @RequestMapping(path = "/sso/authorizeData", method = {RequestMethod.GET, RequestMethod.POST})
     public ResultData<Map<String, String>> authorizeData(HttpServletRequest request) {
@@ -72,7 +72,7 @@ public class SingleSignOnController implements Constants {
         Oauth2Authenticator authenticator = builder.getOauth2Authenticator(authType);
 
         ResultData<Map<String, String>> result = authenticator.getAuthorizeData(request);
-        if  (LOG.isInfoEnabled()) {
+        if (LOG.isInfoEnabled()) {
             LOG.info("【OAuth2网页授权】获取code, result = {}", JsonUtils.toJson(result));
         }
         return result;
@@ -80,7 +80,7 @@ public class SingleSignOnController implements Constants {
 
     @ApiOperation(value = "单点登录", notes = "PC应用单点登录")
     @RequestMapping(path = {SSO_LOGIN_ENDPOINT}, method = {RequestMethod.GET, RequestMethod.POST})
-    public String ssoLogin(HttpServletRequest request) {
+    public ResultData<SessionUserResponse> ssoLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
             // 单点登录失败：authType不能为空！
@@ -116,12 +116,18 @@ public class SingleSignOnController implements Constants {
                 index = authenticator.getLogoutUrl(userResponse, agentIsMobile, request);
             }
         } else {
-            LOG.error(StringUtils.isBlank(result.getMessage()) ? "单点登录失败：未获取到当前登录用户！": result.getMessage());
+            LOG.error(StringUtils.isBlank(result.getMessage()) ? "单点登录失败：未获取到当前登录用户！" : result.getMessage());
         }
-        return "redirect:" + index;
+        if (StringUtils.isNotBlank(index)) {
+            // 发送重定向
+            // return "redirect:" + index;
+            response.sendRedirect(index);
+            return null;
+        } else {
+            return result;
+        }
     }
 
-    @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
     @RequestMapping(path = "/sso/binding/socialAccount", method = {RequestMethod.POST}, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultData<SessionUserResponse> binding(@RequestBody @Valid LoginRequest loginRequest, HttpServletRequest request) {
@@ -132,7 +138,6 @@ public class SingleSignOnController implements Constants {
         return authenticator.bindingAccount(loginRequest, agentIsMobile);
     }
 
-    @ResponseBody
     @ApiOperation(value = "绑定社交账号", notes = "绑定社交账号")
     @RequestMapping(path = "/sso/js/sdk", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResultData<Map<String, String>> jsSdk(HttpServletRequest request) {

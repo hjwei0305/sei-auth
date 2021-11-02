@@ -1,7 +1,6 @@
 package com.changhong.sei.auth.entity;
 
 import com.changhong.sei.auth.dto.ChannelEnum;
-import com.changhong.sei.core.entity.BaseAuditableEntity;
 import com.changhong.sei.core.entity.BaseEntity;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -9,7 +8,6 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * 账号绑定记录(BindingRecord)实体类

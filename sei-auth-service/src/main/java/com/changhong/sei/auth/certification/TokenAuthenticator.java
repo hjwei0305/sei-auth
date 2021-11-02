@@ -27,6 +27,10 @@ public interface TokenAuthenticator {
      */
     String AUTH_TYPE_WE_CHAT = "weChat";
     /**
+     * 微信小程序
+     */
+    String AUTH_TYPE_WX_MINI_PROGRAM = "wxMiniProgram";
+    /**
      * 手机认证
      */
     String AUTH_TYPE_MOBILE = "mobile";

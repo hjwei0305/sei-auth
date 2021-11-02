@@ -218,13 +218,17 @@ public class IdmOAuth2Authenticator extends AbstractTokenAuthenticator implement
                         loginRequest.setAccount(account.getAccount());
                         loginRequest.setReqId(code);
                         ResultData<SessionUserResponse> result = login(loginRequest, account);
-                        LOG.info("微信关联账号登录验证: {}", result);
+                        LOG.info("IDM关联账号登录验证: {}", result);
                         userResponse.setTenantCode(account.getTenantCode());
                         userResponse.setAccount(account.getAccount());
                         userResponse.setLoginAccount(account.getOpenId());
+                        userResponse.setUserId(account.getUserId());
+                        userResponse.setUserName(account.getName());
                         SessionUserResponse sessionUserResponse = result.getData();
                         if (Objects.nonNull(sessionUserResponse)) {
                             userResponse.setSessionId(sessionUserResponse.getSessionId());
+                            userResponse.setUserType(sessionUserResponse.getUserType());
+                            userResponse.setAuthorityPolicy(sessionUserResponse.getAuthorityPolicy());
                             userResponse.setLoginStatus(sessionUserResponse.getLoginStatus());
                         }
                     }
