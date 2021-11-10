@@ -4,6 +4,7 @@ import com.changhong.sei.auth.entity.AccessRecord;
 import com.changhong.sei.auth.service.AccessRecordService;
 import com.changhong.sei.core.util.JsonUtils;
 import eu.bitwalker.useragentutils.UserAgent;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,7 @@ public class AccessRecordConsumer {
 
                     accessRecord.setTenantCode(logVo.getTenantCode());
                     accessRecord.setUserId(logVo.getUserId());
-                    accessRecord.setUserAccount(logVo.getUserAccount());
+                    accessRecord.setUserAccount(StringUtils.isBlank(logVo.getUserAccount()) ? "anonymous" : logVo.getUserAccount());
                     accessRecord.setUserName(logVo.getUserName());
                     accessRecord.setAppModule(logVo.getAppModule());
                     accessRecord.setFeatureCode(logVo.getFeatureCode());
