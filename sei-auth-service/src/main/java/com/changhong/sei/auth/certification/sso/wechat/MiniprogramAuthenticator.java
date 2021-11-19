@@ -4,7 +4,6 @@ import com.changhong.sei.auth.certification.AbstractTokenAuthenticator;
 import com.changhong.sei.auth.certification.sso.Oauth2Authenticator;
 import com.changhong.sei.auth.certification.sso.SingleSignOnAuthenticator;
 import com.changhong.sei.auth.common.Constants;
-import com.changhong.sei.auth.common.weixin.WeChatUtil;
 import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.dto.BindingAccountRequest;
 import com.changhong.sei.auth.dto.ChannelEnum;
@@ -13,9 +12,9 @@ import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
@@ -167,6 +166,27 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
         return ResultData.fail("认证类型错误.");
     }
 
+    private static final Map<String, Map<String, String>> DATA;
+
+    static {
+        DATA = new HashMap<>();
+        // 门户
+        Map<String, String> map = new HashMap<>();
+        map.put("appId", "wx3de1742f653abf62");
+        map.put("secret", "0b6299d860c4fe3b535afd78fd4cb21a");
+        DATA.put("portal", map);
+        // 票夹
+        map = new HashMap<>();
+        map.put("appId", "wx5fbb485394893b4e");
+        map.put("secret", "ec4414eae5010ac2d281b8963ac9e631");
+        DATA.put("ebill", map);
+        // 费控
+        map = new HashMap<>();
+        map.put("appId", "wx21f216c29b156651");
+        map.put("secret", "4f812482a00235f70c042c8d20a9dc5b");
+        DATA.put("erms", map);
+    }
+
     /**
      * 获取用户信息
      */
@@ -174,9 +194,17 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
     public ResultData<SessionUserResponse> auth(HttpServletRequest request) {
         // 授权码
         String code = request.getParameter("code");
+        String appCode = request.getParameter("appCode");
+        if (StringUtils.isBlank(appCode)) {
+            return ResultData.fail("appCode不能为空.");
+        }
         // AuthProperties.SingleSignOnProperties sso = properties.getSso();
         // String url = String.format(GET_USER_URL, sso.getAppId(), sso.getCropSecret(), code);
-        String url = String.format(GET_USER_URL, "wx21f216c29b156651", "4f812482a00235f70c042c8d20a9dc5b", code);
+        Map<String, String> map = DATA.get(appCode);
+        if (Objects.isNull(map)) {
+            return ResultData.fail("应用[" + appCode + "]未授权.");
+        }
+        String url = String.format(GET_USER_URL, map.get("appId"), map.get("secret"), code);
         Map<String, Object> userMap;
         LOG.info("小程序认证请求: {}", url);
         try {
