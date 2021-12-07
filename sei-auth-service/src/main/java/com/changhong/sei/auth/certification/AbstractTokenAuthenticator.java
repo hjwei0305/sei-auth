@@ -6,6 +6,7 @@ import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.event.LoginEvent;
 import com.changhong.sei.auth.service.AccountService;
+import com.changhong.sei.auth.service.ClientDetailService;
 import com.changhong.sei.auth.service.SessionService;
 import com.changhong.sei.core.context.ApplicationContextHolder;
 import com.changhong.sei.core.context.ContextUtil;
@@ -29,6 +30,8 @@ import java.util.Objects;
 public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
     @Autowired
     protected AccountService accountService;
+    @Autowired
+    protected ClientDetailService clientDetailService;
     @Autowired
     private SessionService sessionService;
 

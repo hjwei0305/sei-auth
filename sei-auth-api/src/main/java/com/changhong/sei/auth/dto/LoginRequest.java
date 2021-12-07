@@ -32,6 +32,11 @@ public class LoginRequest implements Serializable {
     @ApiModelProperty(notes = "验证码")
     private String verifyCode;
     /**
+     * 应用代码
+     */
+    @ApiModelProperty(notes = "应用代码")
+    private String appCode;
+    /**
      * 代码
      */
     @Size(max = 10)
@@ -87,6 +92,14 @@ public class LoginRequest implements Serializable {
 
     public void setVerifyCode(String verifyCode) {
         this.verifyCode = verifyCode;
+    }
+
+    public String getAppCode() {
+        return appCode;
+    }
+
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
     }
 
     public String getTenant() {

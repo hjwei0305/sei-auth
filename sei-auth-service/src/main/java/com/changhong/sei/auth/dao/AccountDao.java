@@ -55,14 +55,6 @@ public interface AccountDao extends BaseEntityDao<Account> {
     int updateLocked(@Param("id") String id, @Param("locked") boolean locked);
 
     /**
-     * 根据账号查询账户
-     *
-     * @param account 账号
-     * @return 存在返回账号, 不存在返回null
-     */
-    List<Account> findByOpenId(String account);
-
-    /**
      * 根据账号,租户代码查询账户
      *
      * @param account 账号
@@ -83,9 +75,9 @@ public interface AccountDao extends BaseEntityDao<Account> {
      * 根据账号,租户代码查询账户
      *
      * @param account 账号
-     * @param tenant  租户代码
      * @param channel 账号渠道
+     * @param tenant  租户代码
      * @return 存在返回账号, 不存在返回null
      */
-    Account findByOpenIdAndTenantCodeAndChannel(String account, String tenant, ChannelEnum channel);
+    Account findByOpenIdAndChannelAndTenantCode(String account, ChannelEnum channel, String tenant);
 }

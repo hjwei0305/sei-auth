@@ -5,7 +5,6 @@ import com.changhong.sei.auth.dao.ClientDetailDao;
 import com.changhong.sei.auth.entity.ClientDetail;
 import com.changhong.sei.core.dto.serach.PageResult;
 import com.changhong.sei.core.dto.serach.Search;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,5 +78,9 @@ public class ClientDetailService {
             return detail.getClientSecret();
         }
         return null;
+    }
+
+    public ClientDetail getByAppCode(String appCode) {
+        return dao.findByAppCode(appCode);
     }
 }

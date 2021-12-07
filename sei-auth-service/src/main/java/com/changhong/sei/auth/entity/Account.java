@@ -53,6 +53,7 @@ public class Account extends BaseEntity implements ITenant {
 
     /**
      * 社交平台开放ID
+     * 因一家企业可能存在多个小程序.因此,当channel为小程序时,openId为小程序代码+"|"+小程序返回的openId
      */
     @Column(name = "open_id", length = 100)
     private String openId;

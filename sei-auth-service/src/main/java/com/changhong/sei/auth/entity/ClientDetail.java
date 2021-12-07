@@ -23,6 +23,8 @@ import java.time.LocalDate;
 @DynamicUpdate
 public class ClientDetail extends BaseAuditableEntity implements ITenant, Serializable {
     private static final long serialVersionUID = 676143817403479972L;
+    public static final String FIELD_CLIENT_ID = "clientId";
+    public static final String FIELD_APP_CODE = "appCode";
 
     /**
      * 租户代码
@@ -32,15 +34,20 @@ public class ClientDetail extends BaseAuditableEntity implements ITenant, Serial
     /**
      * 应用标识
      */
+    @Column(name = "app_code", nullable = false)
+    private String appCode;
+    /**
+     * 客户端应用id
+     */
     @Column(name = "client_id", nullable = false)
     private String clientId;
     /**
-     * 应用名称
+     * 客户端应用名称
      */
     @Column(name = "client_name", nullable = false)
     private String clientName;
     /**
-     * 应用秘钥
+     * 客户端应用秘钥
      */
     @Column(name = "client_secret", nullable = false)
     private String clientSecret;
@@ -80,6 +87,14 @@ public class ClientDetail extends BaseAuditableEntity implements ITenant, Serial
     @Override
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public String getAppCode() {
+        return appCode;
+    }
+
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
     }
 
     public String getClientId() {

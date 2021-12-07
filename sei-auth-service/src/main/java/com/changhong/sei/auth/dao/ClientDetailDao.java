@@ -14,4 +14,6 @@ import org.springframework.stereotype.Repository;
 public interface ClientDetailDao extends BaseEntityDao<ClientDetail> {
 
     ClientDetail findByClientIdAndTenantCode(String clientId, String tenantCode);
+
+    ClientDetail findByAppCode(String appCode);
 }

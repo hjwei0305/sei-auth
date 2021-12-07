@@ -206,7 +206,7 @@ public class AccountService extends BaseEntityService<Account> {
         }
 
         // 检查账户是否已存在
-        Account oldAccount = dao.findByOpenIdAndTenantCodeAndChannel(account.getAccount(), account.getTenantCode(), account.getChannel());
+        Account oldAccount = dao.findByOpenIdAndChannelAndTenantCode(account.getAccount(), account.getChannel(), account.getTenantCode());
         if (Objects.nonNull(oldAccount)) {
             if (!isUpdateUserId) {
                 return ResultData.fail(String.format("账户[%s]已在租户[%s]下存在！", account.getAccount(), account.getTenantCode()));
@@ -365,7 +365,7 @@ public class AccountService extends BaseEntityService<Account> {
      * @return 存在返回账号, 不存在返回null
      */
     public Account getByAccountAndTenantCode(String account, String tenant) {
-        return dao.findByOpenIdAndTenantCodeAndChannel(account, tenant, ChannelEnum.SEI);
+        return dao.findByOpenIdAndChannelAndTenantCode(account, ChannelEnum.SEI, tenant);
     }
 
     /**

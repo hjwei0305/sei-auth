@@ -10,6 +10,7 @@ import com.changhong.sei.auth.dto.ChannelEnum;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
+import com.changhong.sei.auth.entity.ClientDetail;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.HttpUtils;
@@ -120,6 +121,8 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
     public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest, boolean agentIsMobile) {
         // 社交平台开放ID
         String openId = loginRequest.getReqId();
+        // 小程序绑定需要传小程序应用代码
+        String appCode = loginRequest.getAppCode();
         ResultData<SessionUserResponse> resultData = login(loginRequest);
         if (resultData.successful()) {
             SessionUserResponse response = resultData.getData();
@@ -129,7 +132,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
                 accountRequest.setAccount(response.getAccount());
                 accountRequest.setUserId(response.getUserId());
                 accountRequest.setName(response.getUserName());
-                accountRequest.setOpenId(openId);
+                accountRequest.setOpenId(this.getAppOpenId(appCode, openId));
                 accountRequest.setChannel(ChannelEnum.WXMiniProgram);
 
                 ResultData<String> rd = accountService.bindingAccount(accountRequest);
@@ -166,45 +169,24 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
         return ResultData.fail("认证类型错误.");
     }
 
-    private static final Map<String, Map<String, String>> DATA;
-
-    static {
-        DATA = new HashMap<>();
-        // 门户
-        Map<String, String> map = new HashMap<>();
-        map.put("appId", "wx3de1742f653abf62");
-        map.put("secret", "0b6299d860c4fe3b535afd78fd4cb21a");
-        DATA.put("portal", map);
-        // 票夹
-        map = new HashMap<>();
-        map.put("appId", "wx5fbb485394893b4e");
-        map.put("secret", "ec4414eae5010ac2d281b8963ac9e631");
-        DATA.put("ebill", map);
-        // 费控
-        map = new HashMap<>();
-        map.put("appId", "wx21f216c29b156651");
-        map.put("secret", "4f812482a00235f70c042c8d20a9dc5b");
-        DATA.put("erms", map);
-    }
-
     /**
      * 获取用户信息
      */
+    @SuppressWarnings("unchecked")
     @Override
     public ResultData<SessionUserResponse> auth(HttpServletRequest request) {
         // 授权码
         String code = request.getParameter("code");
+        // 应用代码(小程序定制必传)
         String appCode = request.getParameter("appCode");
         if (StringUtils.isBlank(appCode)) {
             return ResultData.fail("appCode不能为空.");
         }
-        // AuthProperties.SingleSignOnProperties sso = properties.getSso();
-        // String url = String.format(GET_USER_URL, sso.getAppId(), sso.getCropSecret(), code);
-        Map<String, String> map = DATA.get(appCode);
-        if (Objects.isNull(map)) {
+        ClientDetail clientDetail = clientDetailService.getByAppCode(appCode);
+        if (Objects.isNull(clientDetail)) {
             return ResultData.fail("应用[" + appCode + "]未授权.");
         }
-        String url = String.format(GET_USER_URL, map.get("appId"), map.get("secret"), code);
+        String url = String.format(GET_USER_URL, clientDetail.getClientId(), clientDetail.getClientSecret(), code);
         Map<String, Object> userMap;
         LOG.info("小程序认证请求: {}", url);
         try {
@@ -231,7 +213,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
         LOG.info("OpenId: {}", openId);
 
         // 检查是否有账号绑定
-        ResultData<Account> resultData = accountService.checkAccount(ChannelEnum.WXMiniProgram, openId);
+        ResultData<Account> resultData = accountService.checkAccount(ChannelEnum.WXMiniProgram, this.getAppOpenId(appCode, openId));
         LOG.info("检查是否有账号绑定: {}", resultData);
 
         if (resultData.successful()) {
@@ -278,5 +260,17 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
     private String getSessionKey(String openId) {
         // 检查缓存中是否存在有效SessionKey
         return cacheBuilder.get(CACHE_KEY_TOKEN);
+    }
+
+    /**
+     * 因一家企业可能存在多个小程序.
+     * 因此,当channel为小程序时,openId为小程序代码+"|"+小程序返回的openId
+     *
+     * @param appCode 小程序应用代码
+     * @param openId  小程序返回openId
+     * @return 返回sei约定的小程序openId
+     */
+    private String getAppOpenId(String appCode, String openId) {
+        return appCode + "|" + openId;
     }
 }

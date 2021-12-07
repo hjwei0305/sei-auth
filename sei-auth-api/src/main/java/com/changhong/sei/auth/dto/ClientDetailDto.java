@@ -30,19 +30,26 @@ public class ClientDetailDto extends BaseEntityDto {
     @NotBlank
     @Size(max = 50)
     @ApiModelProperty(notes = "应用标识", required = true)
+    private String appCode;
+    /**
+     * 客户端应用id
+     */
+    @NotBlank
+    @Size(max = 50)
+    @ApiModelProperty(notes = "客户端应用id", required = true)
     private String clientId;
     /**
-     * 应用名称
+     * 客户端应用名称
      */
     @NotBlank
     @Size(max = 100)
-    @ApiModelProperty(notes = "应用名称", required = true)
+    @ApiModelProperty(notes = "客户端应用名称", required = true)
     private String clientName;
     /**
-     * 应用秘钥
+     * 客户端应用秘钥
      */
     @NotBlank
-    @ApiModelProperty(notes = "应用秘钥", required = true)
+    @ApiModelProperty(notes = "客户端应用秘钥", required = true)
     private String clientSecret;
     /**
      * 应用签约的所有权限, 多个用逗号隔开
@@ -78,6 +85,14 @@ public class ClientDetailDto extends BaseEntityDto {
 
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public String getAppCode() {
+        return appCode;
+    }
+
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
     }
 
     public String getClientId() {
