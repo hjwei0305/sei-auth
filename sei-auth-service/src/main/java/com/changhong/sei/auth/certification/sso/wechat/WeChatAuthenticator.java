@@ -41,10 +41,6 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
     private static final Logger LOG = LoggerFactory.getLogger(WeChatAuthenticator.class);
     private static final String CACHE_KEY_TOKEN = "WeChat:AccessToken";
 
-//    private String cropId = "wwdc99e9511ccac381";
-//    private String agentId = "1000003";
-//    private String cropSecret = "xIKMGprmIKWrK1VJ5oALdgeUAFng3DzxIpmPgT56XAA";
-
     private final CacheBuilder cacheBuilder;
     private final AuthProperties properties;
 
@@ -52,7 +48,6 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
         this.cacheBuilder = cacheBuilder;
         this.properties = properties;
     }
-
 
     /**
      * 前端web根url地址

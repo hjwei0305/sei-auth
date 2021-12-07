@@ -63,6 +63,16 @@ public class ClientDetailDto extends BaseEntityDto {
     @ApiModelProperty(notes = "授权的URL")
     public String allowUrl;
     /**
+     * 单点成功跳转URL
+     */
+    @ApiModelProperty(notes = "单点成功跳转URL")
+    private String indexUrl;
+    /**
+     * 单点失败跳转URL
+     */
+    @ApiModelProperty(notes = "单点失败跳转URL")
+    private String loginUrl;
+    /**
      * 备注描述
      */
     @ApiModelProperty(notes = "备注描述")
@@ -133,6 +143,22 @@ public class ClientDetailDto extends BaseEntityDto {
 
     public void setAllowUrl(String allowUrl) {
         this.allowUrl = allowUrl;
+    }
+
+    public String getIndexUrl() {
+        return indexUrl;
+    }
+
+    public void setIndexUrl(String indexUrl) {
+        this.indexUrl = indexUrl;
+    }
+
+    public String getLoginUrl() {
+        return loginUrl;
+    }
+
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
     }
 
     public String getRemark() {

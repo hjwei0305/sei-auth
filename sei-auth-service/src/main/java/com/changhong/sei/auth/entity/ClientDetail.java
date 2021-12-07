@@ -63,6 +63,16 @@ public class ClientDetail extends BaseAuditableEntity implements ITenant, Serial
     @Column(name = "allow_url")
     private String allowUrl;
     /**
+     * 单点成功跳转URL
+     */
+    @Column(name = "index_url")
+    private String indexUrl;
+    /**
+     * 单点失败跳转URL
+     */
+    @Column(name = "login_url")
+    private String loginUrl;
+    /**
      * 备注描述
      */
     @Column(name = "remark")
@@ -135,6 +145,22 @@ public class ClientDetail extends BaseAuditableEntity implements ITenant, Serial
 
     public void setAllowUrl(String allowUrl) {
         this.allowUrl = allowUrl;
+    }
+
+    public String getIndexUrl() {
+        return indexUrl;
+    }
+
+    public void setIndexUrl(String indexUrl) {
+        this.indexUrl = indexUrl;
+    }
+
+    public String getLoginUrl() {
+        return loginUrl;
+    }
+
+    public void setLoginUrl(String loginUrl) {
+        this.loginUrl = loginUrl;
     }
 
     public String getRemark() {

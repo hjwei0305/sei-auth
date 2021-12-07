@@ -76,6 +76,7 @@ public class AuthProperties {
         this.passwordExpire = passwordExpire;
     }
 
+    @Deprecated
     public SingleSignOnProperties getSso() {
         return sso;
     }
@@ -84,6 +85,7 @@ public class AuthProperties {
         this.sso = sso;
     }
 
+    @Deprecated
     public static class SingleSignOnProperties {
         /**
          * 登录成功url地址
