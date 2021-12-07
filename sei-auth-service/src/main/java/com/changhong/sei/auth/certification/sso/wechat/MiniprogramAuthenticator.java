@@ -201,6 +201,10 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
             return ResultData.fail("小程序认证失败.");
         }
         LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
+        Integer errcode = (Integer) userMap.get("errcode");
+        if (0 != errcode) {
+            return ResultData.fail((String) userMap.get("errmsg"));
+        }
         String openId = (String) userMap.get("openid");
         String sessionKey = (String) userMap.get("session_key");
         // 暂存sessionKey
