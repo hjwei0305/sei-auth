@@ -12,6 +12,7 @@ import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.entity.ClientDetail;
 import com.changhong.sei.core.cache.CacheBuilder;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
@@ -200,12 +201,28 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
         if (Objects.isNull(userMap)) {
             return ResultData.fail("小程序认证失败.");
         }
-        LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
-        Integer errcode = (Integer) userMap.get("errcode");
-        if (0 != errcode) {
-            return ResultData.fail((String) userMap.get("errmsg"));
+        Integer errCode = (Integer) userMap.get("errcode");
+        if (Objects.nonNull(errCode) && !Objects.equals(0, errCode)) {
+            if (Objects.equals(-1, errCode)) {
+                // 系统繁忙，此时请开发者稍候再试
+                return ResultData.fail("sso_mini_001");
+            } else if (Objects.equals(40029, errCode)) {
+                // code 无效
+                return ResultData.fail(ContextUtil.getMessage("sso_mini_002"));
+            } else if (Objects.equals(45011, errCode)) {
+                return ResultData.fail(ContextUtil.getMessage("sso_mini_003"));
+            } else if (Objects.equals(40226, errCode)) {
+                return ResultData.fail(ContextUtil.getMessage("sso_mini_004"));
+            } else {
+                return ResultData.fail((String) userMap.get("errmsg"));
+            }
         }
         String openId = (String) userMap.get("openid");
+        if (StringUtils.isBlank(openId)) {
+            // 小程序登录失败,OpenId不能为空
+            return ResultData.fail(ContextUtil.getMessage("sso_mini_005"));
+        }
+
         String sessionKey = (String) userMap.get("session_key");
         // 暂存sessionKey
         this.setSessionKey(openId, sessionKey);
