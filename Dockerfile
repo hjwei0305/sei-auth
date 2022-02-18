@@ -5,9 +5,7 @@ FROM rddhub.changhong.com/library/openjdk:8-jre-alpine-ttf
 # 作者
 LABEL maintainer="hua.feng@changhong.com"
 
-# 环境变量
-## JAVA_OPTS：JAVA启动参数
-## APP_NAME：应用名称（各项目需要修改）
+# 环境变量 JAVA_OPTS：JAVA启动参数 APP_NAME：应用名称（各项目需要修改）
 ENV JAVA_OPTS=""  APP_NAME="sei-auth"
 
 # 设置时区
