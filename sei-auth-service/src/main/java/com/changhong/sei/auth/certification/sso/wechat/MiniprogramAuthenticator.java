@@ -11,23 +11,23 @@ import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.entity.ClientDetail;
-import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
-import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 实现功能：微信小程序单点集成
@@ -50,11 +50,11 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
      */
     private static final String GET_USER_URL = "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code";
 
-    private final CacheBuilder cacheBuilder;
+    private final StringRedisTemplate stringRedisTemplate;
     private final AuthProperties properties;
 
-    public MiniprogramAuthenticator(AuthProperties properties, CacheBuilder cacheBuilder) {
-        this.cacheBuilder = cacheBuilder;
+    public MiniprogramAuthenticator(AuthProperties properties, StringRedisTemplate stringRedisTemplate) {
+        this.stringRedisTemplate = stringRedisTemplate;
         this.properties = properties;
     }
 
@@ -297,7 +297,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
      */
     private void setSessionKey(String openId, String sessionKey) {
         // 微信默认SessionKey过期时间为3天
-        cacheBuilder.set(CACHE_KEY_TOKEN.concat(openId), sessionKey, 259200);
+        stringRedisTemplate.opsForValue().set(CACHE_KEY_TOKEN.concat(openId), sessionKey, 7, TimeUnit.DAYS);
     }
 
     /**
@@ -305,7 +305,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
      */
     private String getSessionKey(String openId) {
         // 检查缓存中是否存在有效SessionKey
-        return cacheBuilder.get(CACHE_KEY_TOKEN.concat(openId));
+        return stringRedisTemplate.opsForValue().get(CACHE_KEY_TOKEN.concat(openId));
     }
 
     /**
@@ -313,7 +313,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
      */
     private void setUnionIdSessionId(String unionId, String sessionId) {
         // 微信默认SessionKey过期时间为3天
-        cacheBuilder.set(CACHE_KEY_TOKEN.concat("sid:").concat(unionId), sessionId, 259200);
+        stringRedisTemplate.opsForValue().set(CACHE_KEY_TOKEN.concat("sid:").concat(unionId), sessionId, 7, TimeUnit.DAYS);
     }
 
     /**
@@ -321,6 +321,6 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
      */
     private String getSessionId(String unionId) {
         // 检查缓存中是否存在有效SessionKey
-        return cacheBuilder.get(CACHE_KEY_TOKEN.concat("sid:").concat(unionId));
+        return stringRedisTemplate.opsForValue().get(CACHE_KEY_TOKEN.concat("sid:").concat(unionId));
     }
 }
