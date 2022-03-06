@@ -124,11 +124,13 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
     public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest, boolean agentIsMobile) {
         // 社交平台开放ID
         String openId = loginRequest.getReqId();
-        LogUtil.bizLog("绑定的openId: {}", openId);
+        LOG.debug("绑定的openId: {}", openId);
         ResultData<SessionUserResponse> resultData = login(loginRequest);
         if (resultData.successful()) {
             SessionUserResponse response = resultData.getData();
             if (Objects.nonNull(response) && SessionUserResponse.LoginStatus.success.equals(response.getLoginStatus())) {
+                this.setUnionIdSessionId(openId, response.getSessionId());
+
                 BindingAccountRequest accountRequest = new BindingAccountRequest();
                 accountRequest.setTenantCode(response.getTenantCode());
                 accountRequest.setAccount(response.getAccount());
@@ -190,10 +192,10 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
         }
         String url = String.format(GET_USER_URL, clientDetail.getClientId(), clientDetail.getClientSecret(), code);
         Map<String, Object> userMap;
-        LOG.info("小程序认证请求: {}", url);
+        LOG.debug("小程序认证请求: {}", url);
         try {
             String result = HttpUtils.sendGet(url);
-            LogUtil.bizLog("小程序认证请求结果: {}", result);
+            LOG.debug("小程序认证请求结果: {}", result);
             userMap = JsonUtils.fromJson(result, HashMap.class);
         } catch (Exception e) {
             LOG.error("发起微信平台请求[" + url + "]异常.", e);
@@ -223,13 +225,13 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
             // 小程序登录失败,OpenId不能为空
             return ResultData.fail(ContextUtil.getMessage("sso_mini_005"));
         }
-        LOG.info("OpenId: {}", openId);
+        LOG.debug("OpenId: {}", openId);
         String unionId = (String) userMap.get("unionid");
         if (StringUtils.isBlank(unionId)) {
             // 因一家企业可能存在多个小程序,若未启用unionId时需要拼接以区别.因此,当channel为小程序时,openId为小程序代码+"|"+小程序返回的openId
             unionId = appCode + "|" + openId;
         }
-        LOG.info("unionId: {}", unionId);
+        LOG.debug("unionId: {}", unionId);
 
         String sessionKey = (String) userMap.get("session_key");
         // 暂存sessionKey
@@ -242,7 +244,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
 
         // 检查是否有账号绑定
         ResultData<Account> resultData = accountService.checkAccount(ChannelEnum.WXMiniProgram, unionId);
-        LOG.info("检查是否有账号绑定: {}", resultData);
+        LOG.debug("检查是否有账号绑定: {}", resultData);
 
         if (resultData.successful()) {
             Account account = resultData.getData();
@@ -269,7 +271,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
             loginRequest.setAccount(account.getAccount());
             loginRequest.setReqId(openId);
             ResultData<SessionUserResponse> result = login(loginRequest, account);
-            LOG.info("微信关联账号登录验证: {}", result);
+            LOG.debug("微信关联账号登录验证: {}", result);
 
             SessionUserResponse sessionUserResponse = result.getData();
             if (Objects.nonNull(sessionUserResponse)) {
