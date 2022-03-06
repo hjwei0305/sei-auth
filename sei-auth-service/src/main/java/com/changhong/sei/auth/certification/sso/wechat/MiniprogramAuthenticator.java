@@ -14,6 +14,7 @@ import com.changhong.sei.auth.entity.ClientDetail;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -192,7 +193,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
         LOG.info("小程序认证请求: {}", url);
         try {
             String result = HttpUtils.sendGet(url);
-            LOG.info("小程序认证请求结果: {}", result);
+            LogUtil.bizLog("小程序认证请求结果: {}", result);
             userMap = JsonUtils.fromJson(result, HashMap.class);
         } catch (Exception e) {
             LOG.error("发起微信平台请求[" + url + "]异常.", e);
