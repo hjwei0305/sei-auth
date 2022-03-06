@@ -33,7 +33,7 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
     @Autowired
     protected ClientDetailService clientDetailService;
     @Autowired
-    private SessionService sessionService;
+    protected SessionService sessionService;
 
     /**
      * 处理登录逻辑

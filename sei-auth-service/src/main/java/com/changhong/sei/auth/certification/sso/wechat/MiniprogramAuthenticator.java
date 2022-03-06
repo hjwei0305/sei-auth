@@ -13,6 +13,7 @@ import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.entity.ClientDetail;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.core.util.HttpUtils;
@@ -229,7 +230,6 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
             unionId = appCode + "|" + openId;
         }
         LOG.info("unionId: {}", unionId);
-        LogUtil.bizLog("绑定的openId: {}", openId);
 
         String sessionKey = (String) userMap.get("session_key");
         // 暂存sessionKey
@@ -246,24 +246,40 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
 
         if (resultData.successful()) {
             Account account = resultData.getData();
+            userResponse.setTenantCode(account.getTenantCode());
+            userResponse.setAccount(account.getAccount());
+            userResponse.setLoginAccount(openId);
+            userResponse.setUserId(account.getUserId());
+            userResponse.setUserName(account.getName());
 
+            String sessionId = this.getSessionId(unionId);
+            if (StringUtils.isNotBlank(sessionId)) {
+                SessionUser sessionUser = sessionService.getSessionUser(sessionId);
+                if (Objects.nonNull(sessionUser)) {
+                    userResponse.setSessionId(sessionId);
+                    userResponse.setUserType(sessionUser.getUserType());
+                    userResponse.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
+                    userResponse.setLoginStatus(SessionUserResponse.LoginStatus.success);
+
+                    return ResultData.success(userResponse);
+                }
+            }
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setTenant(account.getTenantCode());
             loginRequest.setAccount(account.getAccount());
             loginRequest.setReqId(openId);
             ResultData<SessionUserResponse> result = login(loginRequest, account);
             LOG.info("微信关联账号登录验证: {}", result);
-            userResponse.setTenantCode(account.getTenantCode());
-            userResponse.setAccount(account.getAccount());
-            userResponse.setLoginAccount(openId);
-            userResponse.setUserId(account.getUserId());
-            userResponse.setUserName(account.getName());
+
             SessionUserResponse sessionUserResponse = result.getData();
             if (Objects.nonNull(sessionUserResponse)) {
                 userResponse.setSessionId(sessionUserResponse.getSessionId());
                 userResponse.setUserType(sessionUserResponse.getUserType());
                 userResponse.setAuthorityPolicy(sessionUserResponse.getAuthorityPolicy());
                 userResponse.setLoginStatus(sessionUserResponse.getLoginStatus());
+                if (SessionUserResponse.LoginStatus.success == sessionUserResponse.getLoginStatus()) {
+                    this.setUnionIdSessionId(unionId, sessionUserResponse.getSessionId());
+                }
             }
         }
         return ResultData.success(userResponse);
@@ -288,5 +304,21 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
     private String getSessionKey(String openId) {
         // 检查缓存中是否存在有效SessionKey
         return cacheBuilder.get(CACHE_KEY_TOKEN.concat(openId));
+    }
+
+    /**
+     * 暂存SessionId
+     */
+    private void setUnionIdSessionId(String unionId, String sessionId) {
+        // 微信默认SessionKey过期时间为3天
+        cacheBuilder.set(CACHE_KEY_TOKEN.concat("sid:").concat(unionId), sessionId, 259200);
+    }
+
+    /**
+     * 获取SessionId
+     */
+    private String getSessionId(String unionId) {
+        // 检查缓存中是否存在有效SessionKey
+        return cacheBuilder.get(CACHE_KEY_TOKEN.concat("sid:").concat(unionId));
     }
 }
