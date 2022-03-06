@@ -520,7 +520,8 @@ public class AccountService extends BaseEntityService<Account> {
 
         Search search = Search.createSearch();
         search.addFilter(new SearchFilter(Account.FIELD_USER_ID, user.getUserId()));
-        search.addFilter(new SearchFilter(Account.FIELD_OPEN_ID, openId));
+        // todo 在未使用小程序的unionId前,默认解除该账号下所有绑定的小程序.故注释
+        // search.addFilter(new SearchFilter(Account.FIELD_OPEN_ID, openId));
         search.addFilter(new SearchFilter(Account.FIELD_CHANNEL, channel));
         List<Account> accounts = this.findByFilters(search);
         if (Objects.isNull(accounts)) {
