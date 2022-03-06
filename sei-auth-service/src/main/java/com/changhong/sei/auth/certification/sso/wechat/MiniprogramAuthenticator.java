@@ -223,6 +223,11 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
             // 小程序登录失败,OpenId不能为空
             return ResultData.fail(ContextUtil.getMessage("sso_mini_005"));
         }
+        String unionId = (String) userMap.get("unionid");
+        if (StringUtils.isBlank(unionId)) {
+            unionId = this.getAppOpenId(appCode, openId);
+        }
+        LOG.info("unionId: {}", unionId);
 
         String sessionKey = (String) userMap.get("session_key");
         // 暂存sessionKey
@@ -235,7 +240,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
         LOG.info("OpenId: {}", openId);
 
         // 检查是否有账号绑定
-        ResultData<Account> resultData = accountService.checkAccount(ChannelEnum.WXMiniProgram, this.getAppOpenId(appCode, openId));
+        ResultData<Account> resultData = accountService.checkAccount(ChannelEnum.WXMiniProgram, unionId);
         LOG.info("检查是否有账号绑定: {}", resultData);
 
         if (resultData.successful()) {
