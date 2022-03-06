@@ -14,6 +14,7 @@ import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,10 +102,12 @@ public class OnlineUserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void removeOnlineUser(String sid) {
-        int count = dao.removeSid(sid);
-        LogUtil.bizLog("删除sid:{},条数:{}", sid, count);
-        // 更新退出时间
-        loginHistoryService.setLogoutTime(sid);
+        if (StringUtils.isNotBlank(sid)) {
+            int count = dao.removeSid(sid);
+            LOG.info("删除sid:{},条数:{}", sid, count);
+            // 更新退出时间
+            loginHistoryService.setLogoutTime(sid);
+        }
     }
 
     /**

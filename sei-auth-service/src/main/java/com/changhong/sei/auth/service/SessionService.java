@@ -154,20 +154,19 @@ public class SessionService {
                 // 立即删除
                 cacheBuilder.remove(Constants.REDIS_KEY_PREFIX + sid);
             }
-
-            // 删除cookie
-            try {
-                HttpServletRequest request = HttpUtils.getRequest();
-                if (Objects.nonNull(request)) {
-                    // 删除cookie
-                    HttpUtils.deleteCookie(Constants.COOKIE_SID, request);
-                    // 删除cookie
-                    HttpUtils.deleteCookie(Constants.COOKIE_CLIENT, request);
-                }
-            } catch (Exception e) {
-                LOG.error("登录删除cookie异常", e);
-            }
         });
+        // 删除cookie
+        try {
+            HttpServletRequest request = HttpUtils.getRequest();
+            if (Objects.nonNull(request)) {
+                // 删除cookie
+                HttpUtils.deleteCookie(Constants.COOKIE_SID, request);
+                // 删除cookie
+                HttpUtils.deleteCookie(Constants.COOKIE_CLIENT, request);
+            }
+        } catch (Exception e) {
+            //LOG.error("登录删除cookie异常", e);
+        }
     }
 
     public SessionUser getSessionUser(String sid) {

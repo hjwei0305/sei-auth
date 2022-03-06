@@ -5,6 +5,7 @@ import com.changhong.sei.auth.dto.*;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.entity.AccountInfo;
 import com.changhong.sei.auth.service.AccountService;
+import com.changhong.sei.auth.service.SessionService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
@@ -21,6 +22,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.xml.transform.Result;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +40,8 @@ public class AccountController implements AccountApi {
 
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private SessionService sessionService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -291,7 +295,12 @@ public class AccountController implements AccountApi {
      */
     @Override
     public ResultData<String> unbinding(BindingAccountRequest request) {
-        return accountService.unbinding(request.getOpenId(), request.getChannel());
+        ResultData<String> resultData = accountService.unbinding(request.getOpenId(), request.getChannel());
+        if (resultData.successful()) {
+            SessionUser user = ContextUtil.getSessionUser();
+            sessionService.removeSession(user.getSessionId(), 0);
+        }
+        return resultData;
     }
 
     /**
