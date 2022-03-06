@@ -38,7 +38,7 @@ import java.util.Objects;
 @Component(SingleSignOnAuthenticator.AUTH_TYPE_WX_MINI_PROGRAM)
 public class MiniprogramAuthenticator extends AbstractTokenAuthenticator implements Oauth2Authenticator, SingleSignOnAuthenticator, Constants {
     private static final Logger LOG = LoggerFactory.getLogger(MiniprogramAuthenticator.class);
-    private static final String CACHE_KEY_TOKEN = "miniprogram:session_key:";
+    private static final String CACHE_KEY_TOKEN = "sei:auth:mp:sk:";
 
 //    private String cropId = "wwdc99e9511ccac381";
 //    private String agentId = "1000003";
@@ -123,6 +123,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
     public ResultData<SessionUserResponse> bindingAccount(LoginRequest loginRequest, boolean agentIsMobile) {
         // 社交平台开放ID
         String openId = loginRequest.getReqId();
+        LogUtil.bizLog("绑定的openId: {}", openId);
         ResultData<SessionUserResponse> resultData = login(loginRequest);
         if (resultData.successful()) {
             SessionUserResponse response = resultData.getData();
@@ -228,6 +229,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
             unionId = appCode + "|" + openId;
         }
         LOG.info("unionId: {}", unionId);
+        LogUtil.bizLog("绑定的openId: {}", openId);
 
         String sessionKey = (String) userMap.get("session_key");
         // 暂存sessionKey
@@ -277,7 +279,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
      */
     private void setSessionKey(String openId, String sessionKey) {
         // 微信默认SessionKey过期时间为3天
-        cacheBuilder.set(CACHE_KEY_TOKEN, sessionKey, 259200);
+        cacheBuilder.set(CACHE_KEY_TOKEN.concat(openId), sessionKey, 259200);
     }
 
     /**
@@ -285,6 +287,6 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
      */
     private String getSessionKey(String openId) {
         // 检查缓存中是否存在有效SessionKey
-        return cacheBuilder.get(CACHE_KEY_TOKEN);
+        return cacheBuilder.get(CACHE_KEY_TOKEN.concat(openId));
     }
 }
