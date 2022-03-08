@@ -257,7 +257,7 @@ public class MiniprogramAuthenticator extends AbstractTokenAuthenticator impleme
             String sessionId = this.getSessionId(unionId);
             if (StringUtils.isNotBlank(sessionId)) {
                 SessionUser sessionUser = sessionService.getSessionUser(sessionId);
-                if (Objects.nonNull(sessionUser)) {
+                if (Objects.nonNull(sessionUser) && !sessionUser.isAnonymous()) {
                     userResponse.setSessionId(sessionId);
                     userResponse.setUserType(sessionUser.getUserType());
                     userResponse.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
