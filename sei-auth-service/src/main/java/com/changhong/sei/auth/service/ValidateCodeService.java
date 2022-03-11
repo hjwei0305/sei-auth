@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -113,9 +115,12 @@ public class ValidateCodeService {
                 break;
             case Mobile:
                 if (target.matches("[0-9]+") && target.length() > 8 && target.length() < 14) {
-                    content.append("您好！您申请了").append(operation).append(",验证码为:").append(code).append(", 5分钟内有效");
                     SmsMessage smsMessage = new SmsMessage();
-                    smsMessage.setContent(content.toString());
+                    // TODO 需要在notify模块中预制
+                    smsMessage.setContentTemplateCode("AUTH_SMS_LOGIN");
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("code", code);
+                    smsMessage.setContentTemplateParams(params);
                     smsMessage.addPhoneNum(target);
                     notifyManager.sendSms(smsMessage);
                 } else {
