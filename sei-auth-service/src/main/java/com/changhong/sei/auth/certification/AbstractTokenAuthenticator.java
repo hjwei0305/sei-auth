@@ -12,6 +12,7 @@ import com.changhong.sei.core.context.ApplicationContextHolder;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,20 +48,36 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
         String tenant = loginRequest.getTenant();
         String account = loginRequest.getAccount();
         String password = loginRequest.getPassword();
+        if (StringUtils.isBlank(account)) {
+            // 账号不能为空,认证失败!
+            result = ResultData.fail(ContextUtil.getMessage("authentication_0006"));
+            // 发布登录账号或密码错误事件
+            ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
+            return result;
+        }
+        if (StringUtils.isBlank(password)) {
+            // 密码不能为空,认证失败!
+            result = ResultData.fail(ContextUtil.getMessage("authentication_0007"));
+            // 发布登录账号或密码错误事件
+            ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
+            return result;
+        }
 
         Account entity;
         if (StringUtils.isBlank(tenant)) {
 //            List<Account> accounts = accountService.getByAccount(account);
             List<Account> accounts = accountService.findByOpenIdAndChannel(account, ChannelEnum.SEI);
             if (CollectionUtils.isEmpty(accounts)) {
-                result = ResultData.fail("账号或密码错误,认证失败!");
+                // 账号或密码错误,认证失败!
+                result = ResultData.fail(ContextUtil.getMessage("authentication_0008"));
                 // 发布登录账号或密码错误事件
                 ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
                 return result;
             }
 
             if (accounts.size() > 1) {
-                result = ResultData.success("请指定租户代码", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.multiTenant));
+                // 请指定租户代码
+                result = ResultData.success(ContextUtil.getMessage("authentication_0009"), SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.multiTenant));
                 // 发布登录多租户事件
                 // ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
                 return result;
@@ -72,7 +89,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
         }
 
         if (Objects.isNull(entity)) {
-            result = ResultData.fail("账号或密码错误,认证失败!");
+            // 账号或密码错误,认证失败!
+            result = ResultData.fail(ContextUtil.getMessage("authentication_0008"));
             // 发布登录账号或密码错误事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
@@ -82,7 +100,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
 
         // 验证密码
         if (!accountService.verifyPassword(password, entity.getPassword())) {
-            result = ResultData.fail("账号或密码错误,认证失败!");
+            // "账号或密码错误,认证失败!"
+            result = ResultData.fail(ContextUtil.getMessage("authentication_0008"));
             // 发布登录账号或密码错误事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
@@ -95,7 +114,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
             userResponse.setAccount(entity.getAccount());
             userResponse.setLoginAccount(entity.getOpenId());
             userResponse.setLoginStatus(SessionUserResponse.LoginStatus.passwordExpire);
-            result = ResultData.success("不能使用系统默认密码登陆，请先在PC端修改密码!", userResponse);
+            // 不能使用系统默认密码登陆，请先在PC端修改密码!
+            result = ResultData.success(ContextUtil.getMessage("authentication_0010"), userResponse);
             // 发布登录账号已过期事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
@@ -111,7 +131,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
                 userResponse.setAccount(entity.getAccount());
                 userResponse.setLoginAccount(entity.getOpenId());
                 userResponse.setLoginStatus(SessionUserResponse.LoginStatus.passwordExpire);
-                result = ResultData.success("密码已过期,认证失败!", userResponse);
+                // 密码已过期,认证失败!
+                result = ResultData.success(ContextUtil.getMessage("authentication_0011"), userResponse);
                 // 发布登录账号已过期事件
                 ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
                 return result;
@@ -125,14 +146,16 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
         ResultData<SessionUserResponse> result;
         // 检查是否被锁定
         if (entity.getLocked()) {
-            result = ResultData.success("账号被锁定,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.locked));
+            // 账号被锁定,认证失败!
+            result = ResultData.success(ContextUtil.getMessage("authentication_0012"), SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.locked));
             // 发布登录账号被锁定事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
         }
         // 检查是否被冻结
         if (entity.getFrozen()) {
-            result = ResultData.success("账号被冻结,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.frozen));
+            // 账号被冻结,认证失败!
+            result = ResultData.success(ContextUtil.getMessage("authentication_0013"), SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.frozen));
             // 发布登录账号被冻结事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
             return result;
@@ -141,7 +164,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
         LocalDate validityDate = entity.getAccountExpired();
         if (Objects.nonNull(validityDate)) {
             if (validityDate.isBefore(LocalDate.now())) {
-                result = ResultData.success("账号已过期,认证失败!", SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
+                // 账号已过期,认证失败!
+                result = ResultData.success(ContextUtil.getMessage("authentication_0014"), SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.expire));
                 // 发布登录账号已过期事件
                 ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
                 return result;
@@ -171,7 +195,8 @@ public abstract class AbstractTokenAuthenticator implements TokenAuthenticator {
             sessionService.addSession(sessionUser);
             result = ResultData.success(dto);
         } catch (Exception e) {
-            result = ResultData.fail("登录认证异常:" + e.getMessage());
+            LogUtil.error("登录异常", e);
+            result = ResultData.fail(ContextUtil.getMessage("authentication_0015", e.getMessage()));
         }
         // 发布登录事件
         ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
