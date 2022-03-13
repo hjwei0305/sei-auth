@@ -120,6 +120,7 @@ public class ValidateCodeService {
                     smsMessage.setContentTemplateCode("AUTH_SMS_LOGIN");
                     Map<String, Object> params = new HashMap<>();
                     params.put("code", code);
+                    params.put("expireTime", "5分钟");
                     smsMessage.setContentTemplateParams(params);
                     smsMessage.addPhoneNum(target);
                     notifyManager.sendSms(smsMessage);

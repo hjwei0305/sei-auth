@@ -69,7 +69,7 @@ public class LoginRequest implements Serializable {
      * refresh_token: 刷新token
      * captcha: 验证码+账号密码
      */
-    @ApiModelProperty(value = "认证类型", example = "captcha", allowableValues = "captcha,password,weChat")
+    @ApiModelProperty(value = "认证类型", example = "captcha", allowableValues = "captcha,password,weChat,email,mobile")
     private String authType = "captcha";
 
 //    /**
