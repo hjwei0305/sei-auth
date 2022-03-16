@@ -13,11 +13,9 @@ import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.util.IdGenerator;
-import com.landray.sso.client.token.Token;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -156,7 +154,7 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
             if (Objects.isNull(resultMap)) {
                 return ResultData.fail("WorkPlus认证失败,返回结果Map为空.");
             }
-            token = String.valueOf(resultMap.get("access_token"));
+            token = (String) ((Map)resultMap.get("result")).get("access_token");
             if (StringUtils.isBlank(token)) {
                 return ResultData.fail("WorkPlus认证失败,返回Token为空.");
             }
@@ -165,7 +163,7 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
             return ResultData.fail("发起WorkPlus平台请求[" + url + "]异常.");
         }
         //2.请求workplus的API，验证APP传过来的ticket是否正确
-        url = String.format(TICKET_CHECK_URL, ticket, token);
+        url = String.format(workPlusApiHost + TICKET_CHECK_URL, ticket, token);
         LOG.debug("WorkPlus验证Ticket请求: {}", url);
         String userId;
         try {
@@ -185,7 +183,7 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
             if (!Objects.equals("0", status)) {
                 return ResultData.fail("WorkPlus验证Ticket失败,返回Status为: " + status);
             }
-            userId = (String) ((Map)resultMap.get("result")).get("client_id");
+            userId = (String) ((Map) resultMap.get("result")).get("client_id");
             if (StringUtils.isBlank(userId)) {
                 return ResultData.fail("WorkPlus验证Ticket失败,返回client_id为空.");
             }
@@ -194,7 +192,7 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
             return ResultData.fail("WorkPlus验证Ticket请求[" + url + "]异常.");
         }
         //3.获取用户信息
-        url = String.format(GET_USER_INFO_URL, userId, token);
+        url = String.format(workPlusApiHost + GET_USER_INFO_URL, userId, token);
         LOG.debug("WorkPlus获取用户信息请求: {}", url);
         String userName;
         try {
@@ -207,7 +205,7 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
             if (Objects.isNull(resultMap)) {
                 return ResultData.fail("WorkPlus获取用户信息失败,返回结果Map为空.");
             }
-            userName = (String) ((Map)resultMap.get("result")).get("username");
+            userName = (String) ((Map) resultMap.get("result")).get("username");
             if (StringUtils.isBlank(userName)) {
                 return ResultData.fail("WorkPlus获取用户信息失败,返回userName为空.");
             }
