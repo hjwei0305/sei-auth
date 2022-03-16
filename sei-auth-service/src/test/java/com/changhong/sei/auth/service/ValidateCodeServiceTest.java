@@ -39,7 +39,7 @@ public class ValidateCodeServiceTest extends BaseUnitTest {
 
     @Test
     public void sendVerifyCode() {
-        ResultData<String> resultData = service.sendVerifyCode("1111", "chao2.ma@changhong.com", ChannelEnum.EMAIL, "测试验证码");
+        ResultData<String> resultData = service.sendVerifyCode("1111", "chao2.ma@changhong.com", "chao2.ma", ChannelEnum.EMAIL, "测试验证码");
         System.out.println(resultData);
     }
 }

@@ -53,7 +53,7 @@ public class VerifyCodeController implements VerifyCodeApi {
     public ResultData<String> sendVerifyCode(String reqId, String channel, String operation) {
         ChannelEnum channelEnum = EnumUtils.getEnum(ChannelEnum.class, channel);
         if (Objects.nonNull(channelEnum)) {
-            return validateCodeService.sendVerifyCode(reqId, reqId, channelEnum, operation);
+            return validateCodeService.sendVerifyCode(reqId, reqId, ContextUtil.getUserName(), channelEnum, operation);
         } else {
             return ResultData.fail(ContextUtil.getMessage("verify_code_0001", channel));
         }

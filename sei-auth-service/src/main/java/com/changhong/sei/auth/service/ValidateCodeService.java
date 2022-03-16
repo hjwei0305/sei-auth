@@ -90,7 +90,7 @@ public class ValidateCodeService {
         return ResultData.success("ok");
     }
 
-    public ResultData<String> sendVerifyCode(String reqId, String target, ChannelEnum channel, String operation) {
+    public ResultData<String> sendVerifyCode(String reqId, String target, String targetName, ChannelEnum channel, String operation) {
         String code = RandomUtils.randomNumberString(6);
         LogUtil.info("验证码: {}", code);
 
@@ -101,13 +101,13 @@ public class ValidateCodeService {
                 if (EMAIL_PATTERN.matcher(target).matches()) {
                     EmailMessage message = new EmailMessage();
                     message.setSubject(subject);
-                    content.append("尊敬的").append(ContextUtil.getUserName()).append("：<br/><br/>")
+                    content.append("尊敬的").append(targetName).append("：<br/><br/>")
                             .append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;您好！您申请了")
                             .append(operation).append("，验证码为：")
                             .append(code)
                             .append(", 5分钟内有效。如果您没有执行该操作，请忽略此邮件。");
                     message.setContent(content.toString());
-                    message.setReceivers(Lists.newArrayList(new EmailAccount(ContextUtil.getUserName(), target)));
+                    message.setReceivers(Lists.newArrayList(new EmailAccount(targetName, target)));
                     notifyManager.sendEmail(message);
                 } else {
                     return ResultData.fail("邮箱格式不正确[" + target + "]");

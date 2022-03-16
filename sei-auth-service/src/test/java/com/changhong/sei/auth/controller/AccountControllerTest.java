@@ -43,7 +43,7 @@ public class AccountControllerTest extends BaseUnitTest {
 
     @Test
     public void getByTenantAccount() {
-        ResultData<SessionUserResponse> resultData = service.getByTenantAccount("10044", "mac321");
+        ResultData<SessionUserResponse> resultData = service.getByTenantAccount("GGG", "10000");
         System.out.println(JsonUtils.toJson(resultData));
     }
 
