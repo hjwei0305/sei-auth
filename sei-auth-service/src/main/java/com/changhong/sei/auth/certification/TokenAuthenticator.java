@@ -63,6 +63,11 @@ public interface TokenAuthenticator {
      */
     String AUTH_TYPE_LANDRAY = "landray";
 
+    /**
+     * workplus开放平台认证
+     */
+    String AUTH_TYPE_WORKPLUS = "workplus";
+
     String[] AGENT = {"iphone", "android", "ipad", "phone", "mobile", "wap", "netfront", "java", "operamobi",
             "operamini", "ucweb", "windowsce", "symbian", "series", "webos", "sony", "blackberry", "dopod",
             "nokia", "samsung", "palmsource", "xda", "pieplus", "meizu", "midp", "cldc", "motorola", "foma",
