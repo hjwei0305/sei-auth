@@ -8,6 +8,7 @@ import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.entity.ClientDetail;
 import com.changhong.sei.auth.service.AccountService;
+import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
@@ -39,17 +40,20 @@ import java.util.Objects;
 public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator {
     private static final Logger LOG = LoggerFactory.getLogger(WorkPlusAuthenticator.class);
     /**
-     * 获取访问用户
+     * 获取Token
      */
     private static final String GET_TOKEN_URL = "/v1/token";
     /**
-     * 获取访问用户
+     * ticket验证
      */
     private static final String TICKET_CHECK_URL = "/v1/tickets/%s?access_token=%s";
     /**
+     * 获取用户信息
+     */
+    private static final String GET_USER_INFO_URL = "/v1/users/%s?access_token=%s&type=id";
+    /**
      * workplus工作台API访问地址
      */
-    @Value("${sei.auth.sso.workplus.api.host}")
     private String workPlusApiHost;
 
     private final AuthProperties authProperties;
@@ -58,6 +62,7 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
     public WorkPlusAuthenticator(AuthProperties authProperties, AccountService accountService) {
         this.authProperties = authProperties;
         this.accountService = accountService;
+        this.workPlusApiHost = ContextUtil.getProperty("sei.auth.sso.workplus.api.host");
     }
 
     /**
@@ -121,11 +126,6 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
         if (StringUtils.isBlank(orgId)) {
             return ResultData.fail("org_id不能为空.");
         }
-        // 用户名
-        String userName = request.getParameter("user_name");
-        if (StringUtils.isBlank(userName)) {
-            return ResultData.fail("user_name不能为空.");
-        }
         ClientDetail clientDetail = clientDetailService.getByAppCode(appCode);
         if (Objects.isNull(clientDetail)) {
             return ResultData.fail("应用[" + appCode + "]未授权.");
@@ -167,6 +167,7 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
         //2.请求workplus的API，验证APP传过来的ticket是否正确
         url = String.format(TICKET_CHECK_URL, ticket, token);
         LOG.debug("WorkPlus验证Ticket请求: {}", url);
+        String userId;
         try {
             String result = HttpUtils.sendGet(url);
             LOG.debug("WorkPlus验证Ticket请求结果: {}", result);
@@ -184,9 +185,35 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
             if (!Objects.equals("0", status)) {
                 return ResultData.fail("WorkPlus验证Ticket失败,返回Status为: " + status);
             }
+            userId = (String) ((Map)resultMap.get("result")).get("client_id");
+            if (StringUtils.isBlank(userId)) {
+                return ResultData.fail("WorkPlus验证Ticket失败,返回client_id为空.");
+            }
         } catch (Exception e) {
             LOG.error("WorkPlus验证Ticket请求[" + url + "]异常.", e);
             return ResultData.fail("WorkPlus验证Ticket请求[" + url + "]异常.");
+        }
+        //3.获取用户信息
+        url = String.format(GET_USER_INFO_URL, userId, token);
+        LOG.debug("WorkPlus获取用户信息请求: {}", url);
+        String userName;
+        try {
+            String result = HttpUtils.sendGet(url);
+            LOG.debug("WorkPlus获取用户信息请求结果: {}", result);
+            if (StringUtils.isBlank(result)) {
+                return ResultData.fail("WorkPlus获取用户信息失败,返回结果为空.");
+            }
+            resultMap = JsonUtils.fromJson(result, HashMap.class);
+            if (Objects.isNull(resultMap)) {
+                return ResultData.fail("WorkPlus获取用户信息失败,返回结果Map为空.");
+            }
+            userName = (String) ((Map)resultMap.get("result")).get("username");
+            if (StringUtils.isBlank(userName)) {
+                return ResultData.fail("WorkPlus获取用户信息失败,返回userName为空.");
+            }
+        } catch (Exception e) {
+            LOG.error("WorkPlus获取用户信息[" + url + "]异常.", e);
+            return ResultData.fail("WorkPlus获取用户信息[" + url + "]异常.");
         }
         Account accountObj = accountService.getByAccountAndTenantCode(userName, clientDetail.getTenantCode());
         if (Objects.nonNull(accountObj)) {
