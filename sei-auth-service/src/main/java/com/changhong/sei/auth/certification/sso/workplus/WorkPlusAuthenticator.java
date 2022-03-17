@@ -12,6 +12,7 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
+import com.changhong.sei.core.utils.ResultDataUtil;
 import com.changhong.sei.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -37,18 +38,7 @@ import java.util.Objects;
 @Component(SingleSignOnAuthenticator.AUTH_TYPE_WORKPLUS)
 public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator {
     private static final Logger LOG = LoggerFactory.getLogger(WorkPlusAuthenticator.class);
-    /**
-     * 获取Token
-     */
-    private static final String GET_TOKEN_URL = "/v1/token";
-    /**
-     * ticket验证
-     */
-    private static final String TICKET_CHECK_URL = "/v1/tickets/%s?access_token=%s";
-    /**
-     * 获取用户信息
-     */
-    private static final String GET_USER_INFO_URL = "/v1/users/%s?access_token=%s&type=id";
+
     /**
      * workplus工作台API访问地址
      */
@@ -104,25 +94,10 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
      */
     @Override
     public ResultData<SessionUserResponse> auth(HttpServletRequest request) {
-        // 授权码
-        String ticket = request.getParameter("ticket");
-        if (StringUtils.isBlank(ticket)) {
-            return ResultData.fail("ticket不能为空.");
-        }
         // 应用代码
         String appCode = request.getParameter("appCode");
         if (StringUtils.isBlank(appCode)) {
             return ResultData.fail("appCode不能为空.");
-        }
-        // 域ID
-        String domainID = request.getParameter("domain_id");
-        if (StringUtils.isBlank(domainID)) {
-            return ResultData.fail("domain_id不能为空.");
-        }
-        // 组织ID
-        String orgId = request.getParameter("org_id");
-        if (StringUtils.isBlank(orgId)) {
-            return ResultData.fail("org_id不能为空.");
         }
         ClientDetail clientDetail = clientDetailService.getByAppCode(appCode);
         if (Objects.isNull(clientDetail)) {
@@ -132,88 +107,24 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
             return ResultData.fail("workplus工作台API访问地址不能为空.");
         }
         //1.请求workplus的API，通过app的key和secret获取accessToken
-        Map<String, String> paramMap = new HashMap<>();
-        paramMap.put("grant_type", "client_credentials");
-        paramMap.put("scope", "app");
-        paramMap.put("domain_id", domainID);
-        paramMap.put("org_id", orgId);
-        paramMap.put("client_secret", clientDetail.getClientSecret());
-        paramMap.put("client_id", clientDetail.getClientId());
-        String url = workPlusApiHost + GET_TOKEN_URL;
-        String paramString = JsonUtils.toJson(paramMap);
-        LOG.debug("WorkPlus认证请求: {},参数: {}", url, paramString);
-        Map<String, Object> resultMap;
-        String token;
-        try {
-            String result = HttpUtils.sendPost(url, paramString);
-            LOG.debug("WorkPlus认证请求结果: {}", result);
-            if (StringUtils.isBlank(result)) {
-                return ResultData.fail("WorkPlus认证失败,返回Token结果为空.");
-            }
-            resultMap = JsonUtils.fromJson(result, HashMap.class);
-            if (Objects.isNull(resultMap)) {
-                return ResultData.fail("WorkPlus认证失败,返回结果Map为空.");
-            }
-            token = (String) ((Map)resultMap.get("result")).get("access_token");
-            if (StringUtils.isBlank(token)) {
-                return ResultData.fail("WorkPlus认证失败,返回Token为空.");
-            }
-        } catch (Exception e) {
-            LOG.error("发起WorkPlus平台请求[" + url + "]异常.", e);
-            return ResultData.fail("发起WorkPlus平台请求[" + url + "]异常.");
+        ResultData<String> resultData = WorkPlusApiUtils.getAccessToken(workPlusApiHost, request.getParameter("domain_id"), request.getParameter("org_id"), clientDetail.getClientSecret(), clientDetail.getClientId());
+        if (resultData.failed()) {
+            return ResultDataUtil.fail(resultData.getMessage());
         }
+        String token = resultData.getData();
         //2.请求workplus的API，验证APP传过来的ticket是否正确
-        url = String.format(workPlusApiHost + TICKET_CHECK_URL, ticket, token);
-        LOG.debug("WorkPlus验证Ticket请求: {}", url);
-        String userId;
-        try {
-            String result = HttpUtils.sendGet(url);
-            LOG.debug("WorkPlus验证Ticket请求结果: {}", result);
-            if (StringUtils.isBlank(result)) {
-                return ResultData.fail("WorkPlus验证Ticket失败,返回结果为空.");
-            }
-            resultMap = JsonUtils.fromJson(result, HashMap.class);
-            if (Objects.isNull(resultMap)) {
-                return ResultData.fail("WorkPlus验证Ticket失败,返回结果Map为空.");
-            }
-            String status = String.valueOf(resultMap.get("status"));
-            if (StringUtils.isBlank(status)) {
-                return ResultData.fail("WorkPlus验证Ticket失败,返回Status为空.");
-            }
-            if (!Objects.equals("0", status)) {
-                return ResultData.fail("WorkPlus验证Ticket失败,返回Status为: " + status);
-            }
-            userId = (String) ((Map) resultMap.get("result")).get("client_id");
-            if (StringUtils.isBlank(userId)) {
-                return ResultData.fail("WorkPlus验证Ticket失败,返回client_id为空.");
-            }
-        } catch (Exception e) {
-            LOG.error("WorkPlus验证Ticket请求[" + url + "]异常.", e);
-            return ResultData.fail("WorkPlus验证Ticket请求[" + url + "]异常.");
+        resultData = WorkPlusApiUtils.checkTicket(workPlusApiHost, request.getParameter("ticket"), token);
+        if (resultData.failed()) {
+            return ResultDataUtil.fail(resultData.getMessage());
         }
+        String userId = resultData.getData();
         //3.获取用户信息
-        url = String.format(workPlusApiHost + GET_USER_INFO_URL, userId, token);
-        LOG.debug("WorkPlus获取用户信息请求: {}", url);
-        String userName;
-        try {
-            String result = HttpUtils.sendGet(url);
-            LOG.debug("WorkPlus获取用户信息请求结果: {}", result);
-            if (StringUtils.isBlank(result)) {
-                return ResultData.fail("WorkPlus获取用户信息失败,返回结果为空.");
-            }
-            resultMap = JsonUtils.fromJson(result, HashMap.class);
-            if (Objects.isNull(resultMap)) {
-                return ResultData.fail("WorkPlus获取用户信息失败,返回结果Map为空.");
-            }
-            userName = (String) ((Map) resultMap.get("result")).get("username");
-            if (StringUtils.isBlank(userName)) {
-                return ResultData.fail("WorkPlus获取用户信息失败,返回userName为空.");
-            }
-        } catch (Exception e) {
-            LOG.error("WorkPlus获取用户信息[" + url + "]异常.", e);
-            return ResultData.fail("WorkPlus获取用户信息[" + url + "]异常.");
+        resultData = WorkPlusApiUtils.getUserInfo(workPlusApiHost, userId, token);
+        if (resultData.failed()) {
+            return ResultDataUtil.fail(resultData.getMessage());
         }
-        Account accountObj = accountService.getByAccountAndTenantCode(userName, clientDetail.getTenantCode());
+        String account = resultData.getData();
+        Account accountObj = accountService.getByAccountAndTenantCode(account, clientDetail.getTenantCode());
         if (Objects.nonNull(accountObj)) {
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setTenant(accountObj.getTenantCode());
@@ -221,8 +132,8 @@ public class WorkPlusAuthenticator extends AbstractTokenAuthenticator implements
             loginRequest.setReqId(IdGenerator.uuid2());
             return login(loginRequest, accountObj);
         } else {
-            LOG.error("账号[{}]不存在，单点登录失败.", userName);
-            return ResultData.fail("账号[" + userName + "]不存在，单点登录失败.");
+            LOG.error("账号[{}]不存在，单点登录失败.", account);
+            return ResultData.fail("账号[" + account + "]不存在，单点登录失败.");
         }
     }
 
