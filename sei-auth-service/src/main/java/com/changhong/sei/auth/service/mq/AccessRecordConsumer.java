@@ -72,7 +72,7 @@ public class AccessRecordConsumer {
                     accessRecord.setOsName(userAgent.getOperatingSystem().getName());
                     accessRecord.setAccessTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(logVo.getAccessTime()), ZoneId.systemDefault()));
 
-                    // service.addRecord(accessRecord);
+                    service.addRecord(accessRecord);
                 }
             } catch (Exception e) {
                 LOG.error("访问日志消费异常!", e);
