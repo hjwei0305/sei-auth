@@ -43,7 +43,8 @@ public class AccessRecordUserResponse extends BaseEntityDto {
     public AccessRecordUserResponse() {
     }
 
-    public AccessRecordUserResponse(String userId, String userAccount, String userName, long countNum, LocalDateTime accessTime) {
+    public AccessRecordUserResponse(String id, String userId, String userAccount, String userName, long countNum, LocalDateTime accessTime) {
+        this.id = id;
         this.userId = userId;
         this.userAccount = userAccount;
         this.userName = userName;
