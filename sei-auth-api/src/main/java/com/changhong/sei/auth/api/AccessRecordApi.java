@@ -62,6 +62,20 @@ public interface AccessRecordApi {
                                                                  @PathVariable("topNum") int topNum);
 
     /**
+     * 指定时间段访问top N的功能
+     */
+    @GetMapping(path = "getTopFeatures")
+    @ApiOperation(value = "指定时间内访问top N的功能", notes = "指定时间内访问top N的功能")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "数据类型(ALL-全部,API-接口,PAGE-页面功能)", paramType = "query"),
+            @ApiImplicitParam(name = "period", value = "时间周期", required = true, paramType = "path"),
+            @ApiImplicitParam(name = "topNum", value = "排名数", required = true, paramType = "path", defaultValue = "10")
+    })
+    ResultData<List<AccessRecordFeatureResponse>> getTopFeatures(@RequestParam(name = "type", required = false, defaultValue = "ALL") String type,
+                                                                 @RequestParam("period") String period,
+                                                                 @RequestParam("topNum") int topNum);
+
+    /**
      * 指定时间段访问top N的人
      */
     @GetMapping(path = "getTopUsers/{tenant}/{period}/{topNum}")
@@ -76,6 +90,20 @@ public interface AccessRecordApi {
                                                            @RequestParam(name = "type", required = false, defaultValue = "ALL") String type,
                                                            @PathVariable("period") String period,
                                                            @PathVariable("topNum") int topNum);
+
+    /**
+     * 指定时间段访问top N的人
+     */
+    @GetMapping(path = "getTopUsers")
+    @ApiOperation(value = "指定时间内访问top N的人", notes = "指定时间内访问top N的人")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "type", value = "数据类型(ALL-全部,API-接口,PAGE-页面功能)", paramType = "query"),
+            @ApiImplicitParam(name = "period", value = "时间周期", required = true, paramType = "path"),
+            @ApiImplicitParam(name = "topNum", value = "排名数", required = true, paramType = "path", defaultValue = "10")
+    })
+    ResultData<List<AccessRecordUserResponse>> getTopUsers(@RequestParam(name = "type", required = false, defaultValue = "ALL") String type,
+                                                           @RequestParam("period") String period,
+                                                           @RequestParam("topNum") int topNum);
 
     /**
      * 指定时间段某一功能访问的人
@@ -94,6 +122,20 @@ public interface AccessRecordApi {
                                                                  @PathVariable("topNum") int topNum);
 
     /**
+     * 指定时间段某一功能访问的人
+     */
+    @GetMapping(path = "getUsersByFeature")
+    @ApiOperation(value = "指定时间内某一功能访问的人", notes = "指定时间内某一功能访问的人")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "feature", value = "功能名称", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "period", value = "时间周期", required = true, paramType = "path"),
+            @ApiImplicitParam(name = "topNum", value = "排名数", required = true, paramType = "path", defaultValue = "10")
+    })
+    ResultData<List<AccessRecordUserResponse>> getUsersByFeature(@RequestParam("feature") String feature,
+                                                                 @RequestParam("period") String period,
+                                                                 @RequestParam("topNum") int topNum);
+
+    /**
      * 指定时间段某人访问的功能
      */
     @GetMapping(path = "getFeaturesByUser/{tenant}/{period}/{topNum}")
@@ -108,4 +150,18 @@ public interface AccessRecordApi {
                                                                     @RequestParam("account") String account,
                                                                     @PathVariable("period") String period,
                                                                     @PathVariable("topNum") int topNum);
+
+    /**
+     * 指定时间段某人访问的功能
+     */
+    @GetMapping(path = "getFeaturesByUser")
+    @ApiOperation(value = "指定时间内某人访问的功能", notes = "指定时间内某人访问的功能")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "account", value = "账号", required = true, paramType = "query"),
+            @ApiImplicitParam(name = "period", value = "时间周期", required = true, paramType = "path"),
+            @ApiImplicitParam(name = "topNum", value = "排名数", required = true, paramType = "path", defaultValue = "10")
+    })
+    ResultData<List<AccessRecordFeatureResponse>> getFeaturesByUser(@RequestParam("account") String account,
+                                                                    @RequestParam("period") String period,
+                                                                    @RequestParam("topNum") int topNum);
 }

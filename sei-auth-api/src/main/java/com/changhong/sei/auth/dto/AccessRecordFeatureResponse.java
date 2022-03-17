@@ -44,7 +44,8 @@ public class AccessRecordFeatureResponse extends BaseEntityDto {
     public AccessRecordFeatureResponse() {
     }
 
-    public AccessRecordFeatureResponse(String appModule, String feature, String path, long countNum, LocalDateTime accessTime) {
+    public AccessRecordFeatureResponse(String id, String appModule, String feature, String path, long countNum, LocalDateTime accessTime) {
+        this.id = id;
         this.appModule = appModule;
         this.feature = feature;
         this.path = path;
