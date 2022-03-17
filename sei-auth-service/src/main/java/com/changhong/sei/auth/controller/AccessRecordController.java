@@ -89,7 +89,7 @@ public class AccessRecordController implements AccessRecordApi {
         for (Map.Entry<String, String> entry : map.entrySet()) {
             mapData = new HashMap<>();
             mapData.put("value", entry.getKey());
-            mapData.put("name", entry.getValue());
+            mapData.put("name", ContextUtil.getMessage(entry.getValue()));
             data.add(mapData);
         }
         return ResultData.success(data);
