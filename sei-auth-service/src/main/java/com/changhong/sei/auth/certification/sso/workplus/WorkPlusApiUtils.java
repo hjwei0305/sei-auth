@@ -32,7 +32,10 @@ public class WorkPlusApiUtils {
      * 获取用户信息
      */
     private static final String GET_USER_INFO_URL = "/v1/users/%s?access_token=%s&type=id";
-
+    /**
+     * 推送消息
+     */
+    private static final String SEND_MSG_URL = "/v1/apps/mbox?access_token=%s";
     /**
      * 获取accessToken
      *
@@ -167,4 +170,41 @@ public class WorkPlusApiUtils {
             return ResultData.fail("WorkPlus获取用户信息[" + url + "]异常.");
         }
     }
+
+    /**
+     * 发送消息
+     * @param host API基地址
+     * @param message 消息参数
+     * @param token token
+     * @return
+     */
+    public static ResultData<String> sendMsg(String host,Map message, String token){
+        String url = String.format(host + SEND_MSG_URL, token);
+        String paramString = JsonUtils.toJson(message);
+        LOG.debug("WorkPlus消息推送: {},参数: {}", url, paramString);
+        try {
+            String result = HttpUtils.sendPost(url,paramString);
+            LOG.debug("WorkPlus消息推送结果: {}", result);
+            if (StringUtils.isBlank(result)) {
+                return ResultData.fail("WorkPlus消息推送失败,返回结果为空.");
+            }
+            Map<String, Object> resultMap = JsonUtils.fromJson(result, HashMap.class);
+            if (Objects.isNull(resultMap)) {
+                return ResultData.fail("WorkPlus消息推送失败,返回结果Map为空.");
+            }
+            String status = String.valueOf(resultMap.get("status"));
+            if (StringUtils.isBlank(status)) {
+                return ResultData.fail("WorkPlus消息推送失败,返回Status为空.");
+            }
+            if (!Objects.equals("0", status)) {
+                String errorMessage = (String) resultMap.get("message");
+                return ResultData.fail("WorkPlus消息推送失败,返回消息为: " + errorMessage);
+            }
+            return ResultData.success();
+        } catch (Exception e) {
+            LOG.error("WorkPlus消息推送失败[" + url + "]异常.", e);
+            return ResultData.fail("WorkPlus消息推送失败[" + url + "]异常.");
+        }
+    }
+
 }
