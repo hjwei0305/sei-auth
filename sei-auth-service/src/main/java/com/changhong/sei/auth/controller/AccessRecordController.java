@@ -1,10 +1,10 @@
 package com.changhong.sei.auth.controller;
 
 import com.changhong.sei.auth.api.AccessRecordApi;
+import com.changhong.sei.auth.common.TimePeriod;
 import com.changhong.sei.auth.dto.AccessRecordCreateRequest;
 import com.changhong.sei.auth.dto.AccessRecordFeatureResponse;
 import com.changhong.sei.auth.dto.AccessRecordUserResponse;
-import com.changhong.sei.auth.common.TimePeriod;
 import com.changhong.sei.auth.entity.AccessRecord;
 import com.changhong.sei.auth.service.AccessRecordService;
 import com.changhong.sei.core.context.ContextUtil;
@@ -105,12 +105,30 @@ public class AccessRecordController implements AccessRecordApi {
     }
 
     /**
+     * 指定时间段访问top N的功能
+     */
+    @Override
+    public ResultData<List<AccessRecordFeatureResponse>> getTopFeatures(String type, String period, int topNum) {
+        TimePeriod timePeriod = EnumUtils.getEnum(TimePeriod.class, period);
+        return accessRecordService.getTopFeatures(ContextUtil.getTenantCode(), type, timePeriod, topNum);
+    }
+
+    /**
      * 指定时间段访问top N的人
      */
     @Override
     public ResultData<List<AccessRecordUserResponse>> getTopUsers(String tenant, String type, String period, int topNum) {
         TimePeriod timePeriod = EnumUtils.getEnum(TimePeriod.class, period);
         return accessRecordService.getTopUsers(tenant, type, timePeriod, topNum);
+    }
+
+    /**
+     * 指定时间段访问top N的人
+     */
+    @Override
+    public ResultData<List<AccessRecordUserResponse>> getTopUsers(String type, String period, int topNum) {
+        TimePeriod timePeriod = EnumUtils.getEnum(TimePeriod.class, period);
+        return accessRecordService.getTopUsers(ContextUtil.getTenantCode(), type, timePeriod, topNum);
     }
 
     /**
@@ -123,11 +141,29 @@ public class AccessRecordController implements AccessRecordApi {
     }
 
     /**
+     * 指定时间段某一功能访问的人
+     */
+    @Override
+    public ResultData<List<AccessRecordUserResponse>> getUsersByFeature(String feature, String period, int topNum) {
+        TimePeriod timePeriod = EnumUtils.getEnum(TimePeriod.class, period);
+        return accessRecordService.getUsersByFeature(ContextUtil.getTenantCode(), feature, timePeriod, topNum);
+    }
+
+    /**
      * 指定时间段某人访问的功能
      */
     @Override
     public ResultData<List<AccessRecordFeatureResponse>> getFeaturesByUser(String tenant, String account, String period, int topNum) {
         TimePeriod timePeriod = EnumUtils.getEnum(TimePeriod.class, period);
         return accessRecordService.getFeaturesByUser(tenant, account, timePeriod, topNum);
+    }
+
+    /**
+     * 指定时间段某人访问的功能
+     */
+    @Override
+    public ResultData<List<AccessRecordFeatureResponse>> getFeaturesByUser(String account, String period, int topNum) {
+        TimePeriod timePeriod = EnumUtils.getEnum(TimePeriod.class, period);
+        return accessRecordService.getFeaturesByUser(ContextUtil.getTenantCode(), account, timePeriod, topNum);
     }
 }
