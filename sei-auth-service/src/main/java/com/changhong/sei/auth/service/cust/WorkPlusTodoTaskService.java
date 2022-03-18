@@ -27,6 +27,7 @@ public class WorkPlusTodoTaskService implements TodoTaskService {
      */
     @Override
     public ResultData<Void> pushNewTask(List<FlowTask> taskList) {
+        LOG.info("进入WorkPlus推送流程模块待办");
         String templateId = ContextUtil.getProperty("sei.auth.sso.workplus.flow.push.templateId");
         List<Map> messages = new ArrayList<>();
         for (FlowTask flowTask : taskList) {
