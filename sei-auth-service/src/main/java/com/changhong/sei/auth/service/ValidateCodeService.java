@@ -5,8 +5,10 @@ import com.changhong.sei.auth.common.RandomUtils;
 import com.changhong.sei.auth.common.validatecode.IVerifyCodeGen;
 import com.changhong.sei.auth.common.validatecode.VerifyCode;
 import com.changhong.sei.auth.dto.ChannelEnum;
+import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.notify.dto.EmailAccount;
@@ -16,12 +18,14 @@ import com.changhong.sei.notify.sdk.manager.NotifyManager;
 import com.changhong.sei.util.Signature;
 import com.google.common.collect.Lists;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -41,6 +45,8 @@ public class ValidateCodeService {
     private CacheBuilder cacheBuilder;
     @Autowired
     private NotifyManager notifyManager;
+    @Autowired
+    private AccountService accountService;
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^\\s*\\w+(?:\\.{0,1}[\\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\\.[a-zA-Z]+\\s*$");
 
@@ -115,6 +121,14 @@ public class ValidateCodeService {
                 break;
             case Mobile:
                 if (target.matches("[0-9]+") && target.length() > 8 && target.length() < 14) {
+                    //如果未登录,则表示手机号登录，需要验证手机号是否在账号中存在
+                    SessionUser user = ContextUtil.getSessionUser();
+                    if (StringUtils.isEmpty(user.getSessionId())) {
+                        List<Account> accounts = accountService.findByOpenIdAndChannel(target, ChannelEnum.Mobile);
+                        if (CollectionUtils.isEmpty(accounts)) {
+                            return ResultData.fail("手机号[" + target + "]未绑定系统账号");
+                        }
+                    }
                     SmsMessage smsMessage = new SmsMessage();
                     // TODO 需要在notify模块中预制
                     smsMessage.setContentTemplateCode("AUTH_SMS_LOGIN");
