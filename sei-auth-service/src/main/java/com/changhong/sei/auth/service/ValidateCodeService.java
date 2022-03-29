@@ -45,8 +45,6 @@ public class ValidateCodeService {
     private CacheBuilder cacheBuilder;
     @Autowired
     private NotifyManager notifyManager;
-    @Autowired
-    private AccountService accountService;
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^\\s*\\w+(?:\\.{0,1}[\\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\\.[a-zA-Z]+\\s*$");
 
@@ -121,14 +119,6 @@ public class ValidateCodeService {
                 break;
             case Mobile:
                 if (target.matches("[0-9]+") && target.length() > 8 && target.length() < 14) {
-                    //如果未登录,则表示手机号登录，需要验证手机号是否在账号中存在
-                    SessionUser user = ContextUtil.getSessionUser();
-                    if (SessionUser.ANONYMOUS.equals(user.getAccount())) {
-                        List<Account> accounts = accountService.findByOpenIdAndChannel(target, ChannelEnum.Mobile);
-                        if (CollectionUtils.isEmpty(accounts)) {
-                            return ResultData.fail("手机号[" + target + "]未绑定系统账号");
-                        }
-                    }
                     SmsMessage smsMessage = new SmsMessage();
                     // TODO 需要在notify模块中预制
                     smsMessage.setContentTemplateCode("AUTH_SMS_LOGIN");
