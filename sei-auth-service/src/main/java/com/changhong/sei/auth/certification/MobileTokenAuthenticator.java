@@ -9,6 +9,7 @@ import com.changhong.sei.auth.service.ValidateCodeService;
 import com.changhong.sei.core.context.ApplicationContextHolder;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.log.LogUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,9 +47,8 @@ public class MobileTokenAuthenticator extends AbstractTokenAuthenticator impleme
         }
 
         List<Account> accountList = accountService.findByOpenIdAndChannel(account, ChannelEnum.Mobile);
-        if (Objects.isNull(accountList)) {
-            LogUtil.warn("账号或密码错误.");
-
+        if (CollectionUtils.isEmpty(accountList)) {
+            LogUtil.warn("认证失败: 未找到对应手机号[{}]的账号", reqId);
             ResultData<SessionUserResponse> result = ResultData.success(checkResult.getMessage(), SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.failure));
             // 发布登录验证码错误事件
             ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
@@ -57,6 +57,7 @@ public class MobileTokenAuthenticator extends AbstractTokenAuthenticator impleme
             if (accountList.size() == 1) {
                 return login(loginRequest, accountList.get(0));
             } else {
+                LogUtil.warn("认证失败: 对应手机号[{}]有多个账号", reqId);
                 ResultData<SessionUserResponse> result = ResultData.success(checkResult.getMessage(), SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.multiTenant));
                 // 发布登录验证码错误事件
                 ApplicationContextHolder.publishEvent(new LoginEvent(loginRequest, result));
