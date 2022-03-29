@@ -37,7 +37,7 @@ public class MobileTokenAuthenticator extends AbstractTokenAuthenticator impleme
         // 认证码检查,登录错误指定次数后要求输入验证码
         ResultData<String> checkResult = validateCodeService.check(reqId, verifyCode);
         if (checkResult.failed()) {
-            LogUtil.warn("认证失败.账号[{}]: {}", account, checkResult.getMessage());
+            LogUtil.error("认证失败.账号[{}]: {}- {}", account, reqId, checkResult.getMessage());
 
             ResultData<SessionUserResponse> result = ResultData.success(checkResult.getMessage(), SessionUserResponse.build().setLoginStatus(SessionUserResponse.LoginStatus.captchaError));
             // 发布登录验证码错误事件
