@@ -123,7 +123,7 @@ public class ValidateCodeService {
                 if (target.matches("[0-9]+") && target.length() > 8 && target.length() < 14) {
                     //如果未登录,则表示手机号登录，需要验证手机号是否在账号中存在
                     SessionUser user = ContextUtil.getSessionUser();
-                    if (StringUtils.isEmpty(user.getSessionId())) {
+                    if (SessionUser.ANONYMOUS.equals(user.getAccount())) {
                         List<Account> accounts = accountService.findByOpenIdAndChannel(target, ChannelEnum.Mobile);
                         if (CollectionUtils.isEmpty(accounts)) {
                             return ResultData.fail("手机号[" + target + "]未绑定系统账号");
