@@ -33,7 +33,7 @@ public interface TodoTaskApi {
     @ResponseBody
     @PostMapping(path = "pushNewTask", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "推送流程模块待办", notes = "推送流程模块待办")
-    ResultData<Void> pushNewTask(@RequestBody List<FlowTask> taskList);
+    ResultData<Void> pushNewTask(@RequestBody List<FlowTask> taskList,HttpServletRequest request);
 
     /**
      * 推送流程模块已办（待办转已办）
@@ -43,7 +43,7 @@ public interface TodoTaskApi {
     @ResponseBody
     @PostMapping(path = "pushOldTask", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "推送流程模块已办（待办转已办）", notes = "推送流程模块已办（待办转已办）")
-    ResultData<Void> pushOldTask(@RequestBody List<FlowTask> taskList);
+    ResultData<Void> pushOldTask(@RequestBody List<FlowTask> taskList,HttpServletRequest request);
 
     /**
      * 推送流程模块需要删除的待办
@@ -53,7 +53,7 @@ public interface TodoTaskApi {
     @ResponseBody
     @PostMapping(path = "pushDelTask", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "推送流程模块需要删除的待办", notes = "推送流程模块需要删除的待办")
-    ResultData<Void> pushDelTask(@RequestBody List<FlowTask> taskList);
+    ResultData<Void> pushDelTask(@RequestBody List<FlowTask> taskList,HttpServletRequest request);
 
     /**
      * 推送流程模块归档（正常结束）的待办
@@ -63,7 +63,7 @@ public interface TodoTaskApi {
     @ResponseBody
     @PostMapping(path = "pushEndTask", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "推送流程模块归档（正常结束）的待办", notes = "推送流程模块归档（正常结束）的待办")
-    ResultData<Void> pushEndTask(@RequestBody FlowTask task);
+    ResultData<Void> pushEndTask(@RequestBody FlowTask task,HttpServletRequest request);
 
     /**
      * 待办任务清单

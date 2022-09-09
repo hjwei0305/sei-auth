@@ -8,6 +8,8 @@ import com.changhong.sei.core.dto.flow.FlowTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -26,7 +28,7 @@ public class WorkPlusTodoTaskService implements TodoTaskService {
      * @param taskList 需要推送的待办
      */
     @Override
-    public ResultData<Void> pushNewTask(List<FlowTask> taskList) {
+    public ResultData<Void> pushNewTask(List<FlowTask> taskList, HttpServletRequest request) {
         LOG.info("进入WorkPlus推送流程模块待办");
         String templateId = ContextUtil.getProperty("sei.auth.sso.workplus.flow.push.templateId");
         List<Map> messages = new ArrayList<>();
@@ -84,7 +86,7 @@ public class WorkPlusTodoTaskService implements TodoTaskService {
      * @param taskList 需要推送的已办（待办转已办）
      */
     @Override
-    public ResultData<Void> pushOldTask(List<FlowTask> taskList) {
+    public ResultData<Void> pushOldTask(List<FlowTask> taskList,HttpServletRequest request) {
 
         return ResultData.success();
     }
@@ -95,7 +97,7 @@ public class WorkPlusTodoTaskService implements TodoTaskService {
      * @param taskList 需要删除的待办
      */
     @Override
-    public ResultData<Void> pushDelTask(List<FlowTask> taskList) {
+    public ResultData<Void> pushDelTask(List<FlowTask> taskList,HttpServletRequest request) {
 
         return ResultData.success();
     }
@@ -106,8 +108,18 @@ public class WorkPlusTodoTaskService implements TodoTaskService {
      * @param task 需要归档的任务
      */
     @Override
-    public ResultData<Void> pushEndTask(FlowTask task) {
+    public ResultData<Void> pushEndTask(FlowTask task,HttpServletRequest request) {
 
         return ResultData.success();
+    }
+
+    @Override
+    public Object getTodoTasks(HttpServletRequest request) {
+        return null;
+    }
+
+    @Override
+    public void ssoDoTask(HttpServletRequest request, HttpServletResponse response) {
+
     }
 }

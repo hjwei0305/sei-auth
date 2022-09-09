@@ -6,6 +6,7 @@ import com.changhong.sei.auth.config.properties.AuthProperties;
 import com.changhong.sei.auth.config.properties.SsoProperties;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
+import com.changhong.sei.auth.dto.TodoTaskRequest;
 import com.changhong.sei.auth.entity.Account;
 import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.core.dto.ResultData;
@@ -111,7 +112,6 @@ public class ChGtSingleSignOnAuthenticator extends AbstractTokenAuthenticator im
 
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setTenant(accountObj.getTenantCode());
-            loginRequest.setAccount(accountObj.getAccount());
             loginRequest.setReqId(IdGenerator.uuid2());
             return login(loginRequest, accountObj);
         } else {
@@ -128,7 +128,48 @@ public class ChGtSingleSignOnAuthenticator extends AbstractTokenAuthenticator im
      */
     @Override
     public ResultData<SessionUserResponse> auth(LoginRequest loginParam) {
+        Account accountObj = accountService.getByAccountAndTenantCode(loginParam.getAccount(), properties.getTenant());
+        if (Objects.nonNull(accountObj)) {
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setTenant(accountObj.getTenantCode());
+            loginRequest.setReqId(loginParam.getReqId());
+            return login(loginRequest, accountObj);
+        }
         return ResultData.fail("认证类型错误.");
+    }
+
+
+    /**
+     * 获取待办任务用户验证
+     */
+    public ResultData<TodoTaskRequest> getTaskListAuth(HttpServletRequest request) {
+        //获取单点参数
+        String ssoToken = request.getParameter("token");
+        LOG.debug("SSO token {}", ssoToken);
+
+        // 获取当前登录账号
+        TodoTaskRequest todoTaskRequest = ChGtAuthUtil.unsignTodoTaskVo(ssoToken, SECURITY);
+        if (Objects.isNull(todoTaskRequest) || StringUtils.isBlank(todoTaskRequest.getAccount())) {
+            return ResultData.fail("单点登录异常.");
+        }
+        String account = todoTaskRequest.getAccount();
+        LOG.debug("SSO登录用户: {}", account);
+
+        Account accountObj = accountService.getByAccountAndTenantCode(account, properties.getTenant());
+        if (Objects.nonNull(accountObj)) {
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setTenant(accountObj.getTenantCode());
+            loginRequest.setReqId(IdGenerator.uuid2());
+            ResultData<SessionUserResponse> resultData = login(loginRequest, accountObj);
+            if (resultData.successful()) {
+                return ResultData.success(todoTaskRequest);
+            } else {
+                return ResultData.fail(resultData.getMessage());
+            }
+        } else {
+            LOG.error("账号[{}]不存在，单点登录失败.", account);
+            return ResultData.fail("账号[" + account + "]不存在，单点登录失败.");
+        }
     }
 
 }

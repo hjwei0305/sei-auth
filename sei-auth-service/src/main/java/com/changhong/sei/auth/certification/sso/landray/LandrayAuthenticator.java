@@ -1,3 +1,4 @@
+/*
 package com.changhong.sei.auth.certification.sso.landray;
 
 import com.changhong.sei.auth.certification.AbstractTokenAuthenticator;
@@ -22,6 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
+*/
 /**
  * 实现功能：蓝凌OA单点集成
  * 配置中心增加配置:
@@ -31,7 +33,8 @@ import java.util.Objects;
  *
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-04-14 14:31
- */
+ *//*
+
 @Lazy
 @Component(SingleSignOnAuthenticator.AUTH_TYPE_LANDRAY)
 public class LandrayAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator {
@@ -63,27 +66,33 @@ public class LandrayAuthenticator extends AbstractTokenAuthenticator implements 
         }
     }
 
-    /**
+    */
+/**
      * 前端web根url地址.必须
      * 如:http://tsei.changhong.com:8090/sei-portal-web
-     */
+     *//*
+
     @Override
     public String getWebBaseUrl() {
         return authProperties.getWebBaseUrl();
     }
 
-    /**
+    */
+/**
      * APP根url地址.必须
      * 如:http://tsei.changhong.com:8090/sei-app
-     */
+     *//*
+
     @Override
     public String getAppBaseUrl() {
         return authProperties.getAppBaseUrl();
     }
 
-    /**
+    */
+/**
      * 登录成功url地址
-     */
+     *//*
+
     @Override
     public String getIndexUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
         String url = properties.getIndex();
@@ -95,19 +104,23 @@ public class LandrayAuthenticator extends AbstractTokenAuthenticator implements 
         return url;
     }
 
-    /**
+    */
+/**
      * 登录失败url地址
      *
      * @param userResponse 用户登录失败返回信息.可能为空,注意检查
-     */
+     *//*
+
     @Override
     public String getLogoutUrl(SessionUserResponse userResponse, boolean agentIsMobile, HttpServletRequest request) {
         return properties.getLogout();
     }
 
-    /**
+    */
+/**
      * 获取用户信息
-     */
+     *//*
+
     @Override
     public ResultData<SessionUserResponse> auth(HttpServletRequest request) {
         //会话token
@@ -152,14 +165,17 @@ public class LandrayAuthenticator extends AbstractTokenAuthenticator implements 
         }
     }
 
-    /**
+    */
+/**
      * 获取用户信息
      *
      * @param loginParam 授权参数
      * @return LoginDTO
-     */
+     *//*
+
     @Override
     public ResultData<SessionUserResponse> auth(LoginRequest loginParam) {
         return ResultData.fail("认证类型错误.");
     }
 }
+*/

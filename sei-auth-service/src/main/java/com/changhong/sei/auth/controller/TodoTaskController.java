@@ -118,8 +118,8 @@ public class TodoTaskController implements TodoTaskApi {
      */
     @Override
     @Log(value = "新待办任务", level = Level.INFO)
-    public ResultData<Void> pushNewTask(List<FlowTask> taskList) {
-        return service.pushNewTask(taskList);
+    public ResultData<Void> pushNewTask(List<FlowTask> taskList,HttpServletRequest request) {
+        return service.pushNewTask(taskList,request);
     }
 
     /**
@@ -129,8 +129,8 @@ public class TodoTaskController implements TodoTaskApi {
      */
     @Override
     @Log(value = "待办转已办", level = Level.INFO)
-    public ResultData<Void> pushOldTask(List<FlowTask> taskList) {
-        return service.pushOldTask(taskList);
+    public ResultData<Void> pushOldTask(List<FlowTask> taskList,HttpServletRequest request) {
+        return service.pushOldTask(taskList,request);
     }
 
     /**
@@ -140,8 +140,8 @@ public class TodoTaskController implements TodoTaskApi {
      */
     @Override
     @Log(value = "删除待办任务", level = Level.INFO)
-    public ResultData<Void> pushDelTask(List<FlowTask> taskList) {
-        return service.pushDelTask(taskList);
+    public ResultData<Void> pushDelTask(List<FlowTask> taskList,HttpServletRequest request) {
+        return service.pushDelTask(taskList,request);
     }
 
     /**
@@ -151,8 +151,8 @@ public class TodoTaskController implements TodoTaskApi {
      */
     @Override
     @Log(value = "办结任务", level = Level.INFO)
-    public ResultData<Void> pushEndTask(FlowTask task) {
-        return service.pushEndTask(task);
+    public ResultData<Void> pushEndTask(FlowTask task,HttpServletRequest request) {
+        return service.pushEndTask(task,request);
     }
 
     /**
