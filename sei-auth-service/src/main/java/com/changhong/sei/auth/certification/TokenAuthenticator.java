@@ -39,6 +39,10 @@ public interface TokenAuthenticator {
      */
     String AUTH_TYPE_EMAIL = "email";
     /**
+     * 新宝单点认证
+     */
+    String AUTH_TYPE_XB_GT="xbGF";
+    /**
      * 长虹GT单点认证
      */
     String AUTH_TYPE_CH_GT = "chGT";
