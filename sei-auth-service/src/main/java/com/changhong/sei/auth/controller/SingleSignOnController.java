@@ -62,7 +62,7 @@ public class SingleSignOnController implements Constants {
     }
 
     @ApiOperation(value = "OAuth2授权路由(移动端)", notes = "OAuth2授权路由(移动端使用)")
-    @RequestMapping(path = "/sso/authorizeData", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(path = "/sso/authorizeData", method = {RequestMethod.POST})
     public ResultData<Map<String, String>> authorizeData(HttpServletRequest request) {
         String authType = request.getParameter("authType");
         if (StringUtils.isBlank(authType)) {
