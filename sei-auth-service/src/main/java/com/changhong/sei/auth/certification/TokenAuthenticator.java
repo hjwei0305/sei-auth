@@ -43,6 +43,10 @@ public interface TokenAuthenticator {
      */
     String AUTH_TYPE_XB_GT="xbDL";
     /**
+     * 新宝代办认证
+     */
+    String AUTH_TYPE_XB_AG="xbAG";
+    /**
      * 长虹GT单点认证
      */
     String AUTH_TYPE_CH_GT = "chGT";

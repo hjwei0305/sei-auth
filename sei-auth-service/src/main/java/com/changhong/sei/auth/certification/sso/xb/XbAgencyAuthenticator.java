@@ -22,11 +22,11 @@ import java.util.Objects;
 
 /**
  * @author Joe
- * @date 2022/9/14
+ * @date 2022/9/22
  */
 @Lazy
-@Component(SingleSignOnAuthenticator.AUTH_TYPE_XB_GT)
-public class XbSingleSignOnAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator {
+@Component(SingleSignOnAuthenticator.AUTH_TYPE_XB_AG)
+public class XbAgencyAuthenticator extends AbstractTokenAuthenticator implements SingleSignOnAuthenticator{
 
     private static final Logger LOG = LoggerFactory.getLogger(XbSingleSignOnAuthenticator.class);
     private final AuthProperties authProperties;
@@ -34,7 +34,7 @@ public class XbSingleSignOnAuthenticator extends AbstractTokenAuthenticator impl
     private final AccountService accountService;
     private static String SECURITY;
 
-    public XbSingleSignOnAuthenticator(AuthProperties authProperties, SsoProperties properties, AccountService accountService) {
+    public XbAgencyAuthenticator(AuthProperties authProperties, SsoProperties properties, AccountService accountService) {
         this.authProperties = authProperties;
         this.properties = properties;
         this.accountService = accountService;
@@ -76,20 +76,12 @@ public class XbSingleSignOnAuthenticator extends AbstractTokenAuthenticator impl
     @Override
     public ResultData<SessionUserResponse> auth(HttpServletRequest request) {
         //网址中心传过来的加密工号
-        String ssoToken = request.getParameter("token");
+        String userCode = request.getParameter("code");
         //租户代码
         String tenant = request.getParameter("tenant");
         //需要跳转页面
         String modular = request.getParameter("modular");
         String reUrl = request.getParameter("reUrl");
-        //解密工号网址
-        String url = "http://192.168.117.139:9999/api/XBLoginCheck/Check?ticket=";
-        String userCode = "";
-        //发送http请求
-        String result = HttpUtils.get(url + ssoToken,null,null,10000,10000);
-        String str1 = result.replace("\"","");
-        //解析工号
-        userCode = str1 ;
         //判断工号是否存在
         if (!StringUtils.isBlank(userCode)) {
             Account accountObj = accountService.getByAccountAndTenantCode(userCode, tenant);
@@ -116,6 +108,6 @@ public class XbSingleSignOnAuthenticator extends AbstractTokenAuthenticator impl
 
     @Override
     public ResultData<SessionUserResponse> auth(LoginRequest loginParam) {
-        return null;
+        return ResultData.fail("认证类型错误.");
     }
 }
