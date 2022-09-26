@@ -1,8 +1,5 @@
 package com.changhong.sei.auth.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 /**
  * @author Joe
  * @date 2022/4/25
