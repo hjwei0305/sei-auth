@@ -2,7 +2,10 @@ package com.changhong.sei.auth.service.cust;
 
 import com.changhong.sei.auth.certification.sso.ch.ChGtSingleSignOnAuthenticator;
 import com.changhong.sei.auth.config.properties.AuthProperties;
+import com.changhong.sei.auth.connection.EipConnector;
 import com.changhong.sei.auth.dto.*;
+import com.changhong.sei.auth.entity.Account;
+import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.auth.service.TodoTaskService;
 import com.changhong.sei.auth.service.client.FlowClient;
 import com.changhong.sei.auth.service.client.vo.FlowTaskPageResultVO;
@@ -19,6 +22,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +43,8 @@ public class DefaultTodoTaskService implements TodoTaskService {
     private final AuthProperties authProperties;
     private final ChGtSingleSignOnAuthenticator authenticator;
     private final FlowClient flowClient;
+    @Autowired
+    private AccountService accountService;
 
     public DefaultTodoTaskService(AuthProperties authProperties, ChGtSingleSignOnAuthenticator authenticator, FlowClient flowClient) {
         this.authProperties = authProperties;
@@ -63,8 +70,19 @@ public class DefaultTodoTaskService implements TodoTaskService {
             // TODO 按项目实际情况集成
             String data = "";
             for (FlowTask task : taskList) {
+                String url = "";
+                /*EipMailDto dto = new EipMailDto();
+                String url = authProperties.getApiBaseUrl() +"/sei-auth" + getTodoTaskRelativeUrl(task.getId())+
+                        "&account="+task.getExecutorAccount() +
+                        "&tenant="+task.getTenantCode()+
+                        "&id="+task.getFlowInstance().getBusinessId();
                 // 待办处理地址
-                String url = authProperties.getApiBaseUrl() + request.getContextPath() + getTodoTaskRelativeUrl(task.getId());
+                dto.setAccount("380312");
+                dto.setMailID(task.getId());
+                dto.setUrl(url);
+                dto.setMailBody(task.getFlowName());
+                dto.setMailSubject(task.getTaskName());
+                boolean flag = EipConnector.addEipMall(dto);*/
                 LOG.info("待办消息处理URL: {}", url);
             }
             LOG.info("待办消息推送内容: {}", data);
@@ -215,6 +233,18 @@ public class DefaultTodoTaskService implements TodoTaskService {
     @Override
     public void ssoDoTask(HttpServletRequest request, HttpServletResponse response) {
         // 参考todoTaskContrller实现
+        //当前登录账号
+        String account = request.getParameter("account");
+        String taskId = request.getParameter("taskId");
+        //当前时间戳
+        String stamp = request.getParameter("stamp");
+        //会话token
+        String sign = request.getParameter("sign");
+        if (LOG.isInfoEnabled()) {
+            LOG.info("loginid ：{}, taskId ：{}, stamp ：{}, sign ：{}", account, taskId, stamp, sign);
+        }
+        //获取账号,并模拟用户
+        Account accountObj = accountService.getByAccountAndTenantCode(account, "DONLIM");
     }
 
 }

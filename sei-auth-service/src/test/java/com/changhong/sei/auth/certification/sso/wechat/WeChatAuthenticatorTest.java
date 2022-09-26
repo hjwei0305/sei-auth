@@ -2,7 +2,11 @@ package com.changhong.sei.auth.certification.sso.wechat;
 
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
+import com.changhong.sei.auth.service.TodoTaskService;
+import com.changhong.sei.auth.service.cust.DefaultTodoTaskService;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.dto.flow.FlowInstance;
+import com.changhong.sei.core.dto.flow.FlowTask;
 import com.changhong.sei.core.test.BaseUnitTest;
 import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
@@ -10,15 +14,16 @@ import com.changhong.sei.core.util.JwtTokenUtil;
 import com.changhong.sei.util.DateUtils;
 import com.changhong.sei.util.Signature;
 import io.jsonwebtoken.Claims;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -28,12 +33,31 @@ import static org.junit.Assert.*;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-04-28 16:01
  */
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class WeChatAuthenticatorTest {
 
     @Autowired
     private WeChatAuthenticator authenticator;
+    @Autowired
+    private TodoTaskService todoTaskService;
+
+    @Test
+    public void testEip(){
+        HttpServletRequest request = null;
+        FlowTask flowTask = new FlowTask();
+        FlowInstance flow = new FlowInstance();
+        List<FlowTask> list = new ArrayList<>();
+        flowTask.setId("5FD36C46-3B05-11ED-AEBD-0242AC140022");
+        flowTask.setExecutorAccount("admin");
+        flowTask.setTenantCode("DONLIM");
+        flow.setBusinessId("7D38FC98-3AED-11ED-86B5-0242AC140027");
+        flowTask.setFlowInstance(flow);
+        flowTask.setFlowName("厂际调拨单审核");
+        flowTask.setTaskName("部门负责人审批");
+        list.add(flowTask);
+        todoTaskService.pushNewTask(list,request);
+    }
 
     @Test
     public void bindingAccount() {

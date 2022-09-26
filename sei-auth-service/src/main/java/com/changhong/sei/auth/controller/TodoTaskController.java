@@ -13,6 +13,7 @@ import com.changhong.sei.auth.service.SessionService;
 import com.changhong.sei.auth.service.TodoTaskService;
 import com.changhong.sei.auth.service.client.FlowClient;
 import com.changhong.sei.auth.service.client.vo.FlowTaskPageResultVO;
+import com.changhong.sei.auth.service.cust.DefaultTodoTaskService;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.dto.ResultData;
@@ -259,11 +260,14 @@ public class TodoTaskController implements TodoTaskApi {
         String stamp = request.getParameter("stamp");
         //会话token
         String sign = request.getParameter("sign");
+        //租户代码
+        String tenant = request.getParameter("tenant");
         if (LOG.isInfoEnabled()) {
             LOG.info("loginid ：{}, taskId ：{}, stamp ：{}, sign ：{}", account, taskId, stamp, sign);
         }
         //获取账号,并模拟用户
-        Account accountObj = accountService.getByAccountAndTenantCode(account, properties.getTenant());
+        //Account accountObj = accountService.getByAccountAndTenantCode(account, properties.getTenant());
+        Account accountObj = accountService.getByAccountAndTenantCode(account, tenant);
         if (Objects.isNull(accountObj)) {
             // "用户[" + account + "]不存在,请检查用户同步数据."
             errorMsg(response, ContextUtil.getMessage("task_0001", account));
