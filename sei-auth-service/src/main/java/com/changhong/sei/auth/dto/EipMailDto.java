@@ -7,8 +7,6 @@ import lombok.EqualsAndHashCode;
  * @author Joe
  * @date 2022/4/25
  */
-@EqualsAndHashCode(callSuper=false)
-@Data
 public class EipMailDto {
 
     /**
@@ -40,4 +38,28 @@ public class EipMailDto {
      * url
      */
     private String url;
+
+    public void setAccount(String account){ this.account=account;}
+
+    public String getAccount(){return account;}
+
+    public void setMailBody(String mailBody){ this.mailBody=mailBody;}
+
+    public String getMailBody(){return mailBody;}
+
+    public void setMailID(String mailID){ this.mailID=mailID;}
+
+    public String getMailID(){return mailID;}
+
+    public void setMailSubject(String mailSubject){ this.mailSubject=mailSubject;}
+
+    public String getMailSubject(){return mailSubject;}
+
+    public void setMailType(String mailType){ this.mailType=mailType;}
+
+    public String getMailType(){return mailType;}
+
+    public void setUrl(String url){ this.url=url;}
+
+    public String getUrl(){return url;}
 }
