@@ -76,7 +76,7 @@ public class XbSingleSignOnAuthenticator extends AbstractTokenAuthenticator impl
     @Override
     public ResultData<SessionUserResponse> auth(HttpServletRequest request) {
         //网址中心传过来的加密工号
-        String ssoToken = request.getParameter("token");
+        String ssoToken = request.getParameter("eipaulg");
         //租户代码
         String tenant = request.getParameter("tenant");
         //需要跳转页面
