@@ -82,7 +82,8 @@ public class DefaultTodoTaskService implements TodoTaskService {
                 dto.setMailBody(task.getFlowName());
                 dto.setMailSubject(task.getTaskName());
                 boolean flag = EipConnector.addEipMall(dto);
-                LOG.info("待办消息处理URL: {}", url,flag);
+                LOG.info("待办消息处理URL: {}", url);
+                LOG.info("EIP日志",flag);
             }
             LOG.info("待办消息推送内容: {}", data);
             // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
