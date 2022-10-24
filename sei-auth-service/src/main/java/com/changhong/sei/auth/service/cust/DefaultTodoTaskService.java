@@ -10,6 +10,7 @@ import com.changhong.sei.auth.service.TodoTaskService;
 import com.changhong.sei.auth.service.client.FlowClient;
 import com.changhong.sei.auth.service.client.vo.FlowTaskPageResultVO;
 import com.changhong.sei.auth.service.client.vo.FlowTaskVo;
+import com.changhong.sei.auth.webservice.eipMall.SvcHdrTypes;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.flow.FlowTask;
 import com.changhong.sei.core.dto.serach.PageInfo;
@@ -81,7 +82,7 @@ public class DefaultTodoTaskService implements TodoTaskService {
                 dto.setUrl(url);
                 dto.setMailBody(task.getFlowName());
                 dto.setMailSubject(task.getTaskName());
-                boolean flag = EipConnector.addEipMall(dto);
+                SvcHdrTypes flag = EipConnector.addEipMall(dto);
                 LogUtil.bizLog("EIP日志！", flag);
                 LOG.info("待办消息处理URL: {}", url);
             }
