@@ -70,20 +70,19 @@ public class DefaultTodoTaskService implements TodoTaskService {
             // TODO 按项目实际情况集成
             String data = "";
             for (FlowTask task : taskList) {
-                String url = "";
-                /*EipMailDto dto = new EipMailDto();
+                EipMailDto dto = new EipMailDto();
                 String url = authProperties.getApiBaseUrl() +"/sei-auth" + getTodoTaskRelativeUrl(task.getId())+
                         "&account="+task.getExecutorAccount() +
                         "&tenant="+task.getTenantCode()+
                         "&id="+task.getFlowInstance().getBusinessId();
                 // 待办处理地址
-                dto.setAccount("380312");
+                dto.setAccount(task.getExecutorAccount());
                 dto.setMailID(task.getId());
                 dto.setUrl(url);
                 dto.setMailBody(task.getFlowName());
                 dto.setMailSubject(task.getTaskName());
-                boolean flag = EipConnector.addEipMall(dto);*/
-                LOG.info("待办消息处理URL: {}", url);
+                boolean flag = EipConnector.addEipMall(dto);
+                LOG.info("待办消息处理URL: {}", url,flag);
             }
             LOG.info("待办消息推送内容: {}", data);
             // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
