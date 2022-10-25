@@ -77,7 +77,7 @@ public class DefaultTodoTaskService implements TodoTaskService {
                         "&tenant="+task.getTenantCode()+
                         "&id="+task.getFlowInstance().getBusinessId();
                 // 待办处理地址
-                dto.setAccount("380312");
+                dto.setAccount(task.getTenantCode());
                 dto.setMailID(task.getId());
                 dto.setUrl(url);
                 dto.setMailBody(task.getFlowName());

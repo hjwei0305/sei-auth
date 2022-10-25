@@ -23,7 +23,7 @@ public class EipConnector {
     public static final DONLIMESAGENCYNOTICEINFOSYNC086_Service service = new DONLIMESAGENCYNOTICEINFOSYNC086_Service();
     public static final DONLIMESAGENCYNOTICEINFOSYNC086 sync = service.getDONLIMESAGENCYNOTICEINFOSYNC086SOAP();
     public static final AddNoticeType notice = new AddNoticeType();
-    public static final String sourceId = "ESS";
+    public static final String sourceId = "SEIPROD";
     public static final String destinationId = "EIP";
     public static final String ipAddress = "10.233.0.170";
     public static final HashMap<String, String> map = DateUtils.getStarAndEndDate();
