@@ -77,15 +77,13 @@ public class DefaultTodoTaskService implements TodoTaskService {
                         "&tenant="+task.getTenantCode()+
                         "&id="+task.getFlowInstance().getBusinessId();
                 // 待办处理地址
-                dto.setAccount(task.getTenantCode());
+                dto.setAccount(task.getExecutorAccount());
                 dto.setMailID(task.getId());
                 dto.setUrl(url);
                 dto.setMailBody(task.getFlowName());
                 dto.setMailSubject(task.getTaskName());
                 SvcHdrTypes flag = EipConnector.addEipMall(dto);
-                LogUtil.bizLog("EIP日志",flag.getRDESC());
                 LogUtil.bizLog("EIP日志"+flag.getRDESC());
-                LogUtil.bizLog("EIP日志"+flag.getESBCODE());
                 LogUtil.bizLog("EIP日志"+flag.getESBCODE());
                 LOG.info("待办消息处理URL: {}", url);
             }
