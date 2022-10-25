@@ -143,6 +143,11 @@ public class DefaultTodoTaskService implements TodoTaskService {
         try {
             // TODO 按项目实际情况集成
             String data = "";
+            for (FlowTask task : taskList) {
+                boolean flag = EipConnector.deleteEipMall(task.getId());
+                LOG.info("Eip删除转办: {}", flag);
+                LogUtil.bizLog("EIP日志"+flag);
+            }
             LOG.info("删除待办推送内容: {}", data);
             // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
             // LOG.info("删除待办推送结果: {}", result);
