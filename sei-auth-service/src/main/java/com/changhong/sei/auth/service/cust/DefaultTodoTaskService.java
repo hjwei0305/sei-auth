@@ -78,9 +78,9 @@ public class DefaultTodoTaskService implements TodoTaskService {
                         "&id="+task.getFlowInstance().getBusinessId();
                 // 待办处理地址
                 dto.setAccount(task.getExecutorAccount());
-                dto.setMailID(task.getId());
+                dto.setMailID(task.getFlowInstance().getBusinessId());
                 dto.setUrl(url);
-                dto.setMailBody(task.getFlowInstance().getBusinessId());
+                dto.setMailBody(task.getFlowName());
                 dto.setMailSubject(task.getTaskName());
                 SvcHdrTypes flag = EipConnector.addEipMall(dto);
                 LogUtil.bizLog("EIP日志"+flag.getRDESC());
@@ -114,6 +114,12 @@ public class DefaultTodoTaskService implements TodoTaskService {
         try {
             // TODO 按项目实际情况集成
             String data = "";
+            for (FlowTask task : taskList) {
+
+                boolean flag = EipConnector.deleteEipMall(task.getFlowInstance().getBusinessId());
+                LOG.info("Eip删除待办: {}", flag);
+                LogUtil.bizLog("EIP日志"+flag);
+            }
             LOG.info("已办消息推送内容: {}", data);
             // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
             // LOG.info("已办消息推送结果: {}", result);
