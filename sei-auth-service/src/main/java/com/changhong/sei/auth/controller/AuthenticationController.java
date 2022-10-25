@@ -1,6 +1,7 @@
 package com.changhong.sei.auth.controller;
 
 import com.changhong.sei.auth.api.AuthenticationApi;
+import com.changhong.sei.auth.certification.AbstractTokenAuthenticator;
 import com.changhong.sei.auth.certification.TokenAuthenticatorBuilder;
 import com.changhong.sei.auth.certification.sso.sei.DesUtil;
 import com.changhong.sei.auth.common.Constants;
@@ -55,7 +56,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @Api(value = "AuthenticationApi", tags = "账户认证服务")
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-public class AuthenticationController implements AuthenticationApi {
+public class AuthenticationController implements AuthenticationApi   {
 
     @Autowired
     private ModelMapper modelMapper;
@@ -230,6 +231,50 @@ public class AuthenticationController implements AuthenticationApi {
         } else {
             // 认证失败
             return ResultData.fail(ContextUtil.getMessage("authentication_0002"));
+        }
+    }
+
+    @Override
+    public ResultData<SessionUserResponse> H5SignToken(HttpServletRequest request) {
+        //H5传进工号
+        String userCode = request.getParameter("userCode");
+        //租户代码
+        String tenant = request.getParameter("tenant");
+        //key
+        String key = request.getParameter("key");
+        if(!key.equals("1q2w3eDonlim")){
+            return ResultData.fail("key不符合，登录失败.");
+        }
+        if (!StringUtils.isBlank(userCode)) {
+            Account accountObj = accountService.getByAccountAndTenantCode(userCode, tenant);
+            if (Objects.nonNull(accountObj)) {
+                LoginRequest loginRequest = new LoginRequest();
+                loginRequest.setTenant(accountObj.getTenantCode());
+                loginRequest.setReqId(IdGenerator.uuid2());
+                // 客户端ip
+                String ipAddr = ThreadLocalUtil.getTranVar("ClientIP");
+                SessionUser sessionUser = accountService.convertSessionUser(accountObj, ipAddr, loginRequest.getLocale());
+                // 生产token
+                ContextUtil.generateToken(sessionUser);
+                SessionUserResponse dto = SessionUserResponse.build();
+                dto.setLoginStatus(SessionUserResponse.LoginStatus.success);
+                dto.setSessionId(sessionUser.getSessionId());
+                dto.setTenantCode(sessionUser.getTenantCode());
+                dto.setUserId(sessionUser.getUserId());
+                dto.setAccount(sessionUser.getAccount());
+                dto.setLoginAccount(sessionUser.getLoginAccount());
+                dto.setUserName(sessionUser.getUserName());
+                dto.setUserType(sessionUser.getUserType());
+                dto.setAuthorityPolicy(sessionUser.getAuthorityPolicy());
+                dto.setLocale(sessionUser.getLocale());
+                sessionService.addSession(sessionUser);
+                return ResultData.success(dto);
+            }
+            else {
+                return ResultData.fail("账号[" + userCode + "]不存在，登录失败.");
+            }
+        } else {
+            return ResultData.fail("账号不存在！");
         }
     }
 

@@ -76,6 +76,15 @@ public interface AuthenticationApi {
                                          HttpServletRequest request);
 
     /**
+     * H5端账号token
+     * @param request H5请求
+     * @return
+     */
+    @RequestMapping(path = "oauth2/H5SignToken", method = {RequestMethod.GET, RequestMethod.POST})
+    @ApiOperation("H5单点登录")
+    ResultData<SessionUserResponse> H5SignToken(HttpServletRequest request);
+
+    /**
      * OAuth2协议认证
      */
     @RequestMapping(path = "{tenantCode}/oauth2/{apiPath}", method = {RequestMethod.GET, RequestMethod.POST})

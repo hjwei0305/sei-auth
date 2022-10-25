@@ -9,18 +9,15 @@ import com.changhong.sei.auth.service.AccountService;
 import com.changhong.sei.auth.service.TodoTaskService;
 import com.changhong.sei.auth.service.client.FlowClient;
 import com.changhong.sei.auth.service.client.vo.FlowTaskPageResultVO;
-import com.changhong.sei.auth.service.client.vo.FlowTaskVo;
 import com.changhong.sei.auth.webservice.eipMall.SvcHdrTypes;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.dto.flow.FlowTask;
 import com.changhong.sei.core.dto.serach.PageInfo;
 import com.changhong.sei.core.dto.serach.Search;
 import com.changhong.sei.core.log.LogUtil;
-import com.changhong.sei.core.util.HttpUtils;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.util.DateUtils;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,7 +112,6 @@ public class DefaultTodoTaskService implements TodoTaskService {
             // TODO 按项目实际情况集成
             String data = "";
             for (FlowTask task : taskList) {
-
                 boolean flag = EipConnector.deleteEipMall(task.getFlowInstance().getBusinessId());
                 LOG.info("Eip删除待办: {}", flag);
                 LogUtil.bizLog("EIP日志"+flag);
