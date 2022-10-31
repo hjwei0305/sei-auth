@@ -1,5 +1,6 @@
 package com.changhong.sei.auth.certification.sso.wechat;
 
+import com.changhong.sei.auth.connection.EipConnector;
 import com.changhong.sei.auth.dto.LoginRequest;
 import com.changhong.sei.auth.dto.SessionUserResponse;
 import com.changhong.sei.auth.service.TodoTaskService;
@@ -57,6 +58,11 @@ public class WeChatAuthenticatorTest {
         flowTask.setTaskName("部门负责人审批");
         list.add(flowTask);
         todoTaskService.pushNewTask(list,request);
+    }
+
+    @Test
+    public void deleteEip(){
+        EipConnector.deleteEipMall("EE557E23-56AB-11ED-9043-0242AC140022");
     }
 
     @Test
