@@ -25,10 +25,10 @@ public class EipConnector {
     public static final AddNoticeType notice = new AddNoticeType();
     public static final String sourceId = "SEIPROD";
     public static final String destinationId = "EIP";
-    public static final String ipAddress = "10.233.0.170";
+    public static final String ipAddress = "127.0.0.1";
     public static final HashMap<String, String> map = DateUtils.getStarAndEndDate();
     public static final String bo = "待办通知信息同步";
-    public static final String systemName = "出门管理平台系统";
+    public static final String systemName = "sei平台";
     public static final String systemSort = "A13";
     public static final String mailType = "待办";
 

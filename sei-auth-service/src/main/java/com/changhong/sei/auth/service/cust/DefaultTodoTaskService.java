@@ -78,7 +78,7 @@ public class DefaultTodoTaskService implements TodoTaskService {
                 dto.setMailID(task.getId());
                 dto.setUrl(url);
                 dto.setMailBody(task.getFlowName());
-                dto.setMailSubject(task.getTaskName());
+                dto.setMailSubject("【"+task.getFlowInstance().getBusinessModelRemark()+"】"+task.getTaskName());
                 SvcHdrTypes flag = EipConnector.addEipMall(dto);
                 LogUtil.bizLog("EIP日志"+flag.getRDESC());
                 LogUtil.bizLog("EIP日志"+flag.getESBCODE());
