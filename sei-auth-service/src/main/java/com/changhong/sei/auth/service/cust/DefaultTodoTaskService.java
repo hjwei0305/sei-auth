@@ -67,7 +67,7 @@ public class DefaultTodoTaskService implements TodoTaskService {
         try {
             // TODO 按项目实际情况集成
             String data = "";
-           /* for (FlowTask task : taskList) {
+            for (FlowTask task : taskList) {
                 EipMailDto dto = new EipMailDto();
                 String url = authProperties.getApiBaseUrl() +"/sei-auth" + getTodoTaskRelativeUrl(task.getId())+
                         "&account="+task.getExecutorAccount() +
@@ -83,7 +83,7 @@ public class DefaultTodoTaskService implements TodoTaskService {
                 LogUtil.bizLog("EIP日志"+flag.getRDESC());
                 LogUtil.bizLog("EIP日志"+flag.getESBCODE());
                 LOG.info("待办消息处理URL: {}", url);
-            }*/
+            }
             LOG.info("待办消息推送内容: {}", data);
             // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
             // LOG.info("待办消息推送结果: {}", result);
@@ -111,11 +111,11 @@ public class DefaultTodoTaskService implements TodoTaskService {
         try {
             // TODO 按项目实际情况集成
             String data = "";
-           /* for (FlowTask task : taskList) {
+            for (FlowTask task : taskList) {
                 boolean flag = EipConnector.deleteEipMall(task.getId());
                 LOG.info("Eip删除待办: {}", flag);
                 LogUtil.bizLog("EIP日志"+flag);
-            }*/
+            }
             LOG.info("已办消息推送内容: {}", data);
             // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
             // LOG.info("已办消息推送结果: {}", result);
@@ -143,12 +143,12 @@ public class DefaultTodoTaskService implements TodoTaskService {
         try {
             // TODO 按项目实际情况集成
             String data = "";
-           /* for (FlowTask task : taskList) {
+            for (FlowTask task : taskList) {
                 boolean flag = EipConnector.deleteEipMall(task.getId());
                 LOG.info("Eip删除转办: {}", flag);
                 LogUtil.bizLog("EIP日志"+flag);
             }
-            LOG.info("删除待办推送内容: {}", data);*/
+            LOG.info("删除待办推送内容: {}", data);
             // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
             // LOG.info("删除待办推送结果: {}", result);
             return ResultData.success();
