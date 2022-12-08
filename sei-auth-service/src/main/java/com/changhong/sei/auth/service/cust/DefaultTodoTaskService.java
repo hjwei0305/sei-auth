@@ -82,6 +82,10 @@ public class DefaultTodoTaskService implements TodoTaskService {
                 SvcHdrTypes flag = EipConnector.addEipMall(dto);
                 LogUtil.bizLog("EIP日志"+flag.getRDESC());
                 LogUtil.bizLog("EIP日志"+flag.getESBCODE());
+                if(!flag.getRCODE().equals("Y")){
+                    LOG.error("待办消息推送异常,eip接收出错");
+                    return ResultData.fail("待办消息推送异常,eip接收出错 ");
+                }
                 LOG.info("待办消息处理URL: {}", url);
             }
             LOG.info("待办消息推送内容: {}", data);
@@ -115,6 +119,10 @@ public class DefaultTodoTaskService implements TodoTaskService {
                 boolean flag = EipConnector.deleteEipMall(task.getId());
                 LOG.info("Eip删除待办: {}", flag);
                 LogUtil.bizLog("EIP日志"+flag);
+                if(!flag){
+                    LOG.error("已办消息推送异常,eip无法获取");
+                    return ResultData.fail("已办消息推送异常,eip无法获取");
+                }
             }
             LOG.info("已办消息推送内容: {}", data);
             // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
