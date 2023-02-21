@@ -318,7 +318,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
     private String getAccessToken() {
         // 检查缓存中是否存在有效token
         String accessToken = cacheBuilder.get(CACHE_KEY_TOKEN);
-        if (StringUtils.isBlank(accessToken)) {
+     //   if (StringUtils.isBlank(accessToken)) {
             AuthProperties.SingleSignOnProperties sso = properties.getSso();
 
             // 不存在,获取新的有效token
@@ -327,7 +327,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
                 // 微信默认token过期时间为7200秒, 为防止过期缓存有效时间设置为7000秒
                 cacheBuilder.set(CACHE_KEY_TOKEN, accessToken, 7000000);
             }
-        }
+      //  }
         return accessToken;
     }
 }
