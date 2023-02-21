@@ -240,7 +240,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
 
         // 检查是否有账号绑定
         ResultData<Account> resultData = accountService.checkAccount(ChannelEnum.WeChat, openId);
-        LOG.info("检查是否有账号绑定: {}", resultData);
+        LOG.info("检查是否有微信账号绑定: {}", resultData);
         if (resultData.successful()) {
             Account account = resultData.getData();
 
