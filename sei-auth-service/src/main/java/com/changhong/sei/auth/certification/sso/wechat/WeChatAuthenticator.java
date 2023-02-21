@@ -16,6 +16,7 @@ import com.changhong.sei.core.cache.CacheBuilder;
 import com.changhong.sei.core.dto.ResultData;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.util.Signature;
+import jdk.nashorn.internal.parser.Token;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,7 +226,7 @@ public class WeChatAuthenticator extends AbstractTokenAuthenticator implements O
 
         // 检查缓存中是否存在有效token
         String accessToken = getAccessToken();
-
+        LOG.info("token:{}", accessToken);
         Map<String, Object> userMap = WeChatUtil.getUserInfo(accessToken, code);
         LOG.info("UserInfo: {}", JsonUtils.toJson(userMap));
         // 社交平台开放ID
