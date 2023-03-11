@@ -66,7 +66,6 @@ public class DefaultTodoTaskService implements TodoTaskService {
 
         try {
             // TODO 按项目实际情况集成
-            String data = "";
             for (FlowTask task : taskList) {
                 EipMailDto dto = new EipMailDto();
                 String url = authProperties.getApiBaseUrl() +"/sei-auth" + getTodoTaskRelativeUrl(task.getId())+
@@ -79,18 +78,12 @@ public class DefaultTodoTaskService implements TodoTaskService {
                 dto.setUrl(url);
                 dto.setMailBody(task.getFlowName());
                 dto.setMailSubject("【"+task.getFlowInstance().getBusinessModelRemark()+"】"+task.getTaskName());
-                SvcHdrTypes flag = EipConnector.addEipMall(dto);
-                LogUtil.bizLog("EIP日志"+flag.getRDESC());
-                LogUtil.bizLog("EIP日志"+flag.getESBCODE());
-                if(!flag.getRCODE().equals("Y")){
-                    LOG.error("待办消息推送异常,eip接收出错");
+                boolean flag  = EipConnector.addEipMall(dto);
+                LogUtil.bizLog("addEipMall:推送EIP状态"+flag+"ID为"+task.getId()+"执行人"+task.getExecutorName());
+                if(!flag){
                     return ResultData.fail("待办消息推送异常,eip接收出错 ");
                 }
-                LOG.info("待办消息处理URL: {}", url);
             }
-            LOG.info("待办消息推送内容: {}", data);
-            // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
-            // LOG.info("待办消息推送结果: {}", result);
             return ResultData.success();
         } catch (Exception e) {
             LOG.error("待办消息推送异常", e);
@@ -114,22 +107,15 @@ public class DefaultTodoTaskService implements TodoTaskService {
 
         try {
             // TODO 按项目实际情况集成
-            String data = "";
             for (FlowTask task : taskList) {
                 boolean flag = EipConnector.deleteEipMall(task.getId());
-                LOG.info("Eip删除待办: {}", flag);
-                LogUtil.bizLog("EIP日志"+flag);
+                LogUtil.bizLog("deleteEipMall:推送EIP状态"+flag+"ID为"+task.getId()+"执行人"+task.getExecutorName());
                 if(!flag){
-                    LOG.error("已办消息推送异常,eip无法获取");
                     return ResultData.fail("已办消息推送异常,eip无法获取");
                 }
             }
-            LOG.info("已办消息推送内容: {}", data);
-            // String result = HttpUtils.sendPost(authProperties.getTaskPushUrl(), data);
-            // LOG.info("已办消息推送结果: {}", result);
             return ResultData.success();
         } catch (Exception e) {
-            LOG.error("已办消息推送异常", e);
             return ResultData.fail("已办消息推送异常: " + e.getMessage());
         }
     }
@@ -153,7 +139,7 @@ public class DefaultTodoTaskService implements TodoTaskService {
             String data = "";
             for (FlowTask task : taskList) {
                 boolean flag = EipConnector.deleteEipMall(task.getId());
-                LOG.info("Eip删除转办: {}", flag);
+                LogUtil.bizLog("deleteEipMall:推送EIP状态"+flag+"ID为"+task.getId()+"执行人"+task.getExecutorName());
                 LogUtil.bizLog("EIP日志"+flag);
             }
             LOG.info("删除待办推送内容: {}", data);

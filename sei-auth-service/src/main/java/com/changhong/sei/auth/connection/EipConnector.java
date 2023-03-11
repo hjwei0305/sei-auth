@@ -32,7 +32,7 @@ public class EipConnector {
     public static final String systemSort = "A13";
     public static final String mailType = "待办";
 
-    public static SvcHdrTypes addEipMall(EipMailDto eipMailDto){
+    public static boolean addEipMall(EipMailDto eipMailDto){
         svcHdr.setSOURCEID(sourceId);
         svcHdr.setDESTINATIONID(destinationId);
         svcHdr.setTYPE("ADD");
@@ -48,11 +48,10 @@ public class EipConnector {
         notice.setUrl(eipMailDto.getUrl());
         appBody.setAddNotice(notice);
         sync.donlimESAGENCYNOTICEINFOSYNC086(svcHdr, appHdr, appBody,svcHdrs,appHdrs,appBodys);
-        /*if("Y".equals(svcHdrs.value.getRCODE())){
+        if("Y".equals(svcHdrs.value.getRCODE())){
             return true;
         }
-        return false;*/
-        return svcHdrs.value;
+        return false;
     }
 
     public static boolean deleteEipMall(String mailId){
