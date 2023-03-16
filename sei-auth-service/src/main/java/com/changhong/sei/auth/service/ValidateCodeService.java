@@ -127,7 +127,9 @@ public class ValidateCodeService {
                     params.put("expireTime", "5分钟");
                     smsMessage.setContentTemplateParams(params);
                     smsMessage.addPhoneNum(target);
-                    notifyManager.sendSms(smsMessage);
+                    ResultData<String> stringResultData = notifyManager.sendSms(smsMessage);
+                    LogUtil.bizLog("短信"+stringResultData.successful()+stringResultData.getData());
+
                 } else {
                     return ResultData.fail("手机号不正确[" + target + "]");
                 }
