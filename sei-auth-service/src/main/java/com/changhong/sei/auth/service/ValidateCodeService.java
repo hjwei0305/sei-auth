@@ -127,6 +127,7 @@ public class ValidateCodeService {
                     params.put("expireTime", "5分钟");
                     smsMessage.setContentTemplateParams(params);
                     smsMessage.addPhoneNum(target);
+                    smsMessage.setContent(code);
                     ResultData<String> stringResultData = notifyManager.sendSms(smsMessage);
                     LogUtil.bizLog("短信"+stringResultData.successful()+stringResultData.getData());
 
