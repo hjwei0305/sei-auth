@@ -15,7 +15,9 @@ dependencyManagement {
 
 dependencies {
     implementation project(':sei-auth-api')
-
+    implementation 'org.projectlombok:lombok:1.18.8'
+    annotationProcessor 'org.projectlombok:lombok:1.18.8'
+    compile 'com.alibaba:fastjson:+'
     compile(
             "org.springframework.boot:spring-boot-configuration-processor",
             "org.springframework.boot:spring-boot-starter-websocket",

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!--File DONLIM_EIP_QUERYTODOLISTSYNC_648.wsdl, application DONLIM_EIP_QUERYTODOLISTSYNC_648--><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="DONLIM_EIP_QUERYTODOLISTSYNC_648" targetNamespace="http://www.example.org/DONLIM_EIP_QUERYTODOLISTSYNC_648/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.example.org/DONLIM_EIP_QUERYTODOLISTSYNC_648/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:documentation>
+    <wsdl:appinfo source="WMQI_APPINFO">
+      <MRWSDLAppInfo imported="true">
+        <binding hasEncoding="false" imported="true" name="DONLIM_EIP_QUERYTODOLISTSYNC_648SOAP" originalBindingStyle="document"/>
+        <generatedXSD location="DONLIM_EIP_QUERYTODOLISTSYNC_648_InlineSchema1.xsd"/>
+      </MRWSDLAppInfo>
+    </wsdl:appinfo>
+  </wsdl:documentation>
+
+  <wsdl:types>
+
+      <xsd:schema targetNamespace="http://www.example.org/DONLIM_EIP_QUERYTODOLISTSYNC_648/">
+<xsd:include schemaLocation="http://192.168.119.83:7802/WS/DONLIM/EIP/DONLIM_EIP_QUERYTODOLISTSYNC?xsd=xsd0"/>
+</xsd:schema>
+    </wsdl:types>
+  <wsdl:message name="DONLIM_EIP_QUERYTODOLISTSYNC_648Request">
+    <wsdl:part element="tns:DONLIM_EIP_QUERYTODOLISTSYNC_648" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="DONLIM_EIP_QUERYTODOLISTSYNC_648Response">
+    <wsdl:part element="tns:DONLIM_EIP_QUERYTODOLISTSYNC_648Response" name="parameters"/>
+  </wsdl:message>
+  <wsdl:portType name="DONLIM_EIP_QUERYTODOLISTSYNC_648">
+    <wsdl:operation name="DONLIM_EIP_QUERYTODOLISTSYNC_648">
+      <wsdl:input message="tns:DONLIM_EIP_QUERYTODOLISTSYNC_648Request"/>
+      <wsdl:output message="tns:DONLIM_EIP_QUERYTODOLISTSYNC_648Response"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="DONLIM_EIP_QUERYTODOLISTSYNC_648SOAP" type="tns:DONLIM_EIP_QUERYTODOLISTSYNC_648">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="DONLIM_EIP_QUERYTODOLISTSYNC_648">
+      <soap:operation soapAction="http://www.example.org/DONLIM_EIP_QUERYTODOLISTSYNC_648/DONLIM_EIP_QUERYTODOLISTSYNC_648"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DONLIM_EIP_QUERYTODOLISTSYNC_648">
+    <wsdl:port binding="tns:DONLIM_EIP_QUERYTODOLISTSYNC_648SOAP" name="DONLIM_EIP_QUERYTODOLISTSYNC_648SOAP">
+      <soap:address location="http://192.168.119.83:7802/WS/DONLIM/EIP/DONLIM_EIP_QUERYTODOLISTSYNC"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
