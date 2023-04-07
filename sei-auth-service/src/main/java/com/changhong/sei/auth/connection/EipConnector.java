@@ -1,14 +1,23 @@
 package com.changhong.sei.auth.connection;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.changhong.sei.auth.dto.EipMailDto;
+import com.changhong.sei.auth.dto.FindEipToDoListDto;
 import com.changhong.sei.auth.util.DateUtils;
 import com.changhong.sei.auth.webservice.eipMall.*;
+import com.changhong.sei.auth.webservice.finEipTodoList.DONLIMEIPQUERYTODOLISTSYNC648;
+import com.changhong.sei.auth.webservice.finEipTodoList.DONLIMEIPQUERYTODOLISTSYNC648_Service;
+import com.changhong.sei.auth.webservice.finEipTodoList.SvcHdrsType;
 
 import javax.xml.ws.Holder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ServiceConfigurationError;
 
 /**
  * 对接eip测试待办接口
+ *
  * @author Joe
  * @date 2022/4/26
  */
@@ -32,7 +41,29 @@ public class EipConnector {
     public static final String systemSort = "A13";
     public static final String mailType = "待办";
 
-    public static boolean addEipMall(EipMailDto eipMailDto){
+    public static final DONLIMEIPQUERYTODOLISTSYNC648_Service findService = new DONLIMEIPQUERYTODOLISTSYNC648_Service();
+    public static final DONLIMEIPQUERYTODOLISTSYNC648 findSync = findService.getDONLIMEIPQUERYTODOLISTSYNC648SOAP();
+    private static final com.changhong.sei.auth.webservice.finEipTodoList.SvcHdrType search=new com.changhong.sei.auth.webservice.finEipTodoList.SvcHdrType();
+
+    /**
+     * 获取EIP待办清单
+     * @return
+     */
+    public static List<FindEipToDoListDto.ToDoListDTO> findTodoList() {
+        List<FindEipToDoListDto> toDoList = new ArrayList<>();
+        search.setBO(bo);
+        search.setSOURCEID(sourceId);
+        search.setIPADDRESS(ipAddress);
+        search.setDESTINATIONID(destinationId);
+        search.setTYPE("SELECT");
+        search.setBodyJson("{\"systemName\":\"sei平台\"}");
+        SvcHdrsType svcHdrsType = findSync.donlimEIPQUERYTODOLISTSYNC648(search);
+        JSONObject result = JSONObject.parseObject(svcHdrsType.getResultJson());
+        FindEipToDoListDto dto = JSON.toJavaObject(result,FindEipToDoListDto.class);
+        return dto.getTable();
+    }
+
+    public static boolean addEipMall(EipMailDto eipMailDto) {
         svcHdr.setSOURCEID(sourceId);
         svcHdr.setDESTINATIONID(destinationId);
         svcHdr.setTYPE("ADD");
@@ -47,14 +78,14 @@ public class EipConnector {
         notice.setSystemSort(systemSort);
         notice.setUrl(eipMailDto.getUrl());
         appBody.setAddNotice(notice);
-        sync.donlimESAGENCYNOTICEINFOSYNC086(svcHdr, appHdr, appBody,svcHdrs,appHdrs,appBodys);
-        if("Y".equals(svcHdrs.value.getRCODE())){
+        sync.donlimESAGENCYNOTICEINFOSYNC086(svcHdr, appHdr, appBody, svcHdrs, appHdrs, appBodys);
+        if ("Y".equals(svcHdrs.value.getRCODE())) {
             return true;
         }
         return false;
     }
 
-    public static boolean deleteEipMall(String mailId){
+    public static boolean deleteEipMall(String mailId) {
         svcHdr.setSOURCEID(sourceId);
         svcHdr.setDESTINATIONID(destinationId);
         svcHdr.setTYPE("DELETE");
@@ -65,14 +96,14 @@ public class EipConnector {
         notice.setSystemName(systemName);
         notice.setSystemSort(systemSort);
         appBody.setAddNotice(notice);
-        sync.donlimESAGENCYNOTICEINFOSYNC086(svcHdr, appHdr, appBody,svcHdrs,appHdrs,appBodys);
-        if("Y".equals(svcHdrs.value.getRCODE())){
+        sync.donlimESAGENCYNOTICEINFOSYNC086(svcHdr, appHdr, appBody, svcHdrs, appHdrs, appBodys);
+        if ("Y".equals(svcHdrs.value.getRCODE())) {
             return true;
         }
         return false;
     }
 
-    public static boolean updateEipMall(EipMailDto eipMailDto){
+    public static boolean updateEipMall(EipMailDto eipMailDto) {
         svcHdr.setSOURCEID(sourceId);
         svcHdr.setDESTINATIONID(destinationId);
         svcHdr.setTYPE("DELETE");
@@ -87,8 +118,8 @@ public class EipConnector {
         notice.setSystemSort(systemSort);
         notice.setUrl(eipMailDto.getUrl());
         appBody.setAddNotice(notice);
-        sync.donlimESAGENCYNOTICEINFOSYNC086(svcHdr, appHdr, appBody,svcHdrs,appHdrs,appBodys);
-        if("Y".equals(svcHdrs.value.getRCODE())){
+        sync.donlimESAGENCYNOTICEINFOSYNC086(svcHdr, appHdr, appBody, svcHdrs, appHdrs, appBodys);
+        if ("Y".equals(svcHdrs.value.getRCODE())) {
             return true;
         }
         return false;
