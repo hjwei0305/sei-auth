@@ -16,13 +16,6 @@ sei:
 #      tenant-code: AUDIT
       user-id: 2466CD20-B3C8-11EB-AF09-0242C0A84415
 
-    #knife4j:
-#  basic:
-#    enable: true
-    ## Basic认证用户名
-#    username: admin
-    ## Basic认证密码
-#    password: 123456
 spring:
   application:
     name: ${sei.application.code}
