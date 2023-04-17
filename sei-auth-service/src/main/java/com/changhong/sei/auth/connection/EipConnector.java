@@ -35,7 +35,6 @@ public class EipConnector {
     public static final String sourceId = "SEIPROD";
     public static final String destinationId = "EIP";
     public static final String ipAddress = "127.0.0.1";
-    public static final HashMap<String, String> map = DateUtils.getStarAndEndDate();
     public static final String bo = "待办通知信息同步";
     public static final String systemName = "sei平台";
     public static final String systemSort = "A13";
@@ -50,7 +49,6 @@ public class EipConnector {
      * @return
      */
     public static List<FindEipToDoListDto.ToDoListDTO> findTodoList() {
-        List<FindEipToDoListDto> toDoList = new ArrayList<>();
         search.setBO(bo);
         search.setSOURCEID(sourceId);
         search.setIPADDRESS(ipAddress);
@@ -63,6 +61,11 @@ public class EipConnector {
         return dto.getTable();
     }
 
+    /**
+     * 增加待办
+     * @param eipMailDto
+     * @return
+     */
     public static boolean addEipMall(EipMailDto eipMailDto) {
         svcHdr.setSOURCEID(sourceId);
         svcHdr.setDESTINATIONID(destinationId);
@@ -85,6 +88,11 @@ public class EipConnector {
         return false;
     }
 
+    /**
+     * 清除待办
+     * @param mailId
+     * @return
+     */
     public static boolean deleteEipMall(String mailId) {
         svcHdr.setSOURCEID(sourceId);
         svcHdr.setDESTINATIONID(destinationId);
