@@ -63,7 +63,7 @@ public class AccessRecordService {
     /**
      * 清除小于指定时间的数据
      */
-    // @SeiLock(key = "'auth:cleanAccessLog'")
+    @SeiLock(key = "'auth:cleanAccessLog'")
     @Transactional(rollbackFor = Exception.class)
     public void cleanAccessLog() {
         dao.cleanAccessLog(LocalDateTime.now().minusMonths(3));
