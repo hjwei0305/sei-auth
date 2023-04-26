@@ -115,7 +115,7 @@ public class OnlineUserService {
      */
     @Async
     @Transactional(rollbackFor = Exception.class)
-    @SeiLock(key = "'auth:timedLogout'")
+    // @SeiLock(key = "'auth:timedLogout'")
     public void timedLogout() {
         int count = 0;
         Set<String> keys = stringRedisTemplate.keys(Constants.REDIS_KEY_PREFIX.concat("*"));
