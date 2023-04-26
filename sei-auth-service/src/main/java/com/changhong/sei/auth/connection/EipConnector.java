@@ -40,14 +40,14 @@ public class EipConnector {
     public static final String systemSort = "A13";
     public static final String mailType = "待办";
 
-    public static final DONLIMEIPQUERYTODOLISTSYNC648_Service findService = new DONLIMEIPQUERYTODOLISTSYNC648_Service();
+    /*public static final DONLIMEIPQUERYTODOLISTSYNC648_Service findService = new DONLIMEIPQUERYTODOLISTSYNC648_Service();
     public static final DONLIMEIPQUERYTODOLISTSYNC648 findSync = findService.getDONLIMEIPQUERYTODOLISTSYNC648SOAP();
     private static final com.changhong.sei.auth.webservice.finEipTodoList.SvcHdrType search=new com.changhong.sei.auth.webservice.finEipTodoList.SvcHdrType();
 
-    /**
+    *//**
      * 获取EIP待办清单
      * @return
-     */
+     *//*
     public static List<FindEipToDoListDto.ToDoListDTO> findTodoList() {
         search.setBO(bo);
         search.setSOURCEID(sourceId);
@@ -59,7 +59,7 @@ public class EipConnector {
         JSONObject result = JSONObject.parseObject(svcHdrsType.getResultJson());
         FindEipToDoListDto dto = JSON.toJavaObject(result,FindEipToDoListDto.class);
         return dto.getTable();
-    }
+    }*/
 
     /**
      * 增加待办
