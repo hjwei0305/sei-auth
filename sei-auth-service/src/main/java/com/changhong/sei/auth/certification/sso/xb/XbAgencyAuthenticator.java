@@ -90,6 +90,7 @@ public class XbAgencyAuthenticator extends AbstractTokenAuthenticator implements
                 LoginRequest loginRequest = new LoginRequest();
                 loginRequest.setTenant(accountObj.getTenantCode());
                 loginRequest.setReqId(IdGenerator.uuid2());
+                loginRequest.setAccount(userCode);
                 ResultData<SessionUserResponse> user = login(loginRequest, accountObj);
                 if(StringUtils.isNotBlank(reUrl)) {
                     reUrl = "/"+modular+"/#/"+reUrl;
