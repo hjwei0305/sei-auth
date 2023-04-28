@@ -92,11 +92,24 @@ public class XbAgencyAuthenticator extends AbstractTokenAuthenticator implements
                 loginRequest.setReqId(IdGenerator.uuid2());
                 loginRequest.setAccount(userCode);
                 ResultData<SessionUserResponse> user = login(loginRequest, accountObj);
+                SessionUserResponse userResponse = new SessionUserResponse();
+                userResponse.setTenantCode(accountObj.getTenantCode());
+                userResponse.setAccount(accountObj.getAccount());
+                userResponse.setLoginAccount(accountObj.getOpenId());
+                userResponse.setUserId(accountObj.getUserId());
+                userResponse.setUserName(accountObj.getName());
+                SessionUserResponse sessionUserResponse = user.getData();
+                if (Objects.nonNull(sessionUserResponse)) {
+                    userResponse.setSessionId(sessionUserResponse.getSessionId());
+                    userResponse.setUserType(sessionUserResponse.getUserType());
+                    userResponse.setAuthorityPolicy(sessionUserResponse.getAuthorityPolicy());
+                    userResponse.setLoginStatus(sessionUserResponse.getLoginStatus());
+                }
                 if(StringUtils.isNotBlank(reUrl)) {
                     reUrl = "/"+modular+"/#/"+reUrl;
                     user.getData().setRedirectUrl(reUrl);
                 }
-                return user;
+                return ResultData.success(userResponse);
             }
             else {
                 LOG.error("账号[{}]不存在，单点登录失败.", userCode);
