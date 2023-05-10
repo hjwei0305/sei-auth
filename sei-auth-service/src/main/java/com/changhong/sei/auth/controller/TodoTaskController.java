@@ -396,7 +396,8 @@ public class TodoTaskController implements TodoTaskApi {
             redirectUrl = redirectUrl + "&businessCode=" + businessCode;
         }
         LogUtil.bizLog("OA登录验证成功，跳转页面：{}", redirectUrl);
-        return ResultData.success(redirectUrl);
+        // return ResultData.success(redirectUrl);
+        return ResultData.success("待办暂时不支持移动端");
     }
 
     /**
