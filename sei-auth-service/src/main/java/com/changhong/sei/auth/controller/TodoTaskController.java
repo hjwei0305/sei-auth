@@ -377,7 +377,7 @@ public class TodoTaskController implements TodoTaskApi {
      */
     private ResultData<String> buildMobileRedirectUrl(HttpServletRequest request, SessionUser sessionUser, String todoFlag) {
         //待办任务单号
-        String businessCode = request.getParameter("businessCode");
+        /*String businessCode = request.getParameter("businessCode");
         if (StringUtils.isBlank(businessCode) && "todo".equals(todoFlag)) {
             //待办任务id
             String taskId = request.getParameter("taskId");
@@ -396,8 +396,8 @@ public class TodoTaskController implements TodoTaskApi {
             redirectUrl = redirectUrl + "&businessCode=" + businessCode;
         }
         LogUtil.bizLog("OA登录验证成功，跳转页面：{}", redirectUrl);
-        // return ResultData.success(redirectUrl);
-        return ResultData.fail("待办暂时不支持移动端");
+        return ResultData.success(redirectUrl);*/
+        return ResultData.success("about:blank");
     }
 
     /**
