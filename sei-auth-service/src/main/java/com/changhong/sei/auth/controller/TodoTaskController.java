@@ -397,7 +397,32 @@ public class TodoTaskController implements TodoTaskApi {
         }
         LogUtil.bizLog("OA登录验证成功，跳转页面：{}", redirectUrl);
         return ResultData.success(redirectUrl);*/
-        return ResultData.success("about:blank");
+        //待办任务id
+        String taskId = request.getParameter("taskId");
+        //待办url
+        FlowTask flowTask = flowClient.findTaskById(taskId);
+        if (flowTask == null) {
+            return ResultData.fail(taskId);
+        }
+        //系统基地址 + 待办相对地址
+        StringBuilder redirectUrl = new StringBuilder(flowTask.getTaskFormUrl());
+        Enumeration<String> keys = request.getParameterNames();
+        boolean first = redirectUrl.indexOf("?") <= 0;
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            if (StringUtils.endsWithAny(key, "sign", "stamp", "token", "account")) {
+                continue;
+            }
+            redirectUrl.append(first ? "?" : "&").append(key).append("=").append(request.getParameter(key));
+            first = false;
+        }
+        LogUtil.bizLog("请求token: {}", ContextUtil.getToken());
+        redirectUrl.append(first ? "?" : "&");
+        redirectUrl.append("sessionId").append("=").append(sessionUser.getSessionId());
+        redirectUrl.append("&sid").append("=").append(sessionUser.getSessionId());
+        String page = redirectUrl.toString().replace("businessId", "id");
+        LogUtil.bizLog("OA登录验证成功，跳转页面：{}", page);
+        return ResultData.success(page);
     }
 
     /**
