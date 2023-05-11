@@ -98,6 +98,7 @@ public class XbSingleSignOnAuthenticator extends AbstractTokenAuthenticator impl
                 LoginRequest loginRequest = new LoginRequest();
                 loginRequest.setTenant(accountObj.getTenantCode());
                 loginRequest.setReqId(IdGenerator.uuid2());
+                loginRequest.setAccount(userCode);
                 ResultData<SessionUserResponse> user = login(loginRequest, accountObj);
                 if(StringUtils.isNotBlank(reUrl)) {
                     reUrl = "/"+modular+"/#/"+reUrl;
